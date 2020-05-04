@@ -15,7 +15,7 @@ enum class Attribute {
     DAMAGE_OUTPUT,
     DAMAGE_TYPES,
     WEAPON_TYPE,
-    ATTACK_TYPES,
+    ACTIONS,
     IN_MELEE_COMBAT
 }
 
@@ -41,7 +41,7 @@ enum class WeaponType {
     // #TODO Can optimise this: https://stackoverflow.com/a/19277247/2756877
 }
 
-data class WeaponTypeValue(val value: WeaponType): AttributeValue() {
+data class WeaponTypeValue(val value: WeaponType) : AttributeValue() {
     operator fun plus(other: WeaponTypeValue): WeaponTypeValue {
         return Math.max(this.value.ordinal, other.value.ordinal)
                 .let { largerOrdinal ->
@@ -53,17 +53,10 @@ data class WeaponTypeValue(val value: WeaponType): AttributeValue() {
     }
 }
 
-sealed class AttackType(val damage: String, val numberOfAttacks: Int) {
-    class MELEE(damage: String): AttackType(damage, 1)
-    class RANGED_SINGLE(damage: String): AttackType(damage, 1)
-    class RANGED_SEMI_AUTO_BURST(damage: String,shotsFired: Int): AttackType(damage, shotsFired)
-    class RANGED_FULL_AUTO_BURST(damage: String, shotsFired: Int): AttackType(damage, shotsFired)
-}
-
 /**
  * This attribute value type stacks, i.e. additional attributes are added to the end of the list.
  */
-data class StackingValue<T>(val value: List<T>): AttributeValue() {
+data class StackingValue<T>(val value: List<T>) : AttributeValue() {
     operator fun plus(other: StackingValue<T>): StackingValue<T> {
         return (this.value + other.value)
                 .let { newValue ->

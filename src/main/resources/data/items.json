@@ -2,16 +2,20 @@
     "itemRef": "wpn_pistol_stubRevolver",
     "modifiesAttributes": {
         "WEAPON_TYPE": "PISTOL",
-        "ATTACK_TYPES": [
+        "ACTIONS": [
             {
-                "attackType": "RANGED_SINGLE",
+                "type": "ATTACK_RANGED_SINGLE",
                 "DAMAGE_OUTPUT": "1d10+3",
                 "DAMAGE_TYPE": "IMPACT"
             },
             {
-                "attackType": "MELEE",
+                "type": "ATTACK_MELEE",
                 "DAMAGE_OUTPUT": "1d10-1",
                 "DAMAGE_TYPE": [ "IMPACT", "PRIMITIVE" ]
+            },
+            {
+                "type": "RELOAD",
+                "actionCost": "TWO_FULL_ACTIONS"
             }
         ]
     }

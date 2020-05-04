@@ -1,5 +1,6 @@
 package io.hsar.wh40k.combatsimulator
 
+import io.hsar.wh40k.combatsimulator.Dice.rollInitiative
 import io.hsar.wh40k.combatsimulator.model.UnitInstance
 import io.hsar.wh40k.combatsimulator.model.World
 import io.hsar.wh40k.combatsimulator.model.unit.BaseStat.AGILITY
@@ -11,7 +12,7 @@ class CombatSimulation(val world: World) {
             .map { eachUnit ->
                 eachUnit.unit.stats.baseStats.getValue(AGILITY).getBonus()
                         .let { agilityBonus ->
-                            Dice.rollInitiative(agilityBonus = agilityBonus) to eachUnit
+                            rollInitiative(agilityBonus = agilityBonus) to eachUnit
                         }
             }
             .sortedByDescending { (initiativeRoll, _) -> initiativeRoll }
@@ -19,7 +20,11 @@ class CombatSimulation(val world: World) {
 
     fun run() {
         initiativeOrder.forEach { unit ->
-            TODO("Not yet implemented")
+            unit.tacticalActionStrategy
+                    .decideTurnActions(world, unit)
+                    .let { actionsToExecute ->
+                        world.executeActions(unit, actionsToExecute)
+                    }
         }
     }
 }

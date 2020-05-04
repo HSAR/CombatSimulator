@@ -1,5 +1,6 @@
 package io.hsar.wh40k.combatsimulator.model
 
+import io.hsar.wh40k.combatsimulator.logic.TacticalActionStrategy
 import io.hsar.wh40k.combatsimulator.model.unit.Attribute
 import io.hsar.wh40k.combatsimulator.model.unit.AttributeValue
 import io.hsar.wh40k.combatsimulator.model.unit.EquipmentInfo
@@ -15,5 +16,6 @@ class UnitInstance(
         val description: String,
         val unit: Unit,
         val equipment: Map<EquipmentType, EquipmentInfo>,
-        val attributes: Map<Attribute, AttributeValue> // #TODO: Figure out whether this is good long-term solution
+        val attributes: Map<Attribute, AttributeValue>, // #TODO: Figure out whether this is good long-term solution
+        val tacticalActionStrategy: TacticalActionStrategy = TacticalActionStrategy
 )
