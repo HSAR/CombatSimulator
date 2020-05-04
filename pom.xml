@@ -4,11 +4,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>io.hsar</groupId>
-    <artifactId>wh40k-combat-simulator</artifactId>
+    <artifactId>wh40k-rpg-combat-simulator</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>WH40KCombatSimulator</name>
+    <name>WH40K RPG Combat Simulator</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
