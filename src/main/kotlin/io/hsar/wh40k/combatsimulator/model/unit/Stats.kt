@@ -7,6 +7,7 @@ data class Stats(val baseStats: Map<BaseStat, Short>, val derivedStats: Map<Deri
  * Some abilities not related to combat are not represented.
  */
 enum class BaseStat {
+    MAX_HEALTH,
     WEAPON_SKILL,
     BALLISTIC_SKILL,
     STRENGTH,
