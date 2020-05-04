@@ -2,6 +2,8 @@
 
 ### Simulation Representation
 
+* Item database, flesh out `data/items.json` to include a small variety of weapons and simplify input files.
+    * Proper deserialisation may require Jackson magic.
 * Flesh out and implement how weapons change unit attributes, and the various options that can be selected and exposed to tactical decision-making (rate of fire, multiple weapons, improvised melee)
 * Add a proper co-ordinate system so that we can robustly handle units advancing or retreating from melee
 * Handle weapon ranges
