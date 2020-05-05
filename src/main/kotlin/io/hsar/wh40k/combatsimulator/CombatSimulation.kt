@@ -1,10 +1,10 @@
 package io.hsar.wh40k.combatsimulator
 
-import io.hsar.wh40k.combatsimulator.Dice.rollInitiative
 import io.hsar.wh40k.combatsimulator.model.UnitInstance
 import io.hsar.wh40k.combatsimulator.model.World
 import io.hsar.wh40k.combatsimulator.model.unit.BaseStat.AGILITY
 import io.hsar.wh40k.combatsimulator.model.unit.StatUtils.getBonus
+import io.hsar.wh40k.combatsimulator.random.RandomDice.rollInitiative
 
 class CombatSimulation(val world: World) {
 
@@ -20,10 +20,13 @@ class CombatSimulation(val world: World) {
 
     fun run() {
         initiativeOrder.forEach { unit ->
-            unit.tacticalActionStrategy
-                    .decideTurnActions(world, unit)
-                    .let { actionsToExecute ->
-                        world.executeActions(unit, actionsToExecute)
+            unit.availableActions
+                    .let { allActions ->
+                        unit.tacticalActionStrategy
+                                .decideTurnActions(world, unit, allActions)
+                                .let { actionsToExecute ->
+                                    world.executeActions(unit, actionsToExecute)
+                                }
                     }
         }
     }
