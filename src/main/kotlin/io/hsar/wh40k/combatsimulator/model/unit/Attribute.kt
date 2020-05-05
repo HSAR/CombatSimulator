@@ -41,20 +41,20 @@ enum class WeaponType {
     // #TODO Can optimise this: https://stackoverflow.com/a/19277247/2756877
 }
 
-data class WeaponTypeValue(val value: WeaponType) : AttributeValue() {
-    operator fun plus(other: WeaponTypeValue): WeaponTypeValue {
+data class HighestValue(val value: WeaponType) : AttributeValue() {
+    operator fun plus(other: HighestValue): HighestValue {
         return Math.max(this.value.ordinal, other.value.ordinal)
                 .let { largerOrdinal ->
                     WeaponType.values()[largerOrdinal]
                 }
                 .let { newValue ->
-                    WeaponTypeValue(newValue)
+                    HighestValue(newValue)
                 }
     }
 }
 
 /**
- * This attribute value type stacks, i.e. additional attributes are added to the end of the list.
+ * StackingValue adds attributes are to the end of the list.
  */
 data class StackingValue<T>(val value: List<T>) : AttributeValue() {
     operator fun plus(other: StackingValue<T>): StackingValue<T> {

@@ -1,6 +1,7 @@
 package io.hsar.wh40k.combatsimulator.model
 
 import io.hsar.wh40k.combatsimulator.logic.TacticalActionStrategy
+import io.hsar.wh40k.combatsimulator.logic.TurnAction
 import io.hsar.wh40k.combatsimulator.model.unit.Attribute
 import io.hsar.wh40k.combatsimulator.model.unit.AttributeValue
 import io.hsar.wh40k.combatsimulator.model.unit.EquipmentInfo
@@ -18,4 +19,9 @@ class UnitInstance(
         val equipment: Map<EquipmentType, EquipmentInfo>,
         val attributes: Map<Attribute, AttributeValue>, // #TODO: Figure out whether this is good long-term solution
         val tacticalActionStrategy: TacticalActionStrategy = TacticalActionStrategy
-)
+) {
+
+    fun executeTurnAction(turnAction: TurnAction) {
+        TODO("Not yet implemented")
+    }
+}

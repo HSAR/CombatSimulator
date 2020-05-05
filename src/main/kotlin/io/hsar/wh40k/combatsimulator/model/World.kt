@@ -7,7 +7,7 @@ data class World(val friendlyForces: List<UnitInstance>, val enemyForces: List<U
     fun executeActions(executingUnit: UnitInstance, actionsToExecute: List<TurnAction>) {
         actionsToExecute
                 .map { actionToExecute ->
-                    TODO("Not yet implemented")
+                    executingUnit.executeTurnAction(actionToExecute)
                 }
     }
 }
