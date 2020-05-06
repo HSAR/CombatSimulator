@@ -12,17 +12,17 @@ object TacticalActionStrategy : ActionStrategy {
                     action is DamageCausingAction
                 }
                 .map { eachDamageCausingAction ->
-                    // Estimate average damage
-                    (eachDamageCausingAction as DamageCausingAction).damage
+                    // Associate each action with an estimate of its damage
+                    eachDamageCausingAction to (eachDamageCausingAction as DamageCausingAction).damage
                             .let { damageString ->
                                 AverageDice.roll(damageString)
-                            } to eachDamageCausingAction
+                            }
                 }
-                .maxBy { (expectedDamage, _) -> expectedDamage }
-                ?.second
+                .maxBy { (_, expectedDamage) -> expectedDamage }
+                ?.first
                 .let { maxDamageAttack ->
                     // Shit implementation - units fire their maximum damage attack and do nothing else
-                    listOf(maxDamageAttack).filterNotNull()
+                    listOfNotNull(maxDamageAttack)
                 }
     }
     
