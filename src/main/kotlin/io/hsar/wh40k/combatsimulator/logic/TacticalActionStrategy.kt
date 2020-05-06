@@ -10,16 +10,5 @@ object TacticalActionStrategy {
         TODO("Not yet implemented")
     }
 
-    fun canHalfMoveToEnemy(world: World, thisUnit: UnitInstance, enemy: UnitInstance): Boolean {
-        return  world.distanceApart(thisUnit, enemy)  - 1 <= // -1 as only need to be next to them, not on same square
-                thisUnit.unit.stats.baseStats.getValue(BaseStat.AGILITY).getBonus()
-    }
-
-    fun canChargeToEnemy(world: World, thisUnit: UnitInstance, enemy: UnitInstance): Boolean {
-        //TODO this currently doesn't worry about the straight line clause or minimum distance
-        return  world.distanceApart(thisUnit, enemy)  - 1 <=
-                3 * (thisUnit.unit.stats.baseStats.getValue(BaseStat.AGILITY).getBonus())
-    }
-
     //TODO add collision detection
 }
