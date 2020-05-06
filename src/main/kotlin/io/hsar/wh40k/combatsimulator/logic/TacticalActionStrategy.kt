@@ -7,7 +7,13 @@ import io.hsar.wh40k.combatsimulator.random.AverageDice
 object TacticalActionStrategy : ActionStrategy {
 
     override fun decideTurnActions(world: World, thisUnit: UnitInstance, possibleActions: Collection<TurnAction>): List<TurnAction> {
-        return possibleActions
+        // Shit implementation - units will only ever aim and fire their max damage attack
+        val aimAction = possibleActions
+                .find { action ->
+                    action is TurnAction.AIM_HALF
+                }
+
+        val maxDamageAttackAction = possibleActions
                 .filter { action ->
                     action is DamageCausingAction
                 }
@@ -20,10 +26,9 @@ object TacticalActionStrategy : ActionStrategy {
                 }
                 .maxBy { (_, expectedDamage) -> expectedDamage }
                 ?.first
-                .let { maxDamageAttack ->
-                    // Shit implementation - units fire their maximum damage attack and do nothing else
-                    listOfNotNull(maxDamageAttack)
-                }
+
+
+        return listOfNotNull(aimAction, maxDamageAttackAction)
     }
 
     //TODO add collision detection

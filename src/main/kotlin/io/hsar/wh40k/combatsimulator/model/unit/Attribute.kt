@@ -18,6 +18,7 @@ enum class Attribute {
     DAMAGE_TYPES,
     WEAPON_TYPE,
     ACTIONS,
+    BONUSES,
     IN_MELEE_COMBAT
 }
 
@@ -56,13 +57,25 @@ data class HighestValue(val value: WeaponType) : AttributeValue() {
 }
 
 /**
- * ActionValue adds actions are to the end of the list.
+ * ActionValue adds items to the end of a list.
  */
 data class ActionValue(val value: List<TurnAction>) : AttributeValue() {
     operator fun plus(other: ActionValue): ActionValue {
         return (this.value + other.value)
                 .let { newValue ->
                     ActionValue(newValue)
+                }
+    }
+}
+
+/**
+ * BonusValue adds items are to the end of the list.
+ */
+data class BonusValue(val value: List<Bonus>) : AttributeValue() {
+    operator fun plus(other: BonusValue): BonusValue {
+        return (this.value + other.value)
+                .let { newValue ->
+                    BonusValue(newValue)
                 }
     }
 }

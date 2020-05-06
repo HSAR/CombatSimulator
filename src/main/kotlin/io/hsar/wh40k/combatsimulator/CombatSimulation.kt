@@ -8,7 +8,7 @@ import io.hsar.wh40k.combatsimulator.random.RandomDice.rollInitiative
 
 class CombatSimulation(val world: World) {
 
-    val initiativeOrder: List<UnitInstance> = (world.friendlyForces + world.enemyForces)
+    private val initiativeOrder: List<UnitInstance> = (world.friendlyForces + world.enemyForces)
             .map { eachUnit ->
                 eachUnit.unit.stats.baseStats.getValue(AGILITY).getBonus()
                         .let { agilityBonus ->
@@ -20,13 +20,10 @@ class CombatSimulation(val world: World) {
 
     fun run() {
         initiativeOrder.forEach { unit ->
-            unit.availableActions
-                    .let { allActions ->
-                        unit.tacticalActionStrategy
-                                .decideTurnActions(world, unit, allActions)
-                                .let { actionsToExecute ->
-                                    world.executeActions(unit, actionsToExecute)
-                                }
+            unit.tacticalActionStrategy
+                    .decideTurnActions(world, unit, unit.availableActions)
+                    .let { actionsToExecute ->
+                        world.executeActions(unit, actionsToExecute)
                     }
         }
     }
