@@ -25,5 +25,6 @@ object TacticalActionStrategy : ActionStrategy {
                     listOfNotNull(maxDamageAttack)
                 }
     }
-    
+
+    //TODO add collision detection
 }
