@@ -18,7 +18,7 @@ enum class Attribute {
     DAMAGE_TYPES,
     WEAPON_TYPE,
     ACTIONS,
-    BONUSES,
+    EFFECTS,
     IN_MELEE_COMBAT
 }
 
@@ -69,13 +69,13 @@ data class ActionValue(val value: List<TurnAction>) : AttributeValue() {
 }
 
 /**
- * BonusValue adds items are to the end of the list.
+ * EffectValue adds items to the end of the list.
  */
-data class BonusValue(val value: List<Effects>) : AttributeValue() {
-    operator fun plus(other: BonusValue): BonusValue {
+data class EffectValue(val value: List<Effects>) : AttributeValue() {
+    operator fun plus(other: EffectValue): EffectValue {
         return (this.value + other.value)
                 .let { newValue ->
-                    BonusValue(newValue)
+                    EffectValue(newValue)
                 }
     }
 }

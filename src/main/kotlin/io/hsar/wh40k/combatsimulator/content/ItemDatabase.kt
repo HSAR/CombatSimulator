@@ -1,4 +1,4 @@
-package io.hsar.wh40k.combatsimulator.cli
+package io.hsar.wh40k.combatsimulator.content
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
