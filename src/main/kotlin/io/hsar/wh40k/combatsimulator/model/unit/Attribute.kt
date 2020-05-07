@@ -1,5 +1,7 @@
 package io.hsar.wh40k.combatsimulator.model.unit
 
+import io.hsar.wh40k.combatsimulator.logic.TurnAction
+
 /**
  * Attributes are dynamic information that can change turn by turn.
  */
@@ -44,7 +46,7 @@ enum class WeaponType {
 
 data class HighestValue(val value: WeaponType) : AttributeValue() {
     operator fun plus(other: HighestValue): HighestValue {
-        return Math.max(this.value.ordinal, other.value.ordinal)
+        return this.value.ordinal.coerceAtLeast(other.value.ordinal)
                 .let { largerOrdinal ->
                     WeaponType.values()[largerOrdinal]
                 }
@@ -55,13 +57,25 @@ data class HighestValue(val value: WeaponType) : AttributeValue() {
 }
 
 /**
- * StackingValue adds attributes are to the end of the list.
+ * ActionValue adds items to the end of a list.
  */
-data class StackingValue<T>(val value: List<T>) : AttributeValue() {
-    operator fun plus(other: StackingValue<T>): StackingValue<T> {
+data class ActionValue(val value: List<TurnAction>) : AttributeValue() {
+    operator fun plus(other: ActionValue): ActionValue {
         return (this.value + other.value)
                 .let { newValue ->
-                    StackingValue(newValue)
+                    ActionValue(newValue)
+                }
+    }
+}
+
+/**
+ * BonusValue adds items are to the end of the list.
+ */
+data class BonusValue(val value: List<Bonus>) : AttributeValue() {
+    operator fun plus(other: BonusValue): BonusValue {
+        return (this.value + other.value)
+                .let { newValue ->
+                    BonusValue(newValue)
                 }
     }
 }

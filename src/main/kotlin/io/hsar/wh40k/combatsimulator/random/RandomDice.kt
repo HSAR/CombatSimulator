@@ -1,11 +1,8 @@
-package io.hsar.wh40k.combatsimulator
+package io.hsar.wh40k.combatsimulator.random
 
-import com.bernardomg.tabletop.dice.history.RollHistory
 import com.bernardomg.tabletop.dice.interpreter.DiceRoller
 import com.bernardomg.tabletop.dice.parser.DefaultDiceParser
-import com.bernardomg.tabletop.dice.parser.DiceParser
-import io.hsar.wh40k.combatsimulator.Result.*
-import kotlin.random.Random
+import io.hsar.wh40k.combatsimulator.random.Result.*
 
 enum class Result {
     SUCCESS,
@@ -14,7 +11,7 @@ enum class Result {
 
 data class RollResult(val result: Result, val degreesOfResult: Int)
 
-object Dice {
+object RandomDice {
 
     private val parser = DefaultDiceParser()
     private val roller = DiceRoller()
@@ -41,7 +38,10 @@ object Dice {
 
     fun rollInitiative(agilityBonus: Int): Int = (roll("1d10") + agilityBonus)
 
-    private fun roll(diceString: String): Int = parser.parse(diceString, roller).totalRoll
+    /**
+     * Roll an arbitrary dice string and receive the result.
+     */
+    fun roll(diceString: String): Int = parser.parse(diceString, roller).totalRoll
 
     private fun degreesOfResult(a: Int, b: Int): Int = Math.abs((a / 10) - (b / 10))
 }
