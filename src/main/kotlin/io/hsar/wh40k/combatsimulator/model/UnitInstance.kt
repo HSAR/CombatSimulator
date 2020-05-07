@@ -34,8 +34,8 @@ class UnitInstance(
 
     companion object {
         val DEFAULT_ACTIONS = ActionValue(listOf(
-                TurnAction.AIM_HALF,
-                TurnAction.AIM_FULL
+                TurnAction.HalfAim,
+                TurnAction.FullAim
         ))
 
         val DEFAULT_ATTRIBUTES = mapOf(ACTIONS to DEFAULT_ACTIONS)

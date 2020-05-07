@@ -10,7 +10,7 @@ object TacticalActionStrategy : ActionStrategy {
         // Shit implementation - units will only ever aim and fire their max damage attack
         val aimAction = possibleActions
                 .find { action ->
-                    action is TurnAction.AIM_HALF
+                    action is TurnAction.HalfAim
                 }
 
         val maxDamageAttackAction = possibleActions
