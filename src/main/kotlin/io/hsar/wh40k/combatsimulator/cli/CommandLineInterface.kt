@@ -7,6 +7,8 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import io.hsar.wh40k.combatsimulator.CombatSimulation
 import io.hsar.wh40k.combatsimulator.model.UnitInstance
 import io.hsar.wh40k.combatsimulator.model.World
+import io.hsar.wh40k.combatsimulator.model.unit.EquipmentItem
+import io.hsar.wh40k.combatsimulator.model.unit.Unit
 import java.io.File
 import kotlin.system.exitProcess
 
@@ -33,8 +35,23 @@ class SimulateCombat : Command("simulate-combat") {
                                 objectMapper.readValue<ForcesInput>(forcesFileString)
                             }
                             .let { forces ->
-                                // Spawn requested units by creating UnitInstances for them
-                                val unitsByUnitName = forces.units.associateBy { unit -> unit.unitName }
+                                // Create Unit from UnitDTO by looking up itemRefs
+                                val unitsByUnitName = forces.units
+                                        .map { unitDTO ->
+                                            Unit(
+                                                    unitRef = unitDTO.unitRef,
+                                                    description = unitDTO.description,
+                                                    stats = unitDTO.stats,
+                                                    equipment = unitDTO.equipmentRefs
+                                                            .map { equipmentRef ->
+                                                                itemsByItemRef[equipmentRef]
+                                                                        ?: throw IllegalArgumentException("Attempting to equip unitRef '${unitDTO.unitRef}' with itemRef '$equipmentRef' that was not found.")
+                                                            }
+                                            )
+                                        }
+                                        .associateBy { unit -> unit.unitRef }
+
+                                // Spawn requested units by creating UnitInstances from Units for them
                                 forces.unitsToSpawn
                                         .map { (unitName, spawnList) ->
                                             val unitToSpawnFrom = unitsByUnitName[unitName]
@@ -44,8 +61,7 @@ class SimulateCombat : Command("simulate-combat") {
                                                         name = spawnInstanceName,
                                                         description = unitToSpawnFrom.description, // #TODO: Fix this to be specified, or remove
                                                         unit = unitToSpawnFrom,
-                                                        equipment = mapOf(), // #TODO: Should be specified
-                                                        attributes = mapOf() // #TODO: Should be a merge of default attributes and equipment attributes
+                                                        equipment = unitToSpawnFrom.equipment
                                                 )
                                             }
                                         }
@@ -68,6 +84,15 @@ class SimulateCombat : Command("simulate-combat") {
 
     companion object {
         private val objectMapper = jacksonObjectMapper()
+
+        private val itemsByItemRef = File(this::class.java.classLoader.getResource("data/items.json")!!.file)
+                .readText()
+                .let { itemsString ->
+                    objectMapper.readValue<List<EquipmentItem>>(itemsString)
+                }
+                .associateBy { equipmentItem ->
+                    equipmentItem.itemRef
+                }
     }
 }
 

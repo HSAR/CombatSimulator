@@ -4,9 +4,9 @@ import io.hsar.wh40k.combatsimulator.logic.TacticalActionStrategy
 import io.hsar.wh40k.combatsimulator.logic.TurnAction
 import io.hsar.wh40k.combatsimulator.model.unit.Attribute
 import io.hsar.wh40k.combatsimulator.model.unit.AttributeValue
-import io.hsar.wh40k.combatsimulator.model.unit.EquipmentInfo
-import io.hsar.wh40k.combatsimulator.model.unit.EquipmentType
+import io.hsar.wh40k.combatsimulator.model.unit.EquipmentItem
 import io.hsar.wh40k.combatsimulator.model.unit.Unit
+import io.hsar.wh40k.combatsimulator.utils.sum
 
 /**
  * A single combatant.
@@ -16,12 +16,17 @@ class UnitInstance(
         val name: String,
         val description: String,
         val unit: Unit,
-        val equipment: Map<EquipmentType, EquipmentInfo>,
-        val attributes: Map<Attribute, AttributeValue>, // #TODO: Figure out whether this is good long-term solution
+        val equipment: List<EquipmentItem>,
+        val attributes: Map<Attribute, AttributeValue> =  // #TODO: Figure out whether this is good long-term solution
+                DEFAULT_ATTRIBUTES + equipment.map { it.modifiesAttributes }.sum(),
         val tacticalActionStrategy: TacticalActionStrategy = TacticalActionStrategy
 ) {
 
     fun executeTurnAction(turnAction: TurnAction) {
         TODO("Not yet implemented")
+    }
+
+    companion object {
+        private val DEFAULT_ATTRIBUTES: Map<Attribute, AttributeValue> = emptyMap()
     }
 }

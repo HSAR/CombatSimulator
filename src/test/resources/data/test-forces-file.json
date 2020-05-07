@@ -1,7 +1,7 @@
 {
     "units": [
         {
-            "unitName": "banditRanged",
+            "unitRef": "banditRanged",
             "description": "They give the players some adds to worry about. This one shoots them.",
             "stats": {
                 "baseStats": {
@@ -19,10 +19,14 @@
                     "DODGE": 0,
                     "PARRY": -20
                 }
-            }
+            },
+            "equipmentRefs": [
+                "wpn_pistol_stubRevolver",
+                "amr_basic_heavyLeather"
+            ]
         },
         {
-            "unitName": "banditMelee",
+            "unitRef": "banditMelee",
             "description": "They give the players some adds to worry about. This one runs up and hits them.",
             "stats": {
                 "baseStats": {
@@ -40,7 +44,11 @@
                     "DODGE": -20,
                     "PARRY": 0
                 }
-            }
+            },
+            "equipmentRefs": [
+                "wpn_melee_staff",
+                "amr_basic_heavyLeather"
+            ]
         }
     ],
     "unitsToSpawn": {

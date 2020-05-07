@@ -14,7 +14,6 @@ import io.hsar.wh40k.combatsimulator.model.unit.BaseStat.WILLPOWER
 import io.hsar.wh40k.combatsimulator.model.unit.DerivedStats.DODGE
 import io.hsar.wh40k.combatsimulator.model.unit.DerivedStats.PARRY
 import io.hsar.wh40k.combatsimulator.model.unit.Stats
-import io.hsar.wh40k.combatsimulator.model.unit.Unit
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.equalTo
 import org.junit.jupiter.api.Test
@@ -29,8 +28,8 @@ class InputParseTest {
 
         val expected = ForcesInput(
                 units = listOf(
-                        Unit(
-                                unitName = "banditRanged",
+                        UnitDTO(
+                                unitRef = "banditRanged",
                                 description = "They give the players some adds to worry about. This one shoots them.",
                                 stats = Stats(
                                         baseStats = mapOf(
@@ -48,9 +47,14 @@ class InputParseTest {
                                                 DODGE to 0,
                                                 PARRY to -20
                                         )
-                                )),
-                        Unit(
-                                unitName = "banditMelee",
+                                ),
+                                equipmentRefs = listOf(
+                                        "wpn_pistol_stubRevolver",
+                                        "amr_basic_heavyLeather"
+                                )
+                        ),
+                        UnitDTO(
+                                unitRef = "banditMelee",
                                 description = "They give the players some adds to worry about. This one runs up and hits them.",
                                 stats = Stats(
                                         baseStats = mapOf(
@@ -68,7 +72,12 @@ class InputParseTest {
                                                 DODGE to -20,
                                                 PARRY to 0
                                         )
-                                ))
+                                ),
+                                equipmentRefs = listOf(
+                                        "wpn_melee_staff",
+                                        "amr_basic_heavyLeather"
+                                )
+                        )
                 ),
                 unitsToSpawn = mapOf(
                         "banditRanged" to listOf("banditRanged1", "banditRanged2", "banditRanged3", "banditRanged4"),

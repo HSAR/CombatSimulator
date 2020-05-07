@@ -6,7 +6,7 @@ typealias UnitName = String
 typealias UnitInstanceName = String
 
 data class ForcesInput(
-        val units: List<Unit>,
+        val units: List<UnitDTO>,
         val unitsToSpawn: Map<UnitName, List<UnitInstanceName>>
         // #TODO Possible manual positioning specified here?
 )

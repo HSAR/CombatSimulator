@@ -16,6 +16,7 @@ enum class Attribute {
     DAMAGE_TYPES,
     WEAPON_TYPE,
     ACTIONS,
+    BONUSES,
     IN_MELEE_COMBAT
 }
 
