@@ -20,13 +20,13 @@ class SimulateCombat : Command("simulate-combat") {
     private var enemyForcesFilePath = ""
 
     override fun run() {
-        val friendlyForcesFile: ForcesFile = File(friendlyForcesFilePath)
+        val friendlyForcesInput: ForcesInput = File(friendlyForcesFilePath)
                 .readText()
                 .let { forcesFileString ->
                     objectMapper.readValue(forcesFileString)
                 }
 
-        val enemyForcesFile: ForcesFile = File(friendlyForcesFilePath)
+        val enemyForcesInput: ForcesInput = File(friendlyForcesFilePath)
                 .readText()
                 .let { forcesFileString ->
                     objectMapper.readValue(forcesFileString)
