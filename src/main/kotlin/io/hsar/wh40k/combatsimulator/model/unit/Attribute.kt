@@ -71,7 +71,7 @@ data class ActionValue(val value: List<TurnAction>) : AttributeValue() {
 /**
  * BonusValue adds items are to the end of the list.
  */
-data class BonusValue(val value: List<Bonus>) : AttributeValue() {
+data class BonusValue(val value: List<Effects>) : AttributeValue() {
     operator fun plus(other: BonusValue): BonusValue {
         return (this.value + other.value)
                 .let { newValue ->

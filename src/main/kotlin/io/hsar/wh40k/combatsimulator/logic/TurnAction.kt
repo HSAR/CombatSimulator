@@ -3,8 +3,8 @@ package io.hsar.wh40k.combatsimulator.logic
 import io.hsar.wh40k.combatsimulator.logic.ActionCost.FULL_ACTION
 import io.hsar.wh40k.combatsimulator.logic.ActionCost.HALF_ACTION
 import io.hsar.wh40k.combatsimulator.model.MapPosition
-import io.hsar.wh40k.combatsimulator.model.unit.Bonus
-import io.hsar.wh40k.combatsimulator.model.unit.Bonus.*
+import io.hsar.wh40k.combatsimulator.model.unit.Effects
+import io.hsar.wh40k.combatsimulator.model.unit.Effects.*
 
 sealed class TurnAction {
     abstract val actionCost: ActionCost
@@ -29,14 +29,14 @@ sealed class TurnAction {
 
     data class WeaponReload(override val actionCost: ActionCost) : TurnAction()
 
-    object HalfAim: BonusCausingAction, TurnAction() {
+    object HalfAim: EffectCausingAction, TurnAction() {
         override val actionCost =  HALF_ACTION
-        override val appliesBonus = BONUS_AIM_HALF
+        override val appliesEffects = BONUS_AIM_HALF
     }
 
-    object FullAim: BonusCausingAction, TurnAction() {
+    object FullAim: EffectCausingAction, TurnAction() {
         override val actionCost: ActionCost = HALF_ACTION
-        override val appliesBonus = BONUS_AIM_FULL
+        override val appliesEffects = BONUS_AIM_FULL
     }
 
     abstract class MoveAction: TurnAction() {
@@ -73,8 +73,8 @@ interface DamageCausingAction {
     val numberOfAttacks: Int
 }
 
-interface BonusCausingAction {
-    val appliesBonus: Bonus
+interface EffectCausingAction {
+    val appliesEffects: Effects
 }
 
 enum class ActionCost {
