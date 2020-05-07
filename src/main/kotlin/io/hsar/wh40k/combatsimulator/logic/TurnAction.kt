@@ -2,7 +2,6 @@ package io.hsar.wh40k.combatsimulator.logic
 
 import io.hsar.wh40k.combatsimulator.logic.ActionCost.HALF_ACTION
 import io.hsar.wh40k.combatsimulator.model.MapPosition
-import io.hsar.wh40k.combatsimulator.model.MoveAction
 
 sealed class TurnAction {
     abstract val actionCost: ActionCost
@@ -27,7 +26,12 @@ sealed class TurnAction {
 
     data class RELOAD_WEAPON(override val actionCost: ActionCost) : TurnAction()
 
-    object HalfMoveAction: TurnAction(), MoveAction {
+    abstract class  MoveAction: TurnAction() {
+        abstract fun getMovementRange(agilityBonus: Short): Short
+        abstract fun isValidMovementPath(startPoint: MapPosition, endPoint: MapPosition): Boolean
+    }
+
+    object HalfMoveAction: MoveAction() {
         override val actionCost: ActionCost = ActionCost.HALF_ACTION
         override fun getMovementRange(agilityBonus: Short): Short {
             return agilityBonus
@@ -37,7 +41,7 @@ sealed class TurnAction {
         }
     }
 
-    object ChargeAction: TurnAction(), MoveAction {
+    object ChargeAction: MoveAction() {
         override val actionCost: ActionCost = ActionCost.FULL_ACTION
         override fun getMovementRange(agilityBonus: Short): Short {
             return (3 * agilityBonus).toShort()
