@@ -9,6 +9,7 @@ import io.hsar.wh40k.combatsimulator.model.UnitInstance
 import io.hsar.wh40k.combatsimulator.model.World
 import io.hsar.wh40k.combatsimulator.model.unit.EquipmentItem
 import io.hsar.wh40k.combatsimulator.model.unit.Unit
+import io.hsar.wh40k.combatsimulator.utils.UnitPositionUtils.generateStartPositions
 import java.io.File
 import kotlin.system.exitProcess
 
@@ -75,7 +76,7 @@ class SimulateCombat : Command("simulate-combat") {
                             world = World(
                                     friendlyForces = friendlyForces,
                                     enemyForces = enemyForces,
-                                    unitPositions = mutableMapOf() // #TODO: Fill this in
+                                    unitPositions = generateStartPositions(listOf(friendlyForces, enemyForces)).toMutableMap()
                             )
                     )
                 }
