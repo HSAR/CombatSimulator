@@ -10,13 +10,13 @@ class TestWorld {
     @Test
     fun testCanMoveToUnitInRange() {
         val world = TestUtils.getGenericTwoUnitWorld(MapPosition(1,6), MapPosition(5, 4))
-        assertThat(world.canMoveToUnit(world.friendlyForces[0], world.enemyForces[0], TurnAction.HalfMoveAction), equalTo(true))
+        assertThat(world.canMoveToUnit(world.friendlyForces[0], world.enemyForces[0], TurnAction.HalfMove), equalTo(true))
     }
 
     @Test
     fun testCanMoveToUnitOutOfRange() {
         val world = TestUtils.getGenericTwoUnitWorld(MapPosition(1,6), MapPosition(6, 4))
-        assertThat(world.canMoveToUnit(world.friendlyForces[0], world.enemyForces[0], TurnAction.HalfMoveAction), equalTo(false))
+        assertThat(world.canMoveToUnit(world.friendlyForces[0], world.enemyForces[0], TurnAction.HalfMove), equalTo(false))
     }
 
     @Test

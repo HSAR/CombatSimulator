@@ -2,7 +2,9 @@ package io.hsar.wh40k.combatsimulator.model
 
 import io.hsar.wh40k.combatsimulator.logic.TacticalActionStrategy
 import io.hsar.wh40k.combatsimulator.logic.TurnAction
+import io.hsar.wh40k.combatsimulator.model.unit.ActionValue
 import io.hsar.wh40k.combatsimulator.model.unit.Attribute
+import io.hsar.wh40k.combatsimulator.model.unit.Attribute.ACTIONS
 import io.hsar.wh40k.combatsimulator.model.unit.AttributeValue
 import io.hsar.wh40k.combatsimulator.model.unit.EquipmentInfo
 import io.hsar.wh40k.combatsimulator.model.unit.EquipmentType
@@ -17,11 +19,25 @@ class UnitInstance(
         val description: String,
         val unit: Unit,
         val equipment: Map<EquipmentType, EquipmentInfo>,
-        val attributes: Map<Attribute, AttributeValue>, // #TODO: Figure out whether this is good long-term solution
+        val attributes: Map<Attribute, AttributeValue> = DEFAULT_ATTRIBUTES, // #TODO: Figure out whether this is good long-term solution
         val tacticalActionStrategy: TacticalActionStrategy = TacticalActionStrategy
 ) {
 
+    val availableActions: List<TurnAction>
+        get() = (attributes.getValue(ACTIONS) as? ActionValue
+                ?: throw IllegalStateException("Unit ${name} ACTION attribute should have actions but instead was: ${attributes.getValue(ACTIONS)}"))
+                .value
+
     fun executeTurnAction(turnAction: TurnAction) {
         TODO("Not yet implemented")
+    }
+
+    companion object {
+        val DEFAULT_ACTIONS = ActionValue(listOf(
+                TurnAction.HalfAim,
+                TurnAction.FullAim
+        ))
+
+        val DEFAULT_ATTRIBUTES = mapOf(ACTIONS to DEFAULT_ACTIONS)
     }
 }

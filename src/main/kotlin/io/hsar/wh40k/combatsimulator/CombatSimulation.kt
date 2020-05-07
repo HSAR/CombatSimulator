@@ -1,14 +1,14 @@
 package io.hsar.wh40k.combatsimulator
 
-import io.hsar.wh40k.combatsimulator.Dice.rollInitiative
 import io.hsar.wh40k.combatsimulator.model.UnitInstance
 import io.hsar.wh40k.combatsimulator.model.World
 import io.hsar.wh40k.combatsimulator.model.unit.BaseStat.AGILITY
 import io.hsar.wh40k.combatsimulator.model.unit.StatUtils.getBonus
+import io.hsar.wh40k.combatsimulator.random.RandomDice.rollInitiative
 
 class CombatSimulation(val world: World) {
 
-    val initiativeOrder: List<UnitInstance> = (world.friendlyForces + world.enemyForces)
+    private val initiativeOrder: List<UnitInstance> = (world.friendlyForces + world.enemyForces)
             .map { eachUnit ->
                 eachUnit.unit.stats.baseStats.getValue(AGILITY).getBonus()
                         .let { agilityBonus ->
@@ -21,7 +21,7 @@ class CombatSimulation(val world: World) {
     fun run() {
         initiativeOrder.forEach { unit ->
             unit.tacticalActionStrategy
-                    .decideTurnActions(world, unit)
+                    .decideTurnActions(world, unit, unit.availableActions)
                     .let { actionsToExecute ->
                         world.executeActions(unit, actionsToExecute)
                     }

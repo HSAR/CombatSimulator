@@ -16,7 +16,11 @@ object TestUtils {
     fun getGenericTwoUnitWorld(firstPosition: MapPosition, secondPosition: MapPosition): World {
         val unitInstance = getGenericUnitInstance()
         val otherUnitInstance = getGenericUnitInstance()
-        val unitPositions = mapOf(unitInstance to firstPosition, otherUnitInstance to secondPosition)
-        return World(listOf(unitInstance), listOf(otherUnitInstance), unitPositions)
+        val unitPositions = mutableMapOf(unitInstance to firstPosition, otherUnitInstance to secondPosition)
+        return World(
+                mutableListOf(unitInstance),
+                mutableListOf(otherUnitInstance),
+                unitPositions
+        )
     }
 }
