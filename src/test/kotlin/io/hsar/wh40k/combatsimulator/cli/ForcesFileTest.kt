@@ -70,7 +70,7 @@ class InputParseTest {
                                         )
                                 ))
                 ),
-                spawnUnits = mapOf(
+                unitsToSpawn = mapOf(
                         "banditRanged" to listOf("banditRanged1", "banditRanged2", "banditRanged3", "banditRanged4"),
                         "banditMelee" to listOf("banditMelee1", "banditMelee2")
                 )

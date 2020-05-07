@@ -4,6 +4,9 @@ import com.beust.jcommander.JCommander
 import com.beust.jcommander.Parameter
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import io.hsar.wh40k.combatsimulator.CombatSimulation
+import io.hsar.wh40k.combatsimulator.model.UnitInstance
+import io.hsar.wh40k.combatsimulator.model.World
 import java.io.File
 import kotlin.system.exitProcess
 
@@ -20,19 +23,47 @@ class SimulateCombat : Command("simulate-combat") {
     private var enemyForcesFilePath = ""
 
     override fun run() {
-        val friendlyForcesInput: ForcesInput = File(friendlyForcesFilePath)
-                .readText()
-                .let { forcesFileString ->
-                    objectMapper.readValue(forcesFileString)
+        // Read and parse input files
+        listOf(friendlyForcesFilePath, enemyForcesFilePath)
+                .map { forcesFilePath -> // We are enacting the same operations on both
+                    // Read file and parse into object format
+                    File(forcesFilePath)
+                            .readText()
+                            .let { forcesFileString ->
+                                objectMapper.readValue<ForcesInput>(forcesFileString)
+                            }
+                            .let { forces ->
+                                // Spawn requested units by creating UnitInstances for them
+                                val unitsByUnitName = forces.units.associateBy { unit -> unit.unitName }
+                                forces.unitsToSpawn
+                                        .map { (unitName, spawnList) ->
+                                            val unitToSpawnFrom = unitsByUnitName[unitName]
+                                                    ?: throw IllegalArgumentException("Attempting to spawn unit named '$unitName' but only these units are available: ${unitsByUnitName.values}")
+                                            spawnList.map { spawnInstanceName ->
+                                                UnitInstance(
+                                                        name = spawnInstanceName,
+                                                        description = unitToSpawnFrom.description, // #TODO: Fix this to be specified, or remove
+                                                        unit = unitToSpawnFrom,
+                                                        equipment = mapOf(), // #TODO: Should be specified
+                                                        attributes = mapOf() // #TODO: Should be a merge of default attributes and equipment attributes
+                                                )
+                                            }
+                                        }
+                                        .flatten()
+                            }
                 }
-
-        val enemyForcesInput: ForcesInput = File(friendlyForcesFilePath)
-                .readText()
-                .let { forcesFileString ->
-                    objectMapper.readValue(forcesFileString)
+                .let { (friendlyForces, enemyForces) ->
+                    // Create World and CombatSimulation instances
+                    CombatSimulation(
+                            world = World(
+                                    friendlyForces = friendlyForces,
+                                    enemyForces = enemyForces
+                            )
+                    )
                 }
-
-
+                // Initiate combat
+                .run()
+        // #TODO: Repeat and summarise results
     }
 
     companion object {

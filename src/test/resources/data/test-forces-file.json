@@ -43,7 +43,7 @@
             }
         }
     ],
-    "spawnUnits": {
+    "unitsToSpawn": {
         "banditRanged": [
             "banditRanged1",
             "banditRanged2",
