@@ -7,6 +7,6 @@ typealias UnitInstanceName = String
 
 data class ForcesFile(
         val units: List<Unit>,
-        val unitInstances: Map<UnitName, List<UnitInstanceName>>
+        val spawnUnits: Map<UnitName, List<UnitInstanceName>>
         // #TODO Possible manual positioning specified here?
 )
