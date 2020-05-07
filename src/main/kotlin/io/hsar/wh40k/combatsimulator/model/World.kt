@@ -41,7 +41,7 @@ data class World(val friendlyForces: MutableList<UnitInstance>, val enemyForces:
                 .distanceToPosition(unitPositions.getValue(otherUnit))
     }
 
-    fun canMoveToUnit(unit: UnitInstance, otherUnit: UnitInstance, moveType: MoveAction): Boolean {
+    fun canMoveToUnit(unit: UnitInstance, otherUnit: UnitInstance, moveType: TurnAction.MoveAction): Boolean {
         return distanceApart(unit, otherUnit) - 1 <=
                 unit.unit.stats.baseStats.getValue(BaseStat.AGILITY).getBonus().let {
                     moveType.getMovementRange(it)
