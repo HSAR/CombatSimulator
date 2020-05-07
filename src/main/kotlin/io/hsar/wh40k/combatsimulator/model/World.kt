@@ -6,7 +6,6 @@ import io.hsar.wh40k.combatsimulator.model.unit.BaseStat
 import io.hsar.wh40k.combatsimulator.model.unit.StatUtils.getBonus
 import kotlin.math.absoluteValue
 import kotlin.math.max
-import java.lang.IllegalStateException
 
 data class World(val friendlyForces: MutableList<UnitInstance>, val enemyForces: MutableList<UnitInstance>,
                  val unitPositions: MutableMap<UnitInstance, MapPosition>) {
@@ -42,10 +41,11 @@ data class World(val friendlyForces: MutableList<UnitInstance>, val enemyForces:
     }
 
     fun canMoveToUnit(unit: UnitInstance, otherUnit: UnitInstance, moveType: TurnAction.MoveAction): Boolean {
-        return distanceApart(unit, otherUnit) - 1 <=
-                unit.unit.stats.baseStats.getValue(BaseStat.AGILITY).getBonus().let {
-                    moveType.getMovementRange(it)
-                }
+        return (distanceApart(unit, otherUnit) - 1 <=
+                unit.unit.stats.baseStats.getValue(BaseStat.AGILITY).getBonus()
+                        .let { bonus ->
+                            moveType.getMovementRange(bonus)
+                        })
                 && moveType.isValidMovementPath(unitPositions.getValue(unit), unitPositions.getValue(otherUnit))
     }
 }
@@ -55,10 +55,10 @@ data class MapPosition(val x: Int, val y: Int) {
     fun distanceToPosition(otherPosition: MapPosition): Int {
         // return distance to other position in metres
         // as can diagonal move for 1, this equates to the distance in the longest cartesian direction
-        return max((this.x - otherPosition.x).absoluteValue,(this.y - otherPosition.y).absoluteValue)
+        return max((this.x - otherPosition.x).absoluteValue, (this.y - otherPosition.y).absoluteValue)
     }
 
-    operator fun minus(otherPosition: MapPosition): Int{
+    operator fun minus(otherPosition: MapPosition): Int {
         return this.distanceToPosition(otherPosition)
     }
 }

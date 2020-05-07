@@ -40,13 +40,13 @@ sealed class TurnAction {
     }
 
     abstract class MoveAction: TurnAction() {
-        abstract fun getMovementRange(agilityBonus: Short): Short
+        abstract fun getMovementRange(agilityBonus: Int): Int
         abstract fun isValidMovementPath(startPoint: MapPosition, endPoint: MapPosition): Boolean
     }
 
     object HalfMove: MoveAction() {
         override val actionCost: ActionCost = HALF_ACTION
-        override fun getMovementRange(agilityBonus: Short): Short {
+        override fun getMovementRange(agilityBonus: Int): Int {
             return agilityBonus
         }
         override fun isValidMovementPath(startPoint: MapPosition, endPoint: MapPosition): Boolean {
@@ -59,8 +59,8 @@ sealed class TurnAction {
         override val actionCost: ActionCost = FULL_ACTION
         override val numberOfAttacks = 1
 
-        override fun getMovementRange(agilityBonus: Short): Short {
-            return (3 * agilityBonus).toShort()
+        override fun getMovementRange(agilityBonus: Int): Int {
+            return (3 * agilityBonus)
         }
         override fun isValidMovementPath(startPoint: MapPosition, endPoint: MapPosition): Boolean {
             return startPoint - endPoint >= 4
