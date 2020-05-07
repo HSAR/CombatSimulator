@@ -32,9 +32,11 @@ data class World(val friendlyForces: MutableList<UnitInstance>, val enemyForces:
                 }
     }
 
-    // Used by things like TacticalActionStrategy to work out how far away units are from each other
-    // This will give the inclusive distance from square to square, so callers need to subtract 1 when working out
-    // the distance they need to travel to be NEXT to a unit
+    /**
+     * Used by things like TacticalActionStrategy to work out how far away units are from each other
+     * This will give the inclusive distance from square to square, so callers need to subtract 1 when working out
+     * the distance they need to travel to be NEXT to a unit
+     */
     fun distanceApart(unit: UnitInstance, otherUnit: UnitInstance): Int {
         return unitPositions.getValue(unit)
                 .distanceToPosition(unitPositions.getValue(otherUnit))
@@ -52,11 +54,12 @@ data class World(val friendlyForces: MutableList<UnitInstance>, val enemyForces:
 
 data class MapPosition(val x: Int, val y: Int) {
 
-    fun distanceToPosition(otherPosition: MapPosition): Int {
-        // return distance to other position in metres
-        // as can diagonal move for 1, this equates to the distance in the longest cartesian direction
-        return max((this.x - otherPosition.x).absoluteValue, (this.y - otherPosition.y).absoluteValue)
-    }
+    /**
+     * Returns the distance to the other position in metres, as diagonal moves count as 1 distance.
+     * This equates to the distance in the longest cartesian direction
+     */
+    fun distanceToPosition(otherPosition: MapPosition): Int =
+            max((this.x - otherPosition.x).absoluteValue, (this.y - otherPosition.y).absoluteValue)
 
     operator fun minus(otherPosition: MapPosition): Int {
         return this.distanceToPosition(otherPosition)
