@@ -1,0 +1,58 @@
+{
+    "units": [
+        {
+            "unitName": "banditRanged",
+            "description": "They give the players some adds to worry about. This one shoots them.",
+            "stats": {
+                "baseStats": {
+                    "MAX_HEALTH": 8,
+                    "WEAPON_SKILL": 30,
+                    "BALLISTIC_SKILL": 20,
+                    "STRENGTH": 20,
+                    "TOUGHNESS": 20,
+                    "AGILITY": 20,
+                    "INTELLIGENCE": 20,
+                    "WILLPOWER": 20,
+                    "FELLOWSHIP": 20
+                },
+                "derivedStats": {
+                    "DODGE": 0,
+                    "PARRY": -20
+                }
+            }
+        },
+        {
+            "unitName": "banditMelee",
+            "description": "They give the players some adds to worry about. This one runs up and hits them.",
+            "stats": {
+                "baseStats": {
+                    "MAX_HEALTH": 8,
+                    "WEAPON_SKILL": 20,
+                    "BALLISTIC_SKILL": 30,
+                    "STRENGTH": 20,
+                    "TOUGHNESS": 20,
+                    "AGILITY": 30,
+                    "INTELLIGENCE": 20,
+                    "WILLPOWER": 20,
+                    "FELLOWSHIP": 20
+                },
+                "derivedStats": {
+                    "DODGE": -20,
+                    "PARRY": 0
+                }
+            }
+        }
+    ],
+    "unitInstances": {
+        "banditRanged": [
+            "banditRanged1",
+            "banditRanged2",
+            "banditRanged3",
+            "banditRanged4"
+        ],
+        "banditMelee": [
+            "banditMelee1",
+            "banditMelee2"
+        ]
+    }
+}

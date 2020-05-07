@@ -1,6 +1,6 @@
 package io.hsar.wh40k.combatsimulator.model.unit
 
-data class Stats(val baseStats: Map<BaseStat, Short>, val derivedStats: Map<DerivedStats, Short>)
+data class Stats(val baseStats: Map<BaseStat, Int>, val derivedStats: Map<DerivedStats, Int>)
 
 /**
  * Character base statistics.
@@ -29,5 +29,5 @@ enum class DerivedStats {
 }
 
 object StatUtils {
-    fun Short.getBonus(): Short = (this / 10).toShort()
+    fun Int.getBonus(): Int = (this / 10)
 }

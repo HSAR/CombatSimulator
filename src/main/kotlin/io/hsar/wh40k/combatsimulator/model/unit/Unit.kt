@@ -5,7 +5,7 @@ package io.hsar.wh40k.combatsimulator.model.unit
  * This class should not contain information that can change during the course of simulation.
  */
 data class Unit(
-        val name: String,
+        val unitName: String,
         val description: String,
         val stats: Stats
 )

@@ -2,13 +2,16 @@ package io.hsar.wh40k.combatsimulator.cli
 
 import com.beust.jcommander.JCommander
 import com.beust.jcommander.Parameter
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
+import java.io.File
 import kotlin.system.exitProcess
 
 abstract class Command(val name: String) {
     abstract fun run()
 }
 
-class SimulateCombat: Command("simulate-combat") {
+class SimulateCombat : Command("simulate-combat") {
 
     @Parameter(names = arrayOf("--blufor", "--friendlies"), description = "Path to an input file describing friendly units", required = true)
     private var friendlyForcesFilePath = ""
@@ -17,7 +20,23 @@ class SimulateCombat: Command("simulate-combat") {
     private var enemyForcesFilePath = ""
 
     override fun run() {
-        TODO("Not yet implemented")
+        val friendlyForcesFile: ForcesFile = File(friendlyForcesFilePath)
+                .readText()
+                .let { forcesFileString ->
+                    objectMapper.readValue(forcesFileString)
+                }
+
+        val enemyForcesFile: ForcesFile = File(friendlyForcesFilePath)
+                .readText()
+                .let { forcesFileString ->
+                    objectMapper.readValue(forcesFileString)
+                }
+
+
+    }
+
+    companion object {
+        private val objectMapper = jacksonObjectMapper()
     }
 }
 

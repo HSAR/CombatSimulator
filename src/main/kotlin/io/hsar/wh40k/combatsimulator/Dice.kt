@@ -12,7 +12,7 @@ enum class Result {
     FAILURE
 }
 
-data class RollResult(val result: Result, val degreesOfResult: Short)
+data class RollResult(val result: Result, val degreesOfResult: Int)
 
 object Dice {
 
@@ -22,9 +22,8 @@ object Dice {
     /**
      * Roll a d100 and compare against the result.
      */
-    fun roll(target: Short): RollResult {
-        return roll("1d100") // Gives a number between 1 and 100
-                .toShort()
+    fun roll(target: Int): RollResult {
+        return roll("1d100")
                 .let { rolledNumber ->
                     if (rolledNumber <= target) {
                         SUCCESS
@@ -40,12 +39,9 @@ object Dice {
                 }
     }
 
-    fun rollInitiative(agilityBonus: Short): Short {
-        return (roll("1d10") + agilityBonus) // Gives a number between 1 and 10
-                .toShort()
-    }
+    fun rollInitiative(agilityBonus: Int): Int = (roll("1d10") + agilityBonus)
 
     private fun roll(diceString: String): Int = parser.parse(diceString, roller).totalRoll
 
-    private fun degreesOfResult(a: Short, b: Short): Short = Math.abs((a / 10) - (b / 10)).toShort()
+    private fun degreesOfResult(a: Int, b: Int): Int = Math.abs((a / 10) - (b / 10))
 }
