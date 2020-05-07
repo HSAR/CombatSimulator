@@ -15,15 +15,15 @@ class TestMoveAction {
     }
     @Test
     fun testChargeMoveActionGetRange() {
-        assertThat(33, equalTo(TurnAction.ChargeAttack.getMovementRange(11)))
+        assertThat(33, equalTo(TurnAction.ChargeAttack("1d5").getMovementRange(11)))
     }
     @Test
     fun testChargeMoveIsValidMovementPathWhenFarEnough() {
-        assertThat(true, equalTo(TurnAction.ChargeAttack.isValidMovementPath(MapPosition(2,3), MapPosition(20, 20))))
+        assertThat(true, equalTo(TurnAction.ChargeAttack("1d5").isValidMovementPath(MapPosition(2,3), MapPosition(20, 20))))
     }
     @Test
     fun testChargeMoveIsValidMovementPathWhenTooClose() {
-        assertThat(false, equalTo(TurnAction.ChargeAttack.isValidMovementPath(MapPosition(2,3), MapPosition(5, 5))))
+        assertThat(false, equalTo(TurnAction.ChargeAttack("1d5").isValidMovementPath(MapPosition(2,3), MapPosition(5, 5))))
     }
 
 }
