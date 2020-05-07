@@ -5,12 +5,20 @@ import io.hsar.wh40k.combatsimulator.model.unit.*
 
 object TestUtils {
     fun getGenericUnitInstance(): UnitInstance {
-        val stats = mapOf<BaseStat, Short>(BaseStat.AGILITY to 32)
-        val derivedStats = mapOf<DerivedStats, Short>()
-        val unit = Unit("bob", "bob the guy", Stats(stats, derivedStats))
-        val equipment = mapOf<EquipmentType, EquipmentInfo>()
-        val attributes = mapOf<Attribute, AttributeValue>()
-        return UnitInstance("bob", "a guy", unit, equipment, attributes)
+        val stats = mapOf<BaseStat, Int>(BaseStat.AGILITY to 32)
+        val derivedStats = mapOf<DerivedStats, Int>()
+        val unit = Unit(
+                unitRef = "bob",
+                description = "bob the guy",
+                stats = Stats(stats, derivedStats),
+                initialEquipment = emptyList()
+        )
+        return UnitInstance(
+                name = "bob",
+                description = "a guy",
+                unit = unit,
+                equipment = unit.initialEquipment
+        )
     }
 
     fun getGenericTwoUnitWorld(firstPosition: MapPosition, secondPosition: MapPosition): World {

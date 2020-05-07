@@ -42,7 +42,7 @@ class SimulateCombat : Command("simulate-combat") {
                                                     unitRef = unitDTO.unitRef,
                                                     description = unitDTO.description,
                                                     stats = unitDTO.stats,
-                                                    equipment = unitDTO.equipmentRefs
+                                                    initialEquipment = unitDTO.equipmentRefs
                                                             .map { equipmentRef ->
                                                                 itemsByItemRef[equipmentRef]
                                                                         ?: throw IllegalArgumentException("Attempting to equip unitRef '${unitDTO.unitRef}' with itemRef '$equipmentRef' that was not found.")
@@ -61,11 +61,12 @@ class SimulateCombat : Command("simulate-combat") {
                                                         name = spawnInstanceName,
                                                         description = unitToSpawnFrom.description, // #TODO: Fix this to be specified, or remove
                                                         unit = unitToSpawnFrom,
-                                                        equipment = unitToSpawnFrom.equipment
+                                                        equipment = unitToSpawnFrom.initialEquipment
                                                 )
                                             }
                                         }
                                         .flatten()
+                                        .toMutableList()
                             }
                 }
                 .let { (friendlyForces, enemyForces) ->
@@ -73,7 +74,8 @@ class SimulateCombat : Command("simulate-combat") {
                     CombatSimulation(
                             world = World(
                                     friendlyForces = friendlyForces,
-                                    enemyForces = enemyForces
+                                    enemyForces = enemyForces,
+                                    unitPositions = mutableMapOf() // #TODO: Fill this in
                             )
                     )
                 }

@@ -8,5 +8,5 @@ data class Unit(
         val unitRef: String,
         val description: String,
         val stats: Stats,
-        val equipment: List<EquipmentItem>
+        val initialEquipment: List<EquipmentItem>
 )
