@@ -26,7 +26,7 @@ class InputParseTest {
         // Arrange
         val testFile = getResourcePath("data/test-forces-file.json")
 
-        val expected = ForcesInput(
+        val expected = ForcesDTO(
                 units = listOf(
                         UnitDTO(
                                 unitRef = "banditRanged",
@@ -86,7 +86,7 @@ class InputParseTest {
         )
 
         // Act
-        val result: ForcesInput = objectMapper.readValue(testFile)
+        val result: ForcesDTO = objectMapper.readValue(testFile)
 
         // Assert
         assertThat(result, equalTo(expected))

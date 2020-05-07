@@ -33,51 +33,13 @@ class SimulateCombat : Command("simulate-combat") {
                     File(forcesFilePath)
                             .readText()
                             .let { forcesFileString ->
-                                objectMapper.readValue<ForcesInput>(forcesFileString)
-                            }
-                            .let { forces ->
-                                // Create Unit from UnitDTO by looking up itemRefs
-                                val unitsByUnitName = forces.units
-                                        .map { unitDTO ->
-                                            Unit(
-                                                    unitRef = unitDTO.unitRef,
-                                                    description = unitDTO.description,
-                                                    stats = unitDTO.stats,
-                                                    initialEquipment = unitDTO.equipmentRefs
-                                                            .map { equipmentRef ->
-                                                                itemsByItemRef[equipmentRef]
-                                                                        ?: throw IllegalArgumentException("Attempting to equip unitRef '${unitDTO.unitRef}' with itemRef '$equipmentRef' that was not found.")
-                                                            }
-                                            )
-                                        }
-                                        .associateBy { unit -> unit.unitRef }
-
-                                // Spawn requested units by creating UnitInstances from Units for them
-                                forces.unitsToSpawn
-                                        .map { (unitName, spawnList) ->
-                                            val unitToSpawnFrom = unitsByUnitName[unitName]
-                                                    ?: throw IllegalArgumentException("Attempting to spawn unit named '$unitName' but only these units are available: ${unitsByUnitName.values}")
-                                            spawnList.map { spawnInstanceName ->
-                                                UnitInstance(
-                                                        name = spawnInstanceName,
-                                                        description = unitToSpawnFrom.description, // #TODO: Fix this to be specified, or remove
-                                                        unit = unitToSpawnFrom,
-                                                        equipment = unitToSpawnFrom.initialEquipment
-                                                )
-                                            }
-                                        }
-                                        .flatten()
-                                        .toMutableList()
+                                objectMapper.readValue<ForcesDTO>(forcesFileString)
                             }
                 }
-                .let { (friendlyForces, enemyForces) ->
+                .let { forcesList ->
                     // Create World and CombatSimulation instances
                     CombatSimulation(
-                            world = World(
-                                    friendlyForces = friendlyForces,
-                                    enemyForces = enemyForces,
-                                    unitPositions = generateStartPositions(listOf(friendlyForces, enemyForces)).toMutableMap()
-                            )
+                            world = WorldCreator.createWorld(forcesList)
                     )
                 }
                 // Initiate combat
@@ -87,15 +49,6 @@ class SimulateCombat : Command("simulate-combat") {
 
     companion object {
         private val objectMapper = jacksonObjectMapper()
-
-        private val itemsByItemRef = File(this::class.java.classLoader.getResource("data/items.json")!!.file)
-                .readText()
-                .let { itemsString ->
-                    objectMapper.readValue<List<EquipmentItem>>(itemsString)
-                }
-                .associateBy { equipmentItem ->
-                    equipmentItem.itemRef
-                }
     }
 }
 
