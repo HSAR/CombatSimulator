@@ -1,4 +1,4 @@
-package io.hsar.wh40k.combatsimulator.cli
+package io.hsar.wh40k.combatsimulator.cli.input
 
 import io.hsar.wh40k.combatsimulator.model.unit.Stats
 

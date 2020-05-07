@@ -1,5 +1,6 @@
 package io.hsar.wh40k.combatsimulator.cli
 
+import io.hsar.wh40k.combatsimulator.cli.input.ForcesDTO
 import io.hsar.wh40k.combatsimulator.model.UnitInstance
 import io.hsar.wh40k.combatsimulator.model.World
 import io.hsar.wh40k.combatsimulator.model.unit.Unit

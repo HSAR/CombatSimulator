@@ -2,6 +2,8 @@ package io.hsar.wh40k.combatsimulator.cli
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import io.hsar.wh40k.combatsimulator.cli.input.ForcesDTO
+import io.hsar.wh40k.combatsimulator.cli.input.UnitDTO
 import io.hsar.wh40k.combatsimulator.model.unit.BaseStat.AGILITY
 import io.hsar.wh40k.combatsimulator.model.unit.BaseStat.BALLISTIC_SKILL
 import io.hsar.wh40k.combatsimulator.model.unit.BaseStat.FELLOWSHIP

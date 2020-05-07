@@ -1,6 +1,4 @@
-package io.hsar.wh40k.combatsimulator.cli
-
-import io.hsar.wh40k.combatsimulator.model.unit.Unit
+package io.hsar.wh40k.combatsimulator.cli.input
 
 data class ForcesDTO(
         val units: List<UnitDTO>,

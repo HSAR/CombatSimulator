@@ -5,11 +5,7 @@ import com.beust.jcommander.Parameter
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import io.hsar.wh40k.combatsimulator.CombatSimulation
-import io.hsar.wh40k.combatsimulator.model.UnitInstance
-import io.hsar.wh40k.combatsimulator.model.World
-import io.hsar.wh40k.combatsimulator.model.unit.EquipmentItem
-import io.hsar.wh40k.combatsimulator.model.unit.Unit
-import io.hsar.wh40k.combatsimulator.utils.UnitPositionUtils.generateStartPositions
+import io.hsar.wh40k.combatsimulator.cli.input.ForcesDTO
 import java.io.File
 import kotlin.system.exitProcess
 
