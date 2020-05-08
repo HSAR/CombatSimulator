@@ -11,7 +11,7 @@ object TacticalActionStrategy : ActionStrategy {
         // Shit implementation - units will only ever aim and fire their max damage attack
         val aimAction = possibleActionOptions
                 .find { action ->
-                    action is ActionOption.HalfAim
+                    action is HalfAim
                 }
                 ?.let {
                     action -> AimAction(action)
@@ -61,9 +61,9 @@ object TacticalActionStrategy : ActionStrategy {
             } else { // for melee attacks
                 // check melee attack range based on attack type
                 for(adversary in world.getAdversaries(thisUnit)) {
-                    if(attack is ActionOption.MeleeAttack && world.distanceApart(thisUnit, adversary) == 1) {
+                    if(attack is MeleeAttack && world.distanceApart(thisUnit, adversary) == 1) {
                         wip.add(wip.size - 1, TargetedAction(attack, adversary))
-                    } else if(attack is ActionOption.ChargeAttack) {
+                    } else if(attack is ChargeAttack) {
                         if(attack.isValidMovementPath(world.getPosition(thisUnit), world.getPosition(adversary))
                                 && attack.getMovementRange(thisUnit.unit.stats.baseStats.getValue(BaseStat.AGILITY)) >
                                 world.distanceApart(thisUnit, adversary)) {

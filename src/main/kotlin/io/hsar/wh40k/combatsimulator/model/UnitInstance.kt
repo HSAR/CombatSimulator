@@ -2,6 +2,8 @@ package io.hsar.wh40k.combatsimulator.model
 
 import io.hsar.wh40k.combatsimulator.logic.TacticalActionStrategy
 import io.hsar.wh40k.combatsimulator.logic.ActionOption
+import io.hsar.wh40k.combatsimulator.logic.FullAim
+import io.hsar.wh40k.combatsimulator.logic.HalfAim
 import io.hsar.wh40k.combatsimulator.model.unit.ActionValue
 import io.hsar.wh40k.combatsimulator.model.unit.Attribute
 import io.hsar.wh40k.combatsimulator.model.unit.Attribute.ACTIONS
@@ -35,8 +37,8 @@ class UnitInstance(
 
     companion object {
         val DEFAULT_ACTIONS = ActionValue(listOf(
-                ActionOption.HalfAim,
-                ActionOption.FullAim
+                HalfAim,
+                FullAim
         ))
 
         val DEFAULT_ATTRIBUTES = mapOf(ACTIONS to DEFAULT_ACTIONS)
