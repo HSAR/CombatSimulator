@@ -1,0 +1,27 @@
+[
+    {
+        "itemRef": "wpn_pistol_stubRevolver",
+        "itemName": "Stub Revolver",
+        "itemType": "WEAPON",
+        "modifiesAttributes": {
+            "WEAPON_TYPE": "PISTOL",
+            "ACTIONS": [
+                {
+                    "actionType": "ATTACK_RANGED_SINGLE",
+                    "damage": "1d10+3"
+                },
+                {
+                    "actionType": "ATTACK_MELEE",
+                    "damage": "1d10-1",
+                    "appliesEffects": [
+                        "PRIMITIVE"
+                    ]
+                },
+                {
+                    "actionType": "RELOAD",
+                    "actionCost": "TWO_FULL_ACTIONS"
+                }
+            ]
+        }
+    }
+]

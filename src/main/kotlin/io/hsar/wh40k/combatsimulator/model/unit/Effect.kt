@@ -4,5 +4,6 @@ enum class Effect {
     AIMED_HALF,
     AIMED_FULL,
     BALANCED,
-    CHARGING
+    CHARGING,
+    PRIMITIVE
 }

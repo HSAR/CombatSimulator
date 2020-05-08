@@ -1,29 +1,36 @@
 package io.hsar.wh40k.combatsimulator.logic
 
+import com.fasterxml.jackson.annotation.JsonSubTypes
+import com.fasterxml.jackson.annotation.JsonTypeInfo
 import io.hsar.wh40k.combatsimulator.logic.ActionCost.FULL_ACTION
 import io.hsar.wh40k.combatsimulator.logic.ActionCost.HALF_ACTION
 import io.hsar.wh40k.combatsimulator.model.MapPosition
 import io.hsar.wh40k.combatsimulator.model.unit.Effect
 import io.hsar.wh40k.combatsimulator.model.unit.Effect.*
 
+@JsonTypeInfo(
+        use = JsonTypeInfo.Id.NAME,
+        include = JsonTypeInfo.As.PROPERTY,
+        property = "actionType",
+        visible = true)
 sealed class TurnAction {
     abstract val actionCost: ActionCost
 
-    data class MeleeAttack(override val damage: String) : DamageCausingAction, TurnAction() {
+    data class MeleeAttack(override val damage: String, override val appliesEffects: List<Effect> = emptyList()) : DamageCausingAction, EffectCausingAction, TurnAction() {
         override val actionCost = HALF_ACTION
         override val numberOfAttacks = 1
     }
 
-    data class SingleRangedAttack(override val damage: String) : DamageCausingAction, TurnAction() {
+    data class SingleRangedAttack(override val damage: String, override val appliesEffects: List<Effect> = emptyList()) : DamageCausingAction, EffectCausingAction, TurnAction() {
         override val actionCost = HALF_ACTION
         override val numberOfAttacks = 1
     }
 
-    data class SemiAutoBurstRangedAttack(override val damage: String, override val numberOfAttacks: Int) : DamageCausingAction, TurnAction() {
+    data class SemiAutoBurstRangedAttack(override val damage: String, override val numberOfAttacks: Int, override val appliesEffects: List<Effect> = emptyList()) : DamageCausingAction, EffectCausingAction, TurnAction() {
         override val actionCost = HALF_ACTION
     }
 
-    data class FullAutoBurstRangedAttack(override val damage: String, override val numberOfAttacks: Int) : DamageCausingAction, TurnAction() {
+    data class FullAutoBurstRangedAttack(override val damage: String, override val numberOfAttacks: Int, override val appliesEffects: List<Effect> = emptyList()) : DamageCausingAction, EffectCausingAction, TurnAction() {
         override val actionCost = HALF_ACTION
     }
 

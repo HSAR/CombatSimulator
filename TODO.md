@@ -32,3 +32,7 @@
     * `RangedAttackStrategy` when range is good and ammo is available
     * `MeleeAttackStrategy` when ranged attack is not possible or main weapon is melee
     * ... and others as appropriate.
+    
+### Deferred / Low-Priority
+
+* Damage types

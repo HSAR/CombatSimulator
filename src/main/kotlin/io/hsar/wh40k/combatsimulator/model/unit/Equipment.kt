@@ -9,4 +9,9 @@ enum class ItemType {
 /**
  * Items should store their state (jammed, misfire, ammo status, braced etc.) on the attribute map.
  */
-data class EquipmentItem(val itemRef: String, val itemName: String, val itemType: ItemType, val modifiesAttributes: Map<Attribute, AttributeValue>)
+data class EquipmentItem(
+        val itemRef: String,
+        val itemName: String,
+        val itemType: ItemType,
+        val modifiesAttributes: Map<Attribute, AttributeValue>
+)

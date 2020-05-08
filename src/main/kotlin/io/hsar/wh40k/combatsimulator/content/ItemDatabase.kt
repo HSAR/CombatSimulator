@@ -9,11 +9,22 @@ import java.io.File
  * Deserialises item database and makes it available for general access.
  */
 object ItemDatabase {
-    val itemsByItemRef = File(this::class.java.classLoader.getResource("data/items.json")!!.file)
-            .readText()
-            .let { itemsString ->
-                jacksonObjectMapper().readValue<List<EquipmentItem>>(itemsString)
+
+    private val ITEM_FILES = listOf(
+            "data/armour.json",
+            "data/meleeWeapons.json",
+            "data/rangedWeapons.json"
+    )
+
+    val itemsByItemRef = ITEM_FILES
+            .map { itemFilePath ->
+                File(this::class.java.classLoader.getResource(itemFilePath)!!.file)
+                        .readText()
+                        .let { itemsString ->
+                            jacksonObjectMapper().readValue<List<EquipmentItem>>(itemsString)
+                        }
             }
+            .flatten()
             .associateBy { equipmentItem ->
                 equipmentItem.itemRef
             }

@@ -1,7 +1,7 @@
 package io.hsar.wh40k.combatsimulator.utils
 
 import io.hsar.wh40k.combatsimulator.model.unit.AttributeValue
-import io.hsar.wh40k.combatsimulator.model.unit.HighestValue
+import io.hsar.wh40k.combatsimulator.model.unit.WeaponTypeValue
 import io.hsar.wh40k.combatsimulator.model.unit.NumericValue
 
 fun <K> Map<K, AttributeValue>.mergeWithAddition(otherMap: Map<K, AttributeValue>): Map<K, AttributeValue> {
@@ -12,7 +12,7 @@ fun <K> Map<K, AttributeValue>.mergeWithAddition(otherMap: Map<K, AttributeValue
                         when {
                             (counterValueA is NumericValue && counterValueB is NumericValue) ->
                                 counterValueA + counterValueB
-                            (counterValueA is HighestValue && counterValueB is HighestValue) ->
+                            (counterValueA is WeaponTypeValue && counterValueB is WeaponTypeValue) ->
                                 counterValueA + counterValueB
                             // Not working yet
                             //  (counterValueA is StackingValue<*> && counterValueB is StackingValue<*>) ->

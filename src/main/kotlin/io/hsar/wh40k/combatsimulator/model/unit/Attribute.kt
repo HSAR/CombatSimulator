@@ -1,5 +1,6 @@
 package io.hsar.wh40k.combatsimulator.model.unit
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import io.hsar.wh40k.combatsimulator.logic.TurnAction
 
 /**
@@ -22,11 +23,21 @@ enum class Attribute {
     IN_MELEE_COMBAT
 }
 
+enum class WeaponType {
+    MELEE,
+    PISTOL,
+    BASIC,
+    HEAVY
+    // #TODO Can optimise this: https://stackoverflow.com/a/19277247/2756877
+}
+
 /**
  * Attribute values, whatever they are, must be capable of being added to one another in order to combine effects.
  */
+@JsonDeserialize
 sealed class AttributeValue
 
+@JsonDeserialize
 data class NumericValue(val value: Int) : AttributeValue() {
     operator fun plus(other: NumericValue): NumericValue {
         return (this.value + other.value)
@@ -36,22 +47,15 @@ data class NumericValue(val value: Int) : AttributeValue() {
     }
 }
 
-enum class WeaponType {
-    MELEE,
-    PISTOL,
-    BASIC,
-    HEAVY
-    // #TODO Can optimise this: https://stackoverflow.com/a/19277247/2756877
-}
-
-data class HighestValue(val value: WeaponType) : AttributeValue() {
-    operator fun plus(other: HighestValue): HighestValue {
+@JsonDeserialize
+data class WeaponTypeValue(val value: WeaponType) : AttributeValue() {
+    operator fun plus(other: WeaponTypeValue): WeaponTypeValue {
         return this.value.ordinal.coerceAtLeast(other.value.ordinal)
                 .let { largerOrdinal ->
                     WeaponType.values()[largerOrdinal]
                 }
                 .let { newValue ->
-                    HighestValue(newValue)
+                    WeaponTypeValue(newValue)
                 }
     }
 }
@@ -59,6 +63,7 @@ data class HighestValue(val value: WeaponType) : AttributeValue() {
 /**
  * ActionValue adds items to the end of a list.
  */
+@JsonDeserialize
 data class ActionValue(val value: List<TurnAction>) : AttributeValue() {
     operator fun plus(other: ActionValue): ActionValue {
         return (this.value + other.value)
@@ -71,6 +76,7 @@ data class ActionValue(val value: List<TurnAction>) : AttributeValue() {
 /**
  * EffectValue adds items to the end of the list.
  */
+@JsonDeserialize
 data class EffectValue(val value: List<Effect>) : AttributeValue() {
     operator fun plus(other: EffectValue): EffectValue {
         return (this.value + other.value)
