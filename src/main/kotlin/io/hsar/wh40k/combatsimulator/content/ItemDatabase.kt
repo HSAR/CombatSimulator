@@ -1,5 +1,6 @@
 package io.hsar.wh40k.combatsimulator.content
 
+import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
@@ -14,6 +15,7 @@ import java.io.File
 object ItemDatabase {
 
     private val objectMapper = jacksonObjectMapper()
+            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
     private val ITEM_FILES = listOf(
             "data/armour.json",
             "data/meleeWeapons.json",
