@@ -35,4 +35,5 @@
     
 ### Deferred / Low-Priority
 
+* Targeted actions should generate their own attribute modifiers based on the target (short range etc.)
 * Damage types
