@@ -49,6 +49,19 @@ object TacticalActionStrategy : ActionStrategy {
         val targetedActions: List<TargetedAction> = listOf()
         var wip = targetedActions.toMutableList()
 
+        val foo = possibleAttacks.map { possibleAttack ->
+            world.getAdversaries(thisUnit).map { adversary ->
+                TargetedAction(possibleAttack as ActionOption, adversary)
+            }
+
+        }.flatten().filter {
+            targetedAction ->
+            when(targetedAction.action) {
+                is RangedAttackAction -> targetedAction.action.range >= world.distanceApart(thisUnit, targetedAction.target)
+                else -> false;
+            }
+        }
+
         // for each possible attack, work out which targets in range and generate an
         for(attack in possibleAttacks) {
             if(attack is RangedAttackAction) {
