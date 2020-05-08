@@ -86,9 +86,7 @@ interface TurnAction {
     val action: ActionOption
 }
 
-class TargetedAction(override val action: ActionOption, target: UnitInstance): TurnAction {
-
-}
+class TargetedAction(override val action: ActionOption, val target: UnitInstance): TurnAction
 
 class AimAction(override val action: ActionOption): TurnAction {
 

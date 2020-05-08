@@ -13,20 +13,20 @@ object TacticalActionStrategy : ActionStrategy {
                 .find { action ->
                     action is ActionOption.HalfAim
                 }
-                ?.let {
-                    action -> AimAction(action)
+                ?.let { action ->
+                    AimAction(action)
                 }
 
         val maxDamageAttackAction = possibleActionOptions
                 .filter { action ->
                     action is DamageCausingAction
                 }
-                .map {
-                    eachDamageCausingAction ->
-                     (eachDamageCausingAction as DamageCausingAction)
+                .map { eachDamageCausingAction ->
+                    (eachDamageCausingAction as DamageCausingAction)
                 }
                 .let { damageCausingActions ->
                     performTargeting(world, thisUnit, damageCausingActions)
+                    // this will produce a list of physically possible targeted actions
                 }
                 .map { eachTargetedAction ->
                     // Associate each action with an estimate of its damage
@@ -41,54 +41,29 @@ object TacticalActionStrategy : ActionStrategy {
                 .maxBy { (_, expectedDamage) -> expectedDamage }
                 ?.first
 
-
         return listOfNotNull(aimAction, maxDamageAttackAction)
     }
 
     fun performTargeting(world: World, thisUnit: UnitInstance, possibleAttacks: List<DamageCausingAction>): List<TargetedAction> {
-        val targetedActions: List<TargetedAction> = listOf()
-        var wip = targetedActions.toMutableList()
 
-        val foo = possibleAttacks.map { possibleAttack ->
+        // This will create a list containing a TargetedAction for each feasible action/target pair
+        return possibleAttacks.map { possibleAttack ->
             world.getAdversaries(thisUnit).map { adversary ->
                 TargetedAction(possibleAttack as ActionOption, adversary)
             }
 
-        }.flatten().filter {
-            targetedAction ->
-            when(targetedAction.action) {
+        }.flatten().filter { targetedAction -> // filter out options that are not possible due to range etc
+            when (targetedAction.action) {
                 is RangedAttackAction -> targetedAction.action.range >= world.distanceApart(thisUnit, targetedAction.target)
-                else -> false;
+                is ActionOption.ChargeAttack ->
+                    targetedAction.action.isValidMovementPath(world.getPosition(thisUnit), world.getPosition(targetedAction.target))
+                            && targetedAction.action.getMovementRange(thisUnit.unit.stats.baseStats.getValue(BaseStat.AGILITY)) >
+                            world.distanceApart(thisUnit, targetedAction.target)
+                is ActionOption.MeleeAttack -> world.distanceApart(thisUnit, targetedAction.target) == 1
+                else -> false
             }
+
         }
-
-        // for each possible attack, work out which targets in range and generate an
-        for(attack in possibleAttacks) {
-            if(attack is RangedAttackAction) {
-                for(adversary in world.getAdversaries(thisUnit)) {
-                    if(attack.range >= world.distanceApart(thisUnit, adversary)) {
-                        wip.add(wip.size - 1, TargetedAction(attack as ActionOption, adversary))
-                    }
-                }
-
-            } else { // for melee attacks
-                // check melee attack range based on attack type
-                for(adversary in world.getAdversaries(thisUnit)) {
-                    if(attack is ActionOption.MeleeAttack && world.distanceApart(thisUnit, adversary) == 1) {
-                        wip.add(wip.size - 1, TargetedAction(attack, adversary))
-                    } else if(attack is ActionOption.ChargeAttack) {
-                        if(attack.isValidMovementPath(world.getPosition(thisUnit), world.getPosition(adversary))
-                                && attack.getMovementRange(thisUnit.unit.stats.baseStats.getValue(BaseStat.AGILITY)) >
-                                world.distanceApart(thisUnit, adversary)) {
-                            wip.add(wip.size - 1, TargetedAction(attack, adversary))
-                        }
-                    }
-                }
-            }
-        }
-        return wip
-
     }
 
-    //TODO add collision detection
 }
