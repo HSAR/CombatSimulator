@@ -2,6 +2,7 @@ package io.hsar.wh40k.combatsimulator.model
 
 import io.hsar.wh40k.combatsimulator.logic.DamageCausingAction
 import io.hsar.wh40k.combatsimulator.logic.ActionOption
+import io.hsar.wh40k.combatsimulator.logic.TurnAction
 import io.hsar.wh40k.combatsimulator.model.unit.BaseStat
 import io.hsar.wh40k.combatsimulator.model.unit.StatUtils.getBonus
 import kotlin.math.absoluteValue
@@ -10,12 +11,12 @@ import kotlin.math.max
 data class World(val friendlyForces: MutableList<UnitInstance>, val enemyForces: MutableList<UnitInstance>,
                  val unitPositions: MutableMap<UnitInstance, MapPosition>) {
 
-    fun executeActions(executingUnit: UnitInstance, actionsToExecute: List<ActionOption>) {
+    fun executeActions(executingUnit: UnitInstance, actionsToExecute: List<TurnAction>) {
         // #TODO: Check total
         // #TODO: Check range
         actionsToExecute
                 .map { actionToExecute ->
-                    when (actionToExecute) {
+                    when (actionToExecute.action) {
                         is DamageCausingAction -> {
                             // #TODO Move target selection somewhere better
                             // #TODO Make target selection not shit
@@ -42,7 +43,7 @@ data class World(val friendlyForces: MutableList<UnitInstance>, val enemyForces:
                 .distanceToPosition(unitPositions.getValue(otherUnit))
     }
 
-    fun canMoveToUnit(unit: UnitInstance, otherUnit: UnitInstance, moveType: ActionOption.MoveActionOption): Boolean {
+    fun canMoveToUnit(unit: UnitInstance, otherUnit: UnitInstance, moveType: ActionOption.MoveAction): Boolean {
         return (distanceApart(unit, otherUnit) - 1 <=
                 unit.unit.stats.baseStats.getValue(BaseStat.AGILITY).getBonus()
                         .let { bonus ->

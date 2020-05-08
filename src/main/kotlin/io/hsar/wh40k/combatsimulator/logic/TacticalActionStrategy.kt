@@ -54,7 +54,7 @@ object TacticalActionStrategy : ActionStrategy {
             if(attack is RangedAttackAction) {
                 for(adversary in world.getAdversaries(thisUnit)) {
                     if(attack.range >= world.distanceApart(thisUnit, adversary)) {
-                        wip.add(wip.size - 1, TargetedAction(attack, adversary))
+                        wip.add(wip.size - 1, TargetedAction(attack as ActionOption, adversary))
                     }
                 }
 

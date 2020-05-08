@@ -10,16 +10,12 @@ import io.hsar.wh40k.combatsimulator.model.unit.Effects.*
 sealed class ActionOption {
     abstract val actionCost: ActionCost
 
-    abstract class DamageCausingActionOption: DamageCausingAction, ActionOption() {
-    
-    }
-
-    data class MeleeAttack(override val damage: String) : DamageCausingActionOption() {
+    data class MeleeAttack(override val damage: String) : DamageCausingAction, ActionOption() {
         override val actionCost: ActionCost = HALF_ACTION
         override val numberOfAttacks = 1
     }
 
-    data class SingleRangedAttack(override val damage: String, override val range: Int) :  RangedAttackAction, DamageCausingActionOption() {
+    data class SingleRangedAttack(override val damage: String, override val range: Int) : DamageCausingAction, RangedAttackAction, ActionOption() {
         override val actionCost: ActionCost = HALF_ACTION
         override val numberOfAttacks = 1
     }
@@ -44,12 +40,12 @@ sealed class ActionOption {
         override val appliesEffects = BONUS_AIM_FULL
     }
 
-    interface MoveActionOption {
+    interface MoveAction {
         fun getMovementRange(agilityBonus: Int): Int
         fun isValidMovementPath(startPoint: MapPosition, endPoint: MapPosition): Boolean
     }
 
-    object HalfMove: MoveActionOption, ActionOption() {
+    object HalfMove: MoveAction, ActionOption() {
         override val actionCost: ActionCost = HALF_ACTION
         override fun getMovementRange(agilityBonus: Int): Int {
             return agilityBonus
@@ -59,7 +55,7 @@ sealed class ActionOption {
         }
     }
 
-    data class ChargeAttack(override val damage: String): DamageCausingAction, MoveActionOption, ActionOption() {
+    data class ChargeAttack(override val damage: String): DamageCausingAction, MoveAction, ActionOption() {
 
         override val actionCost: ActionCost = FULL_ACTION
         override val numberOfAttacks = 1
