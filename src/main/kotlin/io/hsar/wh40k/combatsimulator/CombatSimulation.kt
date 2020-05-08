@@ -21,7 +21,7 @@ class CombatSimulation(val world: World) {
     fun run() {
         initiativeOrder.forEach { unit ->
             unit.tacticalActionStrategy
-                    .decideTurnActions(world, unit, unit.availableActions)
+                    .decideTurnActions(world, unit, unit.availableActionOptions)
                     .let { actionsToExecute ->
                         world.executeActions(unit, actionsToExecute)
                     }

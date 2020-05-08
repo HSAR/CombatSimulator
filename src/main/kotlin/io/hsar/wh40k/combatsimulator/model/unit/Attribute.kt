@@ -3,6 +3,7 @@ package io.hsar.wh40k.combatsimulator.model.unit
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import io.hsar.wh40k.combatsimulator.content.AttributeValueDeserialiser
 import io.hsar.wh40k.combatsimulator.logic.TurnAction
+import io.hsar.wh40k.combatsimulator.logic.ActionOption
 
 /**
  * Attributes are dynamic information that can change turn by turn.
@@ -65,7 +66,7 @@ data class WeaponTypeValue(val value: WeaponType) : AttributeValue() {
  * ActionValue adds items to the end of a list.
  */
 @JsonDeserialize
-data class ActionValue(val value: List<TurnAction>) : AttributeValue() {
+data class ActionValue(val value: List<ActionOption>) : AttributeValue() {
     operator fun plus(other: ActionValue): ActionValue {
         return (this.value + other.value)
                 .let { newValue ->
