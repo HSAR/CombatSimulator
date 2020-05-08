@@ -1,7 +1,7 @@
 package io.hsar.wh40k.combatsimulator.model
 
 import io.hsar.wh40k.combatsimulator.logic.DamageCausingAction
-import io.hsar.wh40k.combatsimulator.logic.TurnAction
+import io.hsar.wh40k.combatsimulator.logic.ActionOption
 import io.hsar.wh40k.combatsimulator.model.unit.BaseStat
 import io.hsar.wh40k.combatsimulator.model.unit.StatUtils.getBonus
 import kotlin.math.absoluteValue
@@ -10,7 +10,7 @@ import kotlin.math.max
 data class World(val friendlyForces: MutableList<UnitInstance>, val enemyForces: MutableList<UnitInstance>,
                  val unitPositions: MutableMap<UnitInstance, MapPosition>) {
 
-    fun executeActions(executingUnit: UnitInstance, actionsToExecute: List<TurnAction>) {
+    fun executeActions(executingUnit: UnitInstance, actionsToExecute: List<ActionOption>) {
         // #TODO: Check total
         // #TODO: Check range
         actionsToExecute
@@ -42,13 +42,25 @@ data class World(val friendlyForces: MutableList<UnitInstance>, val enemyForces:
                 .distanceToPosition(unitPositions.getValue(otherUnit))
     }
 
-    fun canMoveToUnit(unit: UnitInstance, otherUnit: UnitInstance, moveType: TurnAction.MoveAction): Boolean {
+    fun canMoveToUnit(unit: UnitInstance, otherUnit: UnitInstance, moveType: ActionOption.MoveActionOption): Boolean {
         return (distanceApart(unit, otherUnit) - 1 <=
                 unit.unit.stats.baseStats.getValue(BaseStat.AGILITY).getBonus()
                         .let { bonus ->
                             moveType.getMovementRange(bonus)
                         })
                 && moveType.isValidMovementPath(unitPositions.getValue(unit), unitPositions.getValue(otherUnit))
+    }
+
+    fun getAdversaries(unit: UnitInstance): List<UnitInstance> {
+        return if(unit in this.friendlyForces) {
+            enemyForces
+        } else {
+            friendlyForces
+        }
+    }
+
+    fun getPosition(unit: UnitInstance): MapPosition {
+        return this.unitPositions.getValue(unit)
     }
 }
 
