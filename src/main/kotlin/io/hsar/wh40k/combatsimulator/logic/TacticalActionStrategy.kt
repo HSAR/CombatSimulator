@@ -53,11 +53,11 @@ object TacticalActionStrategy : ActionStrategy {
         .filter { targetedAction -> // filter out options that are not possible due to range etc
             when (targetedAction.action) {
                 is RangedAttackAction -> targetedAction.action.range >= world.distanceApart(thisUnit, targetedAction.target)
-                is ActionOption.ChargeAttack ->
+                is ChargeAttack ->
                     targetedAction.action.isValidMovementPath(world.getPosition(thisUnit), world.getPosition(targetedAction.target))
                             && targetedAction.action.getMovementRange(thisUnit.unit.stats.baseStats.getValue(BaseStat.AGILITY)) >
                             world.distanceApart(thisUnit, targetedAction.target)
-                is ActionOption.MeleeAttack -> world.distanceApart(thisUnit, targetedAction.target) == 1
+                is MeleeAttack -> world.distanceApart(thisUnit, targetedAction.target) == 1
                 else -> false
             }
 

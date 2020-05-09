@@ -6,10 +6,10 @@ import org.hamcrest.MatcherAssert.assertThat
 import org.junit.jupiter.api.Test
 
 internal class TacticalActionStrategyTest {
-    private val meleeAttack = ActionOption.MeleeAttack("1d10+4")
-    private val singleRangedAttack = ActionOption.SingleRangedAttack("1d10+2", 30)
-    private val chargeAttack = ActionOption.ChargeAttack("1d10+5")
-    private val aimAction = ActionOption.HalfAim
+    private val meleeAttack = MeleeAttack("1d10+4")
+    private val singleRangedAttack = SingleRangedAttack(damage = "1d10+2", range = 30)
+    private val chargeAttack = ChargeAttack("1d10+5")
+    private val aimAction = HalfAim
 
     @Test
     fun decideTurnActions() {
@@ -18,9 +18,9 @@ internal class TacticalActionStrategyTest {
         val feasibleActions: List<TurnAction> = TacticalActionStrategy.decideTurnActions(world, unit, listOf(meleeAttack, singleRangedAttack, chargeAttack, aimAction))
         assertThat(feasibleActions.size, equalTo(2))
         assertThat(feasibleActions[0] is AimAction, equalTo(true))
-        assertThat(feasibleActions[0].action as ActionOption.HalfAim, equalTo(aimAction))
-        assertThat(feasibleActions[1].action is ActionOption.ChargeAttack, equalTo(true))
-        assertThat(feasibleActions[1].action as ActionOption.ChargeAttack, equalTo(chargeAttack))
+        assertThat(feasibleActions[0].action as HalfAim, equalTo(aimAction))
+        assertThat(feasibleActions[1].action is ChargeAttack, equalTo(true))
+        assertThat(feasibleActions[1].action as ChargeAttack, equalTo(chargeAttack))
     }
 
     @Test
@@ -35,7 +35,7 @@ internal class TacticalActionStrategyTest {
         val feasibleActions: List<TurnAction> = TacticalActionStrategy.decideTurnActions(world, unit, listOf(meleeAttack, singleRangedAttack, chargeAttack, aimAction))
         assertThat(feasibleActions.size, equalTo(2))
         assertThat(feasibleActions[0] is AimAction, equalTo(true))
-        assertThat(feasibleActions[1].action is ActionOption.ChargeAttack, equalTo(true))
+        assertThat(feasibleActions[1].action is ChargeAttack, equalTo(true))
         assertThat((feasibleActions[1] as TargetedAction).target, equalTo(extraEnemy))
     }
 
@@ -45,7 +45,7 @@ internal class TacticalActionStrategyTest {
         val unit = world.friendlyForces[0]
         val feasibleActions: List<TurnAction> = TacticalActionStrategy.getPossibleTargetedActions(world, unit, listOf(meleeAttack, singleRangedAttack, chargeAttack))
         assertThat(feasibleActions.size, equalTo(1))
-        assertThat(feasibleActions[0].action is ActionOption.SingleRangedAttack, equalTo(true))
+        assertThat(feasibleActions[0].action is SingleRangedAttack, equalTo(true))
     }
 
 }
