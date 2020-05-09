@@ -18,7 +18,9 @@ internal class TacticalActionStrategyTest {
         val feasibleActions: List<TurnAction> = TacticalActionStrategy.decideTurnActions(world, unit, listOf(meleeAttack, singleRangedAttack, chargeAttack, aimAction))
         assertThat(feasibleActions.size, equalTo(2))
         assertThat(feasibleActions[0] is AimAction, equalTo(true))
+        assertThat(feasibleActions[0].action as ActionOption.HalfAim, equalTo(aimAction))
         assertThat(feasibleActions[1].action is ActionOption.ChargeAttack, equalTo(true))
+        assertThat(feasibleActions[1].action as ActionOption.ChargeAttack, equalTo(chargeAttack))
     }
 
     @Test
@@ -41,7 +43,7 @@ internal class TacticalActionStrategyTest {
     fun performTargeting() {
         val world = TestUtils.getGenericTwoUnitWorld(MapPosition(2,3), MapPosition(4,5))
         val unit = world.friendlyForces[0]
-        val feasibleActions: List<TurnAction> = TacticalActionStrategy.performTargeting(world, unit, listOf(meleeAttack, singleRangedAttack, chargeAttack))
+        val feasibleActions: List<TurnAction> = TacticalActionStrategy.getPossibleTargetedActions(world, unit, listOf(meleeAttack, singleRangedAttack, chargeAttack))
         assertThat(feasibleActions.size, equalTo(1))
         assertThat(feasibleActions[0].action is ActionOption.SingleRangedAttack, equalTo(true))
     }

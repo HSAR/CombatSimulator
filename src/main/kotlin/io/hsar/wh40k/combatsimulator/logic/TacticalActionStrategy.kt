@@ -21,11 +21,9 @@ object TacticalActionStrategy : ActionStrategy {
                 .filter { action ->
                     action is DamageCausingAction
                 }
-                .map { eachDamageCausingAction ->
-                    (eachDamageCausingAction as DamageCausingAction)
-                }
+                .filterIsInstance<DamageCausingAction>()
                 .let { damageCausingActions ->
-                    performTargeting(world, thisUnit, damageCausingActions)
+                    getPossibleTargetedActions(world, thisUnit, damageCausingActions)
                     // this will produce a list of physically possible targeted actions
                 }
                 .map { eachTargetedAction ->
@@ -44,15 +42,15 @@ object TacticalActionStrategy : ActionStrategy {
         return listOfNotNull(aimAction, maxDamageAttackAction)
     }
 
-    fun performTargeting(world: World, thisUnit: UnitInstance, possibleAttacks: List<DamageCausingAction>): List<TargetedAction> {
+    fun getPossibleTargetedActions(world: World, thisUnit: UnitInstance, possibleAttacks: List<DamageCausingAction>): List<TargetedAction> {
 
         // This will create a list containing a TargetedAction for each feasible action/target pair
         return possibleAttacks.map { possibleAttack ->
             world.getAdversaries(thisUnit).map { adversary ->
                 TargetedAction(possibleAttack as ActionOption, adversary)
             }
-
-        }.flatten().filter { targetedAction -> // filter out options that are not possible due to range etc
+        }.flatten()
+        .filter { targetedAction -> // filter out options that are not possible due to range etc
             when (targetedAction.action) {
                 is RangedAttackAction -> targetedAction.action.range >= world.distanceApart(thisUnit, targetedAction.target)
                 is ActionOption.ChargeAttack ->
