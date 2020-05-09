@@ -15,7 +15,7 @@ import java.io.File
 object ItemDatabase {
 
     private val objectMapper = jacksonObjectMapper()
-            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+            //.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
     private val ITEM_FILES = listOf(
             "data/armour.json",
             "data/meleeWeapons.json",

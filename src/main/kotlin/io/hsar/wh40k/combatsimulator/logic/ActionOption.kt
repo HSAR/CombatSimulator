@@ -1,5 +1,6 @@
 package io.hsar.wh40k.combatsimulator.logic
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import io.hsar.wh40k.combatsimulator.logic.ActionCost.FULL_ACTION
@@ -14,6 +15,7 @@ import io.hsar.wh40k.combatsimulator.model.unit.Effect.*
         include = JsonTypeInfo.As.PROPERTY,
         property = "actionType",
         visible = true)
+@JsonIgnoreProperties(value = [ "actionType" ])
 sealed class ActionOption {
     abstract val actionCost: ActionCost
 }
@@ -36,7 +38,7 @@ data class FullAutoBurstRangedAttack(override val range: Int, override val damag
     override val actionCost = HALF_ACTION
 }
 
-data class WeaponReload(override val actionCost: ActionCost) : ActionOption()
+data class WeaponReload(override val actionCost: ActionCost, val setsAmmunitionTo: Int) : ActionOption()
 
 object HalfAim: EffectCausingAction, ActionOption() {
     override val actionCost = HALF_ACTION

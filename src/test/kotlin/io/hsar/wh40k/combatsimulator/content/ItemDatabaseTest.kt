@@ -31,7 +31,7 @@ class ItemDatabaseTest {
                         ACTIONS to ActionValue(listOf(
                                 SingleRangedAttack(damage = "1d10+3", range = 30),
                                 MeleeAttack(damage = "1d10-1", appliesEffects = listOf(PRIMITIVE)),
-                                WeaponReload(actionCost = TWO_FULL_ACTIONS)
+                                WeaponReload(actionCost = TWO_FULL_ACTIONS, setsAmmunitionTo = 6)
                         ))
                 )
         )

@@ -18,8 +18,9 @@ enum class Attribute {
     DAMAGE_REDUCTION_LEG_L,
     DAMAGE_REDUCTION_LEG_R,
     DAMAGE_OUTPUT,
-    DAMAGE_TYPES,
+    // DAMAGE_TYPES, // #TODO: Implement damage types later
     WEAPON_TYPE,
+    WEAPON_AMMUNITION,
     ACTIONS,
     EFFECTS,
     IN_MELEE_COMBAT
