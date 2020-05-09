@@ -3,48 +3,49 @@ package io.hsar.wh40k.combatsimulator.logic
 import io.hsar.wh40k.combatsimulator.logic.ActionCost.FULL_ACTION
 import io.hsar.wh40k.combatsimulator.logic.ActionCost.HALF_ACTION
 import io.hsar.wh40k.combatsimulator.model.MapPosition
+import io.hsar.wh40k.combatsimulator.model.UnitInstance
 import io.hsar.wh40k.combatsimulator.model.unit.Effects
 import io.hsar.wh40k.combatsimulator.model.unit.Effects.*
 
-sealed class TurnAction {
+sealed class ActionOption {
     abstract val actionCost: ActionCost
 
-    data class MeleeAttack(override val damage: String) : DamageCausingAction, TurnAction() {
+    data class MeleeAttack(override val damage: String) : DamageCausingAction, ActionOption() {
         override val actionCost: ActionCost = HALF_ACTION
         override val numberOfAttacks = 1
     }
 
-    data class SingleRangedAttack(override val damage: String) : DamageCausingAction, TurnAction() {
+    data class SingleRangedAttack(override val damage: String, override val range: Int) : DamageCausingAction, RangedAttackAction, ActionOption() {
         override val actionCost: ActionCost = HALF_ACTION
         override val numberOfAttacks = 1
     }
 
-    data class SemiAutoBurstRangedAttack(override val damage: String, override val numberOfAttacks: Int) : DamageCausingAction, TurnAction() {
+    data class SemiAutoBurstRangedAttack(override val damage: String, override val numberOfAttacks: Int, override val range: Int) : DamageCausingAction, RangedAttackAction, ActionOption() {
         override val actionCost: ActionCost = HALF_ACTION
     }
 
-    data class FullAutoBurstRangedAttack(override val damage: String, override val numberOfAttacks: Int) : DamageCausingAction, TurnAction() {
+    data class FullAutoBurstRangedAttack(override val damage: String, override val numberOfAttacks: Int, override val range: Int) : DamageCausingAction,  RangedAttackAction, ActionOption() {
         override val actionCost: ActionCost = HALF_ACTION
     }
 
-    data class WeaponReload(override val actionCost: ActionCost) : TurnAction()
+    data class WeaponReload(override val actionCost: ActionCost) : ActionOption()
 
-    object HalfAim: EffectCausingAction, TurnAction() {
+    object HalfAim: EffectCausingAction, ActionOption() {
         override val actionCost =  HALF_ACTION
         override val appliesEffects = BONUS_AIM_HALF
     }
 
-    object FullAim: EffectCausingAction, TurnAction() {
+    object FullAim: EffectCausingAction, ActionOption() {
         override val actionCost: ActionCost = HALF_ACTION
         override val appliesEffects = BONUS_AIM_FULL
     }
 
-    abstract class MoveAction: TurnAction() {
-        abstract fun getMovementRange(agilityBonus: Int): Int
-        abstract fun isValidMovementPath(startPoint: MapPosition, endPoint: MapPosition): Boolean
+    interface MoveAction {
+        fun getMovementRange(agilityBonus: Int): Int
+        fun isValidMovementPath(startPoint: MapPosition, endPoint: MapPosition): Boolean
     }
 
-    object HalfMove: MoveAction() {
+    object HalfMove: MoveAction, ActionOption() {
         override val actionCost: ActionCost = HALF_ACTION
         override fun getMovementRange(agilityBonus: Int): Int {
             return agilityBonus
@@ -54,7 +55,7 @@ sealed class TurnAction {
         }
     }
 
-    data class ChargeAttack(override val damage: String): DamageCausingAction, MoveAction() {
+    data class ChargeAttack(override val damage: String): DamageCausingAction, MoveAction, ActionOption() {
 
         override val actionCost: ActionCost = FULL_ACTION
         override val numberOfAttacks = 1
@@ -75,6 +76,20 @@ interface DamageCausingAction {
 
 interface EffectCausingAction {
     val appliesEffects: Effects
+}
+
+interface RangedAttackAction {
+    val range: Int
+}
+
+interface TurnAction {
+    val action: ActionOption
+}
+
+class TargetedAction(override val action: ActionOption, val target: UnitInstance): TurnAction
+
+class AimAction(override val action: ActionOption): TurnAction {
+
 }
 
 enum class ActionCost {

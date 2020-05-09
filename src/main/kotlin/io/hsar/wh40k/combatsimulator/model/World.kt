@@ -1,6 +1,7 @@
 package io.hsar.wh40k.combatsimulator.model
 
 import io.hsar.wh40k.combatsimulator.logic.DamageCausingAction
+import io.hsar.wh40k.combatsimulator.logic.ActionOption
 import io.hsar.wh40k.combatsimulator.logic.TurnAction
 import io.hsar.wh40k.combatsimulator.model.unit.BaseStat
 import io.hsar.wh40k.combatsimulator.model.unit.StatUtils.getBonus
@@ -15,7 +16,7 @@ data class World(val friendlyForces: MutableList<UnitInstance>, val enemyForces:
         // #TODO: Check range
         actionsToExecute
                 .map { actionToExecute ->
-                    when (actionToExecute) {
+                    when (actionToExecute.action) {
                         is DamageCausingAction -> {
                             // #TODO Move target selection somewhere better
                             // #TODO Make target selection not shit
@@ -42,13 +43,25 @@ data class World(val friendlyForces: MutableList<UnitInstance>, val enemyForces:
                 .distanceToPosition(unitPositions.getValue(otherUnit))
     }
 
-    fun canMoveToUnit(unit: UnitInstance, otherUnit: UnitInstance, moveType: TurnAction.MoveAction): Boolean {
+    fun canMoveToUnit(unit: UnitInstance, otherUnit: UnitInstance, moveType: ActionOption.MoveAction): Boolean {
         return (distanceApart(unit, otherUnit) - 1 <=
                 unit.unit.stats.baseStats.getValue(BaseStat.AGILITY).getBonus()
                         .let { bonus ->
                             moveType.getMovementRange(bonus)
                         })
                 && moveType.isValidMovementPath(unitPositions.getValue(unit), unitPositions.getValue(otherUnit))
+    }
+
+    fun getAdversaries(unit: UnitInstance): List<UnitInstance> {
+        return if(unit in this.friendlyForces) {
+            enemyForces
+        } else {
+            friendlyForces
+        }
+    }
+
+    fun getPosition(unit: UnitInstance): MapPosition {
+        return this.unitPositions.getValue(unit)
     }
 }
 

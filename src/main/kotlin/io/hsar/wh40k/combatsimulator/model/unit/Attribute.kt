@@ -1,6 +1,6 @@
 package io.hsar.wh40k.combatsimulator.model.unit
 
-import io.hsar.wh40k.combatsimulator.logic.TurnAction
+import io.hsar.wh40k.combatsimulator.logic.ActionOption
 
 /**
  * Attributes are dynamic information that can change turn by turn.
@@ -59,7 +59,7 @@ data class HighestValue(val value: WeaponType) : AttributeValue() {
 /**
  * ActionValue adds items to the end of a list.
  */
-data class ActionValue(val value: List<TurnAction>) : AttributeValue() {
+data class ActionValue(val value: List<ActionOption>) : AttributeValue() {
     operator fun plus(other: ActionValue): ActionValue {
         return (this.value + other.value)
                 .let { newValue ->
