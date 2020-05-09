@@ -95,7 +95,12 @@ interface TurnAction {
     val action: ActionOption
 }
 
-class TargetedAction(override val action: ActionOption, val target: UnitInstance): TurnAction
+/**
+ * The enemy targeted may cause an effect to be applied, i.e. long range
+ */
+class TargetedAction(override val action: ActionOption, val target: UnitInstance, effectsToApply: List<Effect> = emptyList()): EffectCausingAction, TurnAction {
+    override val appliesEffects: List<Effect> = effectsToApply + ((action as? EffectCausingAction)?.appliesEffects ?: emptyList())
+}
 
 class AimAction(override val action: ActionOption): TurnAction {
 
