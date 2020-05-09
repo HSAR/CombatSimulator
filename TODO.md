@@ -8,8 +8,9 @@
 ### Simulation Representation
 
 * Item database, flesh out `data/items.json` to include a small variety of weapons and simplify input files.
-    * Proper deserialisation may require Jackson magic.
-* Flesh out and implement how weapons change unit attributes, and the various options that can be selected and exposed to tactical decision-making (rate of fire, multiple weapons, improvised melee)
+    * Damage should have penetration values
+    * Las weapons should have overload and overcharge settings costing extra ammo
+* Effects should have degrees (i.e. Primitive(7))
 
 
 ### Simulation Computation
@@ -32,3 +33,10 @@
     * `RangedAttackStrategy` when range is good and ammo is available
     * `MeleeAttackStrategy` when ranged attack is not possible or main weapon is melee
     * ... and others as appropriate.
+    
+### Deferred / Low-Priority
+
+* Targeted actions should generate their own attribute modifiers based on the target (short range etc.)
+* Weapon jams
+    * Remove all weapon actions except unjam, empties ammo
+* Damage types

@@ -1,0 +1,62 @@
+[
+    {
+        "itemRef": "wpn_pistol_stubRevolver",
+        "itemName": "Stub Revolver",
+        "itemType": "WEAPON",
+        "modifiesAttributes": {
+            "WEAPON_TYPE": "PISTOL",
+            "ACTIONS": [
+                {
+                    "actionType": "SingleRangedAttack",
+                    "damage": "1d10+3",
+                    "range": 30
+                },
+                {
+                    "actionType": "MeleeAttack",
+                    "damage": "1d10-1",
+                    "appliesEffects": [
+                        "PRIMITIVE"
+                    ]
+                },
+                {
+                    "actionType": "WeaponReload",
+                    "actionCost": "TWO_FULL_ACTIONS",
+                    "setsAmmunitionTo": 6
+                }
+            ]
+        }
+    },
+    {
+        "itemRef": "wpn_pistol_laspistol",
+        "itemName": "Laspistol",
+        "itemType": "WEAPON",
+        "modifiesAttributes": {
+            "WEAPON_TYPE": "PISTOL",
+            "ACTIONS": [
+                {
+                    "actionType": "SingleRangedAttack",
+                    "damage": "1d10+2",
+                    "range": 30
+                },
+                {
+                    "actionType": "SemiAutoBurstRangedAttack",
+                    "damage": "1d10+2",
+                    "range": 30,
+                    "numberOfAttacks": 2
+                },
+                {
+                    "actionType": "MeleeAttack",
+                    "damage": "1d10-1",
+                    "appliesEffects": [
+                        "PRIMITIVE"
+                    ]
+                },
+                {
+                    "actionType": "WeaponReload",
+                    "actionCost": "HALF_ACTION",
+                    "setsAmmunitionTo": 30
+                }
+            ]
+        }
+    }
+]

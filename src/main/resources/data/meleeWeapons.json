@@ -1,0 +1,22 @@
+[
+    {
+        "itemRef": "wpn_melee_staff",
+        "itemName": "Staff",
+        "itemType": "WEAPON",
+        "modifiesAttributes": {
+            "WEAPON_TYPE": "MELEE",
+            "ACTIONS": [
+                {
+                    "actionType": "MeleeAttack",
+                    "damage": "1d10",
+                    "appliesEffects": [
+                        "PRIMITIVE"
+                    ]
+                }
+            ],
+            "EFFECTS": [
+                "BALANCED"
+            ]
+        }
+    }
+]

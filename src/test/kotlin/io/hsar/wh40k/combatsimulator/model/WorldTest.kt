@@ -2,6 +2,7 @@ package io.hsar.wh40k.combatsimulator.model
 
 import TestUtils
 import io.hsar.wh40k.combatsimulator.logic.ActionOption
+import io.hsar.wh40k.combatsimulator.logic.HalfMove
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Test
@@ -12,13 +13,13 @@ class WorldTest {
     @Test
     fun testCanMoveToUnitInRange() {
         val world = TestUtils.getGenericTwoUnitWorld(MapPosition(1, 6), MapPosition(5, 4))
-        assertThat(world.canMoveToUnit(world.friendlyForces[0], world.enemyForces[0], ActionOption.HalfMove), equalTo(true))
+        assertThat(world.canMoveToUnit(world.friendlyForces[0], world.enemyForces[0], HalfMove), equalTo(true))
     }
 
     @Test
     fun testCanMoveToUnitOutOfRange() {
         val world = TestUtils.getGenericTwoUnitWorld(MapPosition(1, 6), MapPosition(6, 4))
-        assertThat(world.canMoveToUnit(world.friendlyForces[0], world.enemyForces[0], ActionOption.HalfMove), equalTo(false))
+        assertThat(world.canMoveToUnit(world.friendlyForces[0], world.enemyForces[0], HalfMove), equalTo(false))
     }
 
     @Test

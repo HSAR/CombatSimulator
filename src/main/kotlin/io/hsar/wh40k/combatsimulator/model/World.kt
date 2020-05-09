@@ -2,6 +2,7 @@ package io.hsar.wh40k.combatsimulator.model
 
 import io.hsar.wh40k.combatsimulator.logic.DamageCausingAction
 import io.hsar.wh40k.combatsimulator.logic.ActionOption
+import io.hsar.wh40k.combatsimulator.logic.MoveAction
 import io.hsar.wh40k.combatsimulator.logic.TurnAction
 import io.hsar.wh40k.combatsimulator.model.unit.BaseStat
 import io.hsar.wh40k.combatsimulator.model.unit.StatUtils.getBonus
@@ -43,7 +44,7 @@ data class World(val friendlyForces: MutableList<UnitInstance>, val enemyForces:
                 .distanceToPosition(unitPositions.getValue(otherUnit))
     }
 
-    fun canMoveToUnit(unit: UnitInstance, otherUnit: UnitInstance, moveType: ActionOption.MoveAction): Boolean {
+    fun canMoveToUnit(unit: UnitInstance, otherUnit: UnitInstance, moveType: MoveAction): Boolean {
         return (distanceApart(unit, otherUnit) - 1 <=
                 unit.unit.stats.baseStats.getValue(BaseStat.AGILITY).getBonus()
                         .let { bonus ->

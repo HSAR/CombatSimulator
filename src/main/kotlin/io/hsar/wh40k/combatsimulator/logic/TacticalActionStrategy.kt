@@ -11,7 +11,7 @@ object TacticalActionStrategy : ActionStrategy {
         // Shit implementation - units will only ever aim and fire their max damage attack
         val aimAction = possibleActionOptions
                 .find { action ->
-                    action is ActionOption.HalfAim
+                    action is HalfAim
                 }
                 ?.let { action ->
                     AimAction(action)
