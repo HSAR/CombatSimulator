@@ -6,6 +6,7 @@ import io.hsar.wh40k.combatsimulator.logic.FullAim
 import io.hsar.wh40k.combatsimulator.logic.HalfAim
 import io.hsar.wh40k.combatsimulator.model.unit.*
 import io.hsar.wh40k.combatsimulator.model.unit.Attribute.ACTIONS
+import io.hsar.wh40k.combatsimulator.model.unit.Attribute.CURRENT_HEALTH
 import io.hsar.wh40k.combatsimulator.model.unit.Unit
 import io.hsar.wh40k.combatsimulator.random.RandomDice
 import io.hsar.wh40k.combatsimulator.random.RollResult
@@ -36,6 +37,15 @@ class UnitInstance(
 
     fun rollBaseStat(stat: BaseStat): RollResult {
         return RandomDice.roll(unit.stats.baseStats.getValue(stat))
+    }
+
+    fun receiveDamage(damage: Int) {
+        //TODO
+        val health = attributes.getValue(CURRENT_HEALTH)
+        when(health) {
+            is NumericValue -> TODO() // FIX THIS WITH MUTABLE MAP - attributes[CURRENT_HEALTH] = NumericValue(health.value - damage)
+            else -> throw RuntimeException("Current health ought to be a NumericValue")
+        }
     }
 
     companion object {
