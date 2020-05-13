@@ -4,12 +4,11 @@ import io.hsar.wh40k.combatsimulator.logic.TacticalActionStrategy
 import io.hsar.wh40k.combatsimulator.logic.ActionOption
 import io.hsar.wh40k.combatsimulator.logic.FullAim
 import io.hsar.wh40k.combatsimulator.logic.HalfAim
-import io.hsar.wh40k.combatsimulator.model.unit.ActionValue
-import io.hsar.wh40k.combatsimulator.model.unit.Attribute
+import io.hsar.wh40k.combatsimulator.model.unit.*
 import io.hsar.wh40k.combatsimulator.model.unit.Attribute.ACTIONS
-import io.hsar.wh40k.combatsimulator.model.unit.AttributeValue
-import io.hsar.wh40k.combatsimulator.model.unit.EquipmentItem
 import io.hsar.wh40k.combatsimulator.model.unit.Unit
+import io.hsar.wh40k.combatsimulator.random.RandomDice
+import io.hsar.wh40k.combatsimulator.random.RollResult
 import io.hsar.wh40k.combatsimulator.utils.sum
 
 /**
@@ -35,6 +34,10 @@ class UnitInstance(
         TODO("Not yet implemented")
     }
 
+    fun rollBaseStat(stat: BaseStat): RollResult {
+        return RandomDice.roll(unit.stats.baseStats.getValue(stat))
+    }
+
     companion object {
         val DEFAULT_ACTIONS = ActionValue(listOf(
                 HalfAim,
@@ -43,4 +46,13 @@ class UnitInstance(
 
         val DEFAULT_ATTRIBUTES = mapOf(ACTIONS to DEFAULT_ACTIONS)
     }
+}
+
+enum class  BodyPart {
+    HEAD,
+    BODY,
+    RIGHT_ARM,
+    LEFT_ARM,
+    RIGHT_LEG,
+    LEFT_LEG
 }
