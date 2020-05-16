@@ -17,33 +17,33 @@ import io.hsar.wh40k.combatsimulator.utils.sum
  * This class may contain dynamic information that changes as combat progresses.
  */
 class UnitInstance(
-        val name: String,  // #TODO how is this different from the name member variable of unit?
+        val name: String,
         val description: String,
         val unit: Unit,
         val equipment: List<EquipmentItem>,
-        val attributes: Map<Attribute, AttributeValue> =  // #TODO: Figure out whether this is good long-term solution
+        val startingAttributes: Map<Attribute, AttributeValue> =  // #TODO: Figure out whether this is good long-term solution
                 DEFAULT_ATTRIBUTES + equipment.map { it.modifiesAttributes }.sum(),
-        val tacticalActionStrategy: TacticalActionStrategy = TacticalActionStrategy
+        val tacticalActionStrategy: TacticalActionStrategy = TacticalActionStrategy,
+        val currentAttributes: MutableMap<Attribute, AttributeValue> = startingAttributes.toMutableMap()
 ) {
 
     val availableActionOptions: List<ActionOption>
-        get() = (attributes.getValue(ACTIONS) as? ActionValue
-                ?: throw IllegalStateException("Unit ${name} ACTION attribute should have actions but instead was: ${attributes.getValue(ACTIONS)}"))
+        get() = (startingAttributes.getValue(ACTIONS) as? ActionValue
+                ?: throw IllegalStateException("Unit ${name} ACTION attribute should have actions but instead was: ${startingAttributes.getValue(ACTIONS)}"))
                 .value
 
     fun executeTurnAction(actionOption: ActionOption) {
         TODO("Not yet implemented")
     }
 
-    fun rollBaseStat(stat: BaseStat): RollResult {
-        return RandomDice.roll(unit.stats.baseStats.getValue(stat))
+    fun rollBaseStat(stat: BaseStat, bonus: Int): RollResult {
+        return RandomDice.roll(unit.stats.baseStats.getValue(stat) + bonus)
     }
 
     fun receiveDamage(damage: Int) {
         //TODO
-        val health = attributes.getValue(CURRENT_HEALTH)
-        when(health) {
-            is NumericValue -> TODO() // FIX THIS WITH MUTABLE MAP - attributes[CURRENT_HEALTH] = NumericValue(health.value - damage)
+        when(val health = currentAttributes.getValue(CURRENT_HEALTH)) {
+            is NumericValue -> currentAttributes[CURRENT_HEALTH] = NumericValue(health.value - damage)
             else -> throw RuntimeException("Current health ought to be a NumericValue")
         }
     }
@@ -54,7 +54,7 @@ class UnitInstance(
                 FullAim
         ))
 
-        val DEFAULT_ATTRIBUTES = mapOf(ACTIONS to DEFAULT_ACTIONS)
+        val DEFAULT_ATTRIBUTES = mapOf(ACTIONS to DEFAULT_ACTIONS, Attribute.EFFECTS to EffectValue(listOf<Effect>()))
     }
 }
 

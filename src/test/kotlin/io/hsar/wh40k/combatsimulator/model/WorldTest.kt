@@ -1,14 +1,23 @@
 package io.hsar.wh40k.combatsimulator.model
 
 import TestUtils
-import io.hsar.wh40k.combatsimulator.logic.ActionOption
-import io.hsar.wh40k.combatsimulator.logic.HalfMove
+import io.hsar.wh40k.combatsimulator.logic.*
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Test
 
 
 class WorldTest {
+
+    @Test
+    fun testExecuteActions() {
+        val world = TestUtils.getGenericTwoUnitWorld(MapPosition(1, 6), MapPosition(5, 4))
+        val actionsToExecute = listOf(
+                AimAction(HalfAim),
+                TargetedAction(SingleRangedAttack(30, "1d10+4"),world.enemyForces[0])
+        )
+        world.executeActions(world.friendlyForces[0], actionsToExecute)
+    }
 
     @Test
     fun testCanMoveToUnitInRange() {

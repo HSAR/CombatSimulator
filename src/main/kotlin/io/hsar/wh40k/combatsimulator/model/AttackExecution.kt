@@ -10,10 +10,21 @@ object AttackExecution {
 
     fun rollHits(attacker: UnitInstance, target: UnitInstance, action: DamageCausingAction): Int {
         //TODO factor in aiming etc
-        val numberOfAttacks = action.numberOfAttacks
+        val effects = attacker.currentAttributes[Attribute.EFFECTS]
+        var aimBonus = 0
+        when(effects) {
+            is EffectValue -> {
+                if(Effect.AIMED_FULL in effects.value) {
+                    aimBonus = 20
+                } else if (Effect.AIMED_HALF in effects.value) {
+                    aimBonus = 10
+                }
+            }
+            else -> throw RuntimeException("Effects must be of type EffectValue")
+        }
         return when(action) {
-            is RangedAttackAction -> attacker.rollBaseStat(BaseStat.BALLISTIC_SKILL)
-            else -> attacker.rollBaseStat(BaseStat.WEAPON_SKILL)
+            is RangedAttackAction -> attacker.rollBaseStat(BaseStat.BALLISTIC_SKILL,aimBonus)
+            else -> attacker.rollBaseStat(BaseStat.WEAPON_SKILL,aimBonus)
         }
                 .let { rollResult->
                     when(rollResult.result) {
@@ -37,14 +48,14 @@ object AttackExecution {
 
         //now, check enemy damage mitigation for that body part
         val mitigation = when(RandomDice.randomBodyPart()) {
-            BodyPart.HEAD -> target.attributes.getValue(Attribute.DAMAGE_REDUCTION_HEAD)
-            BodyPart.RIGHT_ARM -> target.attributes.getValue(Attribute.DAMAGE_REDUCTION_ARM_R)
-            BodyPart.LEFT_ARM -> target.attributes.getValue(Attribute.DAMAGE_REDUCTION_ARM_L)
-            BodyPart.BODY -> target.attributes.getValue(Attribute.DAMAGE_REDUCTION_TORSO)
-            BodyPart.RIGHT_LEG -> target.attributes.getValue(Attribute.DAMAGE_REDUCTION_LEG_R)
-            BodyPart.LEFT_LEG -> target.attributes.getValue(Attribute.DAMAGE_REDUCTION_LEG_L)
+            BodyPart.HEAD -> target.startingAttributes[Attribute.DAMAGE_REDUCTION_HEAD] ?: NumericValue(0)
+            BodyPart.RIGHT_ARM -> target.startingAttributes[Attribute.DAMAGE_REDUCTION_ARM_R] ?: NumericValue(0)
+            BodyPart.LEFT_ARM -> target.startingAttributes[Attribute.DAMAGE_REDUCTION_ARM_L] ?: NumericValue(0)
+            BodyPart.BODY -> target.startingAttributes[Attribute.DAMAGE_REDUCTION_TORSO] ?: NumericValue(0)
+            BodyPart.RIGHT_LEG -> target.startingAttributes[Attribute.DAMAGE_REDUCTION_LEG_R] ?: NumericValue(0)
+            BodyPart.LEFT_LEG -> target.startingAttributes[Attribute.DAMAGE_REDUCTION_LEG_L] ?: NumericValue(0)
         }
-
+        // TODO does damage mitigation cover toughness bonus??
         when(mitigation) {
             is NumericValue -> return damage - mitigation.value
             else -> throw TypeCastException("Invalid damage mitigation attribute used")

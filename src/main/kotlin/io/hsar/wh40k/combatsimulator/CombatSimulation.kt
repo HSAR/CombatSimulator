@@ -24,6 +24,7 @@ class CombatSimulation(val world: World) {
                     .decideTurnActions(world, unit, unit.availableActionOptions)
                     .let { actionsToExecute ->
                         world.executeActions(unit, actionsToExecute)
+                        world.findDead()  // removes dead units from world as side effect
                     }
         }
     }

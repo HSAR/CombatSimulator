@@ -5,7 +5,9 @@ import io.hsar.wh40k.combatsimulator.model.unit.*
 
 object TestUtils {
     fun getGenericUnitInstance(): UnitInstance {
-        val stats = mapOf<BaseStat, Int>(BaseStat.AGILITY to 32)
+        val stats = mapOf<BaseStat, Int>(
+                BaseStat.AGILITY to 32,
+                BaseStat.BALLISTIC_SKILL to 40)
         val derivedStats = mapOf<DerivedStats, Int>()
         val unit = Unit(
                 unitRef = "bob",
@@ -24,6 +26,8 @@ object TestUtils {
     fun getGenericTwoUnitWorld(firstPosition: MapPosition, secondPosition: MapPosition): World {
         val unitInstance = getGenericUnitInstance()
         val otherUnitInstance = getGenericUnitInstance()
+        unitInstance.currentAttributes[Attribute.CURRENT_HEALTH] = NumericValue(15)
+        otherUnitInstance.currentAttributes[Attribute.CURRENT_HEALTH] = NumericValue(10)
         val unitPositions = mutableMapOf(unitInstance to firstPosition, otherUnitInstance to secondPosition)
         return World(
                 mutableListOf(unitInstance),

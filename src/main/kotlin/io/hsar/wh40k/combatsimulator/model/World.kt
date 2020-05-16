@@ -3,6 +3,8 @@ package io.hsar.wh40k.combatsimulator.model
 import io.hsar.wh40k.combatsimulator.logic.*
 import io.hsar.wh40k.combatsimulator.model.unit.Attribute
 import io.hsar.wh40k.combatsimulator.model.unit.BaseStat
+import io.hsar.wh40k.combatsimulator.model.unit.EffectValue
+import io.hsar.wh40k.combatsimulator.model.unit.NumericValue
 import io.hsar.wh40k.combatsimulator.model.unit.StatUtils.getBonus
 import kotlin.math.absoluteValue
 import kotlin.math.max
@@ -36,11 +38,23 @@ data class World(val friendlyForces: MutableList<UnitInstance>, val enemyForces:
                                 }
                                 else -> TODO()
                             }
-
-
-
                         }
-                        else -> TODO("Not yet implemented")
+                        else -> {
+                            when(actionToExecute.action) {
+                                is EffectCausingAction ->  {
+                                    val existingEffects = executingUnit.currentAttributes[Attribute.EFFECTS]
+                                    when (existingEffects) {
+                                        is EffectValue -> {
+                                            executingUnit.currentAttributes[Attribute.EFFECTS] = EffectValue(listOf(existingEffects.value,
+                                                    (actionToExecute.action as EffectCausingAction).appliesEffects).flatten())
+                                        }
+                                        else -> throw RuntimeException("Effects value should be of type EffectValue)")
+                                    }
+
+                                }
+                                else -> TODO()
+                            }
+                        }
                     }
                 }
     }
@@ -74,6 +88,21 @@ data class World(val friendlyForces: MutableList<UnitInstance>, val enemyForces:
 
     fun getPosition(unit: UnitInstance): MapPosition {
         return this.unitPositions.getValue(unit)
+    }
+
+    fun findDead(): List<UnitInstance> {
+        return listOf(findDeadInternal(friendlyForces),findDeadInternal(enemyForces)).flatten()
+    }
+
+    private fun findDeadInternal(unitList: MutableList<UnitInstance>): List<UnitInstance> {
+        val deadUnits = unitList.filter { unitInstance ->
+            when(val health = unitInstance.currentAttributes[Attribute.CURRENT_HEALTH]) {
+                is NumericValue -> health.value <= 0  // simplification
+                else -> throw RuntimeException("Current health must be a NumericValue")
+            }
+        }
+        unitList.removeAll(deadUnits)
+        return deadUnits
     }
 }
 
