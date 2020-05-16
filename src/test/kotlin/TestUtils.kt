@@ -2,6 +2,7 @@ import io.hsar.wh40k.combatsimulator.model.MapPosition
 import io.hsar.wh40k.combatsimulator.model.UnitInstance
 import io.hsar.wh40k.combatsimulator.model.World
 import io.hsar.wh40k.combatsimulator.model.unit.*
+import org.mockito.Mockito
 
 object TestUtils {
     fun getGenericUnitInstance(): UnitInstance {
