@@ -49,12 +49,12 @@ object RandomDice {
         .let { diceRoll ->
                when(diceRoll) {
                    in 0..10 -> return BodyPart.HEAD
-                   in 11..25 -> return BodyPart.LEFT_ARM
-                   in 25..30 -> return BodyPart.RIGHT_ARM
-                   in 30..70 -> return BodyPart.BODY
-                   in 70..85 -> return BodyPart.LEFT_LEG
-                   in 85..100 -> return BodyPart.RIGHT_LEG
-                   else -> throw Exception("d100 roll outside of 1-100")
+                   in 11..20 -> return BodyPart.RIGHT_ARM
+                   in 21..30 -> return BodyPart.LEFT_ARM
+                   in 31..70 -> return BodyPart.BODY
+                   in 71..85 -> return BodyPart.RIGHT_LEG
+                   in 86..100 -> return BodyPart.LEFT_LEG
+                   else -> throw RuntimeException("d100 roll outside of 1-100")
                }
                 }
     }

@@ -23,8 +23,9 @@ class CombatSimulation(val world: World) {
             unit.tacticalActionStrategy
                     .decideTurnActions(world, unit, unit.availableActionOptions)
                     .let { actionsToExecute ->
-                        world.executeActions(unit, actionsToExecute)
-                        world.findDead()  // removes dead units from world as side effect
+                       unit.executeActions(actionsToExecute)
+                        val deadUnits = world.findDead()  // TODO can notify user via IO here
+                        world.removeDead()
                     }
         }
     }

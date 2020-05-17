@@ -1,38 +1,15 @@
 package io.hsar.wh40k.combatsimulator.model
 
 import TestUtils
-import io.hsar.wh40k.combatsimulator.logic.AimAction
-import io.hsar.wh40k.combatsimulator.logic.HalfAim
 import io.hsar.wh40k.combatsimulator.logic.HalfMove
-import io.hsar.wh40k.combatsimulator.logic.SingleRangedAttack
-import io.hsar.wh40k.combatsimulator.logic.TargetedAction
+import io.hsar.wh40k.combatsimulator.model.unit.Attribute
+import io.hsar.wh40k.combatsimulator.model.unit.NumericValue
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Test
-import org.mockito.Mockito.`when`
-import org.mockito.Mockito.mock
 
 
 class WorldTest {
-
-    @Test
-    fun testExecuteActions() {
-        // Arrange
-        val world = TestUtils.getGenericTwoUnitWorld(MapPosition(1, 6), MapPosition(5, 4))
-        val aimAction = AimAction(HalfAim)
-        val singleRangedAttack = SingleRangedAttack(30, "1d10+4")
-        val targetedAction = TargetedAction(singleRangedAttack, world.enemyForces[0])
-        val actionsToExecute = listOf(
-                aimAction, targetedAction
-        )
-
-        val mockAttackExecution = mock(AttackExecution::class.java)
-        `when`(mockAttackExecution.rollHits(world.friendlyForces[0], world.enemyForces[0], singleRangedAttack)).thenReturn(1)
-        `when`(mockAttackExecution.calcDamage(world.friendlyForces[0], world.enemyForces[0], singleRangedAttack)).thenReturn(5)
-
-        // Act
-        world.executeActions(world.friendlyForces[0], actionsToExecute)
-    }
 
     @Test
     fun testCanMoveToUnitInRange() {
@@ -59,10 +36,28 @@ class WorldTest {
         assertThat(first.distanceToPosition(second), equalTo(9))
     }
 
-    @Test()
+    @Test
     fun testMapPositionOperatorMinus() {
         val first = MapPosition(1, 6)
         val second = MapPosition(10, 4)
         assertThat(first - second, equalTo(9))
+    }
+
+    @Test
+    fun `findDead returns exclusively dead units`() {
+        val world = TestUtils.getGenericTwoUnitWorld(MapPosition(1, 6), MapPosition(5, 4))
+        world.enemyForces[0].currentAttributes[Attribute.CURRENT_HEALTH] = NumericValue(-1)
+        val deadUnits = world.findDead()
+        assertThat(deadUnits.size, equalTo(1))
+        assertThat(deadUnits[0], equalTo(world.enemyForces[0]))
+    }
+
+    @Test
+    fun `removeDead exclusively removes dead units`() {
+        val world = TestUtils.getGenericTwoUnitWorld(MapPosition(1, 6), MapPosition(5, 4))
+        world.friendlyForces[0].currentAttributes[Attribute.CURRENT_HEALTH] = NumericValue(-1)
+        world.removeDead()
+        assertThat(world.enemyForces.size, equalTo(1))
+        assertThat(world.friendlyForces.size, equalTo(0))
     }
 }

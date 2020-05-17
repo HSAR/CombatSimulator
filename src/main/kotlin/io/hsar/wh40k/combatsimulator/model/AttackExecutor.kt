@@ -1,20 +1,29 @@
 package io.hsar.wh40k.combatsimulator.model
 
-import io.hsar.wh40k.combatsimulator.logic.*
-import io.hsar.wh40k.combatsimulator.model.unit.*
+import io.hsar.wh40k.combatsimulator.logic.ChargeAttack
+import io.hsar.wh40k.combatsimulator.logic.DamageCausingAction
+import io.hsar.wh40k.combatsimulator.logic.FullAutoBurstRangedAttack
+import io.hsar.wh40k.combatsimulator.logic.MeleeAttack
+import io.hsar.wh40k.combatsimulator.logic.RangedAttackAction
+import io.hsar.wh40k.combatsimulator.logic.SemiAutoBurstRangedAttack
+import io.hsar.wh40k.combatsimulator.logic.SingleRangedAttack
+import io.hsar.wh40k.combatsimulator.model.unit.Attribute
+import io.hsar.wh40k.combatsimulator.model.unit.BaseStat
+import io.hsar.wh40k.combatsimulator.model.unit.Effect
+import io.hsar.wh40k.combatsimulator.model.unit.EffectValue
+import io.hsar.wh40k.combatsimulator.model.unit.NumericValue
 import io.hsar.wh40k.combatsimulator.random.AverageDice
 import io.hsar.wh40k.combatsimulator.random.RandomDice
 import io.hsar.wh40k.combatsimulator.random.Result
 
-object AttackExecution {
+class AttackExecutor {
 
     fun rollHits(attacker: UnitInstance, target: UnitInstance, action: DamageCausingAction): Int {
-        //TODO factor in aiming etc
-        val effects = attacker.currentAttributes[Attribute.EFFECTS]
+        val effects = attacker.currentAttributes[Attribute.EFFECTS] ?: EffectValue(listOf<Effect>())
         var aimBonus = 0
-        when(effects) {
+        when (effects) {
             is EffectValue -> {
-                if(Effect.AIMED_FULL in effects.value) {
+                if (Effect.AIMED_FULL in effects.value) {
                     aimBonus = 20
                 } else if (Effect.AIMED_HALF in effects.value) {
                     aimBonus = 10
@@ -44,7 +53,7 @@ object AttackExecution {
 
     fun calcDamage(attacker: UnitInstance, target: UnitInstance, action: DamageCausingAction): Int {
         val damage = AverageDice.roll(action.damage)
-        // for each attack, roll damage, roll bodypart and then allow for mitigation
+        // for each attack, roll damage, roll body part and then allow for mitigation
 
         //now, check enemy damage mitigation for that body part
         val mitigation = when(RandomDice.randomBodyPart()) {
@@ -55,7 +64,7 @@ object AttackExecution {
             BodyPart.RIGHT_LEG -> target.startingAttributes[Attribute.DAMAGE_REDUCTION_LEG_R] ?: NumericValue(0)
             BodyPart.LEFT_LEG -> target.startingAttributes[Attribute.DAMAGE_REDUCTION_LEG_L] ?: NumericValue(0)
         }
-        // TODO does damage mitigation cover toughness bonus??
+
         when(mitigation) {
             is NumericValue -> return damage - mitigation.value
             else -> throw TypeCastException("Invalid damage mitigation attribute used")

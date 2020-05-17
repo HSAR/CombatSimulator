@@ -1,6 +1,10 @@
 package io.hsar.wh40k.combatsimulator.model
 
-import io.hsar.wh40k.combatsimulator.logic.*
+import io.hsar.wh40k.combatsimulator.logic.DamageCausingAction
+import io.hsar.wh40k.combatsimulator.logic.EffectCausingAction
+import io.hsar.wh40k.combatsimulator.logic.MoveAction
+import io.hsar.wh40k.combatsimulator.logic.TargetedAction
+import io.hsar.wh40k.combatsimulator.logic.TurnAction
 import io.hsar.wh40k.combatsimulator.model.unit.Attribute
 import io.hsar.wh40k.combatsimulator.model.unit.BaseStat
 import io.hsar.wh40k.combatsimulator.model.unit.EffectValue
@@ -9,55 +13,11 @@ import io.hsar.wh40k.combatsimulator.model.unit.StatUtils.getBonus
 import kotlin.math.absoluteValue
 import kotlin.math.max
 
-data class World(val friendlyForces: MutableList<UnitInstance>, val enemyForces: MutableList<UnitInstance>,
-                 val unitPositions: MutableMap<UnitInstance, MapPosition>) {
-
-    fun executeActions(executingUnit: UnitInstance, actionsToExecute: List<TurnAction>) {
-        // #TODO: Check total
-        // #TODO: Check range
-        actionsToExecute
-                .map { actionToExecute ->
-                    when (actionToExecute) {
-                        is TargetedAction -> {
-                            when(actionToExecute.action) {
-                                is DamageCausingAction -> {
-                                    AttackExecution.rollHits(
-                                            executingUnit,
-                                            actionToExecute.target,
-                                            actionToExecute.action as DamageCausingAction
-                                            // forced to hard cast to avoid compiler error
-                                    ).let { numberOfHits ->
-                                        repeat(numberOfHits) {
-                                            actionToExecute.target.receiveDamage(
-                                                    AttackExecution.calcDamage(
-                                                            executingUnit,
-                                                            actionToExecute.target,
-                                                            actionToExecute.action as DamageCausingAction))
-                                        }
-                                    }
-                                }
-                                else -> TODO()
-                            }
-                        }
-                        else -> {
-                            when(actionToExecute.action) {
-                                is EffectCausingAction ->  {
-                                    val existingEffects = executingUnit.currentAttributes[Attribute.EFFECTS]
-                                    when (existingEffects) {
-                                        is EffectValue -> {
-                                            executingUnit.currentAttributes[Attribute.EFFECTS] = EffectValue(listOf(existingEffects.value,
-                                                    (actionToExecute.action as EffectCausingAction).appliesEffects).flatten())
-                                        }
-                                        else -> throw RuntimeException("Effects value should be of type EffectValue)")
-                                    }
-
-                                }
-                                else -> TODO()
-                            }
-                        }
-                    }
-                }
-    }
+data class World(
+        val friendlyForces: MutableList<UnitInstance>,
+        val enemyForces: MutableList<UnitInstance>,
+        val unitPositions: MutableMap<UnitInstance, MapPosition>
+) {
 
     /**
      * Used by things like TacticalActionStrategy to work out how far away units are from each other
@@ -95,14 +55,18 @@ data class World(val friendlyForces: MutableList<UnitInstance>, val enemyForces:
     }
 
     private fun findDeadInternal(unitList: MutableList<UnitInstance>): List<UnitInstance> {
-        val deadUnits = unitList.filter { unitInstance ->
+        return unitList.filter { unitInstance ->
             when(val health = unitInstance.currentAttributes[Attribute.CURRENT_HEALTH]) {
                 is NumericValue -> health.value <= 0  // simplification
                 else -> throw RuntimeException("Current health must be a NumericValue")
             }
         }
-        unitList.removeAll(deadUnits)
-        return deadUnits
+    }
+
+    fun removeDead() {
+        val deadUnits = findDead()
+        friendlyForces.removeAll(deadUnits)
+        enemyForces.removeAll(deadUnits)
     }
 }
 
