@@ -1,38 +1,23 @@
 package io.hsar.wh40k.combatsimulator.model
 
 import io.hsar.wh40k.combatsimulator.logic.DamageCausingAction
-import io.hsar.wh40k.combatsimulator.logic.ActionOption
+import io.hsar.wh40k.combatsimulator.logic.EffectCausingAction
 import io.hsar.wh40k.combatsimulator.logic.MoveAction
+import io.hsar.wh40k.combatsimulator.logic.TargetedAction
 import io.hsar.wh40k.combatsimulator.logic.TurnAction
+import io.hsar.wh40k.combatsimulator.model.unit.Attribute
 import io.hsar.wh40k.combatsimulator.model.unit.BaseStat
+import io.hsar.wh40k.combatsimulator.model.unit.EffectValue
+import io.hsar.wh40k.combatsimulator.model.unit.NumericValue
 import io.hsar.wh40k.combatsimulator.model.unit.StatUtils.getBonus
 import kotlin.math.absoluteValue
 import kotlin.math.max
 
-data class World(val friendlyForces: MutableList<UnitInstance>, val enemyForces: MutableList<UnitInstance>,
-                 val unitPositions: MutableMap<UnitInstance, MapPosition>) {
-
-    fun executeActions(executingUnit: UnitInstance, actionsToExecute: List<TurnAction>) {
-        // #TODO: Check total
-        // #TODO: Check range
-        actionsToExecute
-                .map { actionToExecute ->
-                    when (actionToExecute.action) {
-                        is DamageCausingAction -> {
-                            // #TODO Move target selection somewhere better
-                            // #TODO Make target selection not shit
-                            val targetUnit = when (executingUnit) {
-                                in friendlyForces -> enemyForces.random()
-                                in enemyForces -> friendlyForces.random()
-                                else -> throw IllegalStateException("Executing turn for a unit that is not on any side.")
-                            }
-
-
-                        }
-                        else -> TODO("Not yet implemented")
-                    }
-                }
-    }
+data class World(
+        val friendlyForces: MutableList<UnitInstance>,
+        val enemyForces: MutableList<UnitInstance>,
+        val unitPositions: MutableMap<UnitInstance, MapPosition>
+) {
 
     /**
      * Used by things like TacticalActionStrategy to work out how far away units are from each other
@@ -63,6 +48,24 @@ data class World(val friendlyForces: MutableList<UnitInstance>, val enemyForces:
 
     fun getPosition(unit: UnitInstance): MapPosition {
         return this.unitPositions.getValue(unit)
+    }
+
+    fun findDead(): List<UnitInstance> {
+        return listOf(findDeadInternal(friendlyForces),findDeadInternal(enemyForces)).flatten()
+    }
+
+    private fun findDeadInternal(unitList: MutableList<UnitInstance>): List<UnitInstance> {
+        return unitList.filter { unitInstance ->
+            when(val health = unitInstance.currentAttributes[Attribute.CURRENT_HEALTH]) {
+                is NumericValue -> health.value <= 0  // simplification
+                else -> throw RuntimeException("Current health must be a NumericValue")
+            }
+        }
+    }
+
+    fun removeUnits(unitsToRemove: List<UnitInstance>) {
+        friendlyForces.removeAll(unitsToRemove)
+        enemyForces.removeAll(unitsToRemove)
     }
 }
 

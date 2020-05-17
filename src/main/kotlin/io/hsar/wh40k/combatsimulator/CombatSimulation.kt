@@ -23,7 +23,10 @@ class CombatSimulation(val world: World) {
             unit.tacticalActionStrategy
                     .decideTurnActions(world, unit, unit.availableActionOptions)
                     .let { actionsToExecute ->
-                        world.executeActions(unit, actionsToExecute)
+                       unit.executeActions(actionsToExecute)
+                    }
+                    .also {
+                        world.removeUnits(world.findDead())
                     }
         }
     }
