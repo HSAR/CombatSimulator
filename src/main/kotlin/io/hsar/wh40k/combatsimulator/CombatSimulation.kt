@@ -24,8 +24,9 @@ class CombatSimulation(val world: World) {
                     .decideTurnActions(world, unit, unit.availableActionOptions)
                     .let { actionsToExecute ->
                        unit.executeActions(actionsToExecute)
-                        val deadUnits = world.findDead()  // TODO can notify user via IO here
-                        world.removeDead()
+                    }
+                    .also {
+                        world.removeUnits(world.findDead())
                     }
         }
     }

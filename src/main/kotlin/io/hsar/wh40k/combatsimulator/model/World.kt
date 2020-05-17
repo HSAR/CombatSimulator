@@ -63,10 +63,9 @@ data class World(
         }
     }
 
-    fun removeDead() {
-        val deadUnits = findDead()
-        friendlyForces.removeAll(deadUnits)
-        enemyForces.removeAll(deadUnits)
+    fun removeUnits(unitsToRemove: List<UnitInstance>) {
+        friendlyForces.removeAll(unitsToRemove)
+        enemyForces.removeAll(unitsToRemove)
     }
 }
 

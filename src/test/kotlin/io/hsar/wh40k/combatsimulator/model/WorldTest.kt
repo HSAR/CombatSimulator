@@ -56,7 +56,7 @@ class WorldTest {
     fun `removeDead exclusively removes dead units`() {
         val world = TestUtils.getGenericTwoUnitWorld(MapPosition(1, 6), MapPosition(5, 4))
         world.friendlyForces[0].currentAttributes[Attribute.CURRENT_HEALTH] = NumericValue(-1)
-        world.removeDead()
+        world.removeUnits(world.findDead())
         assertThat(world.enemyForces.size, equalTo(1))
         assertThat(world.friendlyForces.size, equalTo(0))
     }

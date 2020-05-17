@@ -39,17 +39,17 @@ class UnitInstance(
                             when (actionToExecute.action) {
                                 is DamageCausingAction -> {
                                     attackExecutor.rollHits(
-                                            this,
-                                            actionToExecute.target,
-                                            actionToExecute.action as DamageCausingAction
+                                            attacker = this,
+                                            target = actionToExecute.target,
+                                            action = actionToExecute.action as DamageCausingAction
                                             // forced to hard cast to avoid compiler error
                                     ).let { numberOfHits ->
                                         repeat(numberOfHits) {
                                             actionToExecute.target.receiveDamage(
                                                     attackExecutor.calcDamage(
-                                                            this,
-                                                            actionToExecute.target,
-                                                            actionToExecute.action as DamageCausingAction))
+                                                            attacker = this,
+                                                            target = actionToExecute.target,
+                                                            action = actionToExecute.action as DamageCausingAction))
                                         }
                                     }
                                 }
@@ -64,7 +64,7 @@ class UnitInstance(
                                             this.currentAttributes[Attribute.EFFECTS] = EffectValue(listOf(existingEffects.value,
                                                     (actionToExecute.action as EffectCausingAction).appliesEffects).flatten())
                                         }
-                                        else -> throw RuntimeException("Effects value should be of type EffectValue)")
+                                        else -> throw IllegalStateException("Effects value should be of type EffectValue)")
                                     }
 
                                 }
@@ -82,7 +82,7 @@ class UnitInstance(
     private fun receiveDamage(damage: Int) {
         when(val health = currentAttributes.getValue(CURRENT_HEALTH)) {
             is NumericValue -> currentAttributes[CURRENT_HEALTH] = NumericValue(health.value - damage)
-            else -> throw RuntimeException("Current health ought to be a NumericValue")
+            else -> throw IllegalStateException("Current health ought to be a NumericValue")
         }
     }
 
@@ -93,13 +93,4 @@ class UnitInstance(
         ))
         val DEFAULT_ATTRIBUTES = mapOf(ACTIONS to DEFAULT_ACTIONS, Attribute.EFFECTS to EffectValue(listOf<Effect>()))
     }
-}
-
-enum class  BodyPart {
-    HEAD,
-    BODY,
-    RIGHT_ARM,
-    LEFT_ARM,
-    RIGHT_LEG,
-    LEFT_LEG
 }

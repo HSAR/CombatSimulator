@@ -1,52 +1,35 @@
 package io.hsar.wh40k.combatsimulator.model
 
-import io.hsar.wh40k.combatsimulator.logic.ChargeAttack
 import io.hsar.wh40k.combatsimulator.logic.DamageCausingAction
-import io.hsar.wh40k.combatsimulator.logic.FullAutoBurstRangedAttack
-import io.hsar.wh40k.combatsimulator.logic.MeleeAttack
 import io.hsar.wh40k.combatsimulator.logic.RangedAttackAction
-import io.hsar.wh40k.combatsimulator.logic.SemiAutoBurstRangedAttack
-import io.hsar.wh40k.combatsimulator.logic.SingleRangedAttack
-import io.hsar.wh40k.combatsimulator.model.unit.Attribute
-import io.hsar.wh40k.combatsimulator.model.unit.BaseStat
-import io.hsar.wh40k.combatsimulator.model.unit.Effect
-import io.hsar.wh40k.combatsimulator.model.unit.EffectValue
-import io.hsar.wh40k.combatsimulator.model.unit.NumericValue
+import io.hsar.wh40k.combatsimulator.model.unit.*
 import io.hsar.wh40k.combatsimulator.random.AverageDice
 import io.hsar.wh40k.combatsimulator.random.RandomDice
-import io.hsar.wh40k.combatsimulator.random.Result
+import java.lang.IllegalStateException
+
 
 class AttackExecutor {
 
     fun rollHits(attacker: UnitInstance, target: UnitInstance, action: DamageCausingAction): Int {
         val effects = attacker.currentAttributes[Attribute.EFFECTS] ?: EffectValue(listOf<Effect>())
-        var aimBonus = 0
-        when (effects) {
+        return when(effects) {
             is EffectValue -> {
-                if (Effect.AIMED_FULL in effects.value) {
-                    aimBonus = 20
-                } else if (Effect.AIMED_HALF in effects.value) {
-                    aimBonus = 10
+                when {
+                    Effect.AIMED_FULL in effects.value -> 20
+                    Effect.AIMED_HALF in effects.value -> 10
+                    else -> 0
                 }
             }
-            else -> throw RuntimeException("Effects must be of type EffectValue")
+            else -> throw IllegalStateException("Effects must be of type EffectValue")
         }
-        return when(action) {
-            is RangedAttackAction -> attacker.rollBaseStat(BaseStat.BALLISTIC_SKILL,aimBonus)
-            else -> attacker.rollBaseStat(BaseStat.WEAPON_SKILL,aimBonus)
-        }
-                .let { rollResult->
-                    when(rollResult.result) {
-                        Result.FAILURE -> 0
-                        Result.SUCCESS -> when(action) {
-                            is SemiAutoBurstRangedAttack -> rollResult.degreesOfResult / 2 + 1
-                            is FullAutoBurstRangedAttack -> rollResult.degreesOfResult + 1
-                            is SingleRangedAttack -> 1
-                            is MeleeAttack -> 1
-                            is ChargeAttack -> 1
-                            else -> throw RuntimeException("Invalid attack type used")
-                        }
+                .let { aimBonus ->
+                    when(action) {
+                        is RangedAttackAction -> attacker.rollBaseStat(BaseStat.BALLISTIC_SKILL,aimBonus)
+                        else -> attacker.rollBaseStat(BaseStat.WEAPON_SKILL,aimBonus)
                     }
+                            .let { rollResult->
+                                action.determineHitCount(rollResult)
+                            }
                 }
 
     }
@@ -56,7 +39,7 @@ class AttackExecutor {
         // for each attack, roll damage, roll body part and then allow for mitigation
 
         //now, check enemy damage mitigation for that body part
-        val mitigation = when(RandomDice.randomBodyPart()) {
+        val mitigation = when(randomBodyPart()) {
             BodyPart.HEAD -> target.startingAttributes[Attribute.DAMAGE_REDUCTION_HEAD] ?: NumericValue(0)
             BodyPart.RIGHT_ARM -> target.startingAttributes[Attribute.DAMAGE_REDUCTION_ARM_R] ?: NumericValue(0)
             BodyPart.LEFT_ARM -> target.startingAttributes[Attribute.DAMAGE_REDUCTION_ARM_L] ?: NumericValue(0)
@@ -70,6 +53,21 @@ class AttackExecutor {
             else -> throw TypeCastException("Invalid damage mitigation attribute used")
         }
 
+    }
+
+    fun randomBodyPart(): BodyPart {
+        RandomDice.roll("1d100")
+                .let { diceRoll ->
+                    return when(diceRoll) {
+                        in 0..10 -> BodyPart.HEAD
+                        in 11..20 -> BodyPart.RIGHT_ARM
+                        in 21..30 -> BodyPart.LEFT_ARM
+                        in 31..70 -> BodyPart.BODY
+                        in 71..85 -> BodyPart.RIGHT_LEG
+                        in 86..100 -> BodyPart.LEFT_LEG
+                        else -> throw RuntimeException("d100 roll outside of 1-100")
+                    }
+                }
     }
 
 }

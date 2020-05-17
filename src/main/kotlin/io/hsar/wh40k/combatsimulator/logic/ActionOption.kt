@@ -10,6 +10,8 @@ import io.hsar.wh40k.combatsimulator.model.unit.Effect
 import io.hsar.wh40k.combatsimulator.model.unit.Effect.AIMED_FULL
 import io.hsar.wh40k.combatsimulator.model.unit.Effect.AIMED_HALF
 import io.hsar.wh40k.combatsimulator.model.unit.Effect.CHARGING
+import io.hsar.wh40k.combatsimulator.random.Result
+import io.hsar.wh40k.combatsimulator.random.RollResult
 
 @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
@@ -28,6 +30,12 @@ data class MeleeAttack(
 
     override val actionCost = HALF_ACTION
     override val numberOfAttacks = 1
+    override fun determineHitCount(rollResult: RollResult): Int {
+        return when(rollResult.result) {
+            Result.SUCCESS -> 1
+            Result.FAILURE -> 0
+        }
+    }
 }
 
 data class SingleRangedAttack(
@@ -37,6 +45,12 @@ data class SingleRangedAttack(
 ) : DamageCausingAction, RangedAttackAction, EffectCausingAction, ActionOption() {
     override val actionCost = HALF_ACTION
     override val numberOfAttacks = 1
+    override fun determineHitCount(rollResult: RollResult): Int {
+        return when(rollResult.result) {
+            Result.SUCCESS -> 1
+            Result.FAILURE -> 0
+        }
+    }
 }
 
 data class SemiAutoBurstRangedAttack(
@@ -46,6 +60,12 @@ data class SemiAutoBurstRangedAttack(
         override val appliesEffects: List<Effect> = emptyList()
 ) : DamageCausingAction, RangedAttackAction, EffectCausingAction, ActionOption() {
     override val actionCost = HALF_ACTION
+    override fun determineHitCount(rollResult: RollResult): Int {
+        return when(rollResult.result) {
+            Result.SUCCESS -> 1 + rollResult.degreesOfResult / 2
+            Result.FAILURE -> 0
+        }
+    }
 }
 
 data class FullAutoBurstRangedAttack(
@@ -55,6 +75,12 @@ data class FullAutoBurstRangedAttack(
         override val appliesEffects: List<Effect> = emptyList()
 ) : DamageCausingAction, RangedAttackAction, EffectCausingAction, ActionOption() {
     override val actionCost = HALF_ACTION
+    override fun determineHitCount(rollResult: RollResult): Int {
+        return when(rollResult.result) {
+            Result.SUCCESS -> 1 + rollResult.degreesOfResult
+            Result.FAILURE -> 0
+        }
+    }
 }
 
 data class WeaponReload(override val actionCost: ActionCost, val setsAmmunitionTo: Int) : ActionOption()
@@ -90,6 +116,13 @@ data class ChargeAttack(override val damage: String) : DamageCausingAction, Effe
     override val appliesEffects = listOf(CHARGING)
     override val numberOfAttacks = 1
 
+    override fun determineHitCount(rollResult: RollResult): Int {
+        return when(rollResult.result) {
+            Result.SUCCESS -> 1
+            Result.FAILURE -> 0
+        }
+    }
+
     override fun getMovementRange(agilityBonus: Int): Int {
         return (3 * agilityBonus)
     }
@@ -102,6 +135,7 @@ data class ChargeAttack(override val damage: String) : DamageCausingAction, Effe
 interface DamageCausingAction {
     val damage: String
     val numberOfAttacks: Int
+    fun determineHitCount(rollResult: RollResult) : Int
 }
 
 interface EffectCausingAction {
