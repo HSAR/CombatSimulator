@@ -23,7 +23,7 @@ class UnitInstance(
         val attackExecutor: AttackExecutor = AttackExecutor(), // open for test
         val startingAttributes: Map<Attribute, AttributeValue> =  // #TODO: Figure out whether this is good long-term solution
                 DEFAULT_ATTRIBUTES + equipment.map { it.modifiesAttributes }.sum()
-                        + Pair(Attribute.CURRENT_HEALTH, NumericValue(unit.stats.baseStats.getValue(BaseStat.MAX_HEALTH))),
+                        + (Attribute.CURRENT_HEALTH to NumericValue(unit.stats.baseStats.getValue(BaseStat.MAX_HEALTH))),
         val tacticalActionStrategy: TacticalActionStrategy = TacticalActionStrategy,
         val currentAttributes: MutableMap<Attribute, AttributeValue> = startingAttributes.toMutableMap()
 ) {

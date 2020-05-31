@@ -32,11 +32,12 @@ class CombatSimulation(val world: World) {
                             unit.executeActions(actionsToExecute)
                         }
                         .also {
-                            val deadUnits = world.findDead()
-                            deadUnits.forEach { deadUnit->
-                                println("${deadUnit.name} died")
+                            world.findDead().let{ deadUnits ->
+                                deadUnits.forEach { deadUnit->
+                                    println("${deadUnit.name} died")
+                                }
+                                world.removeUnits(deadUnits)
                             }
-                            world.removeUnits(deadUnits)
                         }
             }
 
@@ -47,12 +48,7 @@ class CombatSimulation(val world: World) {
         var roundNum = 1
         while(world.enemyForces.size > 0 && world.friendlyForces.size > 0) {
             printRoundStartStatus(roundNum)
-            try {
-                runRound()
-            } catch(e: Exception) {
-                println("Error: ${e.message}")
-            }
-
+            runRound()
             roundNum++
         }
         if(world.enemyForces.size == 0) {
@@ -64,7 +60,7 @@ class CombatSimulation(val world: World) {
 
     private fun printRoundStartStatus(roundNum: Int) {
         println("Start of combat round $roundNum")
-        println("Friendly units alive: ${world.friendlyForces.map{it.name}}")
+        println("Friendly units alive: ${world.friendlyForces}")
         println("Enemy units alive: ${world.enemyForces.map{it.name}}")
     }
 
