@@ -13,7 +13,8 @@ object TestUtils {
     fun getGenericUnitInstance(attackExecutor: AttackExecutor = AttackExecutor()): UnitInstance {
         val stats = mapOf<BaseStat, Int>(
                 BaseStat.AGILITY to 32,
-                BaseStat.BALLISTIC_SKILL to 40)
+                BaseStat.BALLISTIC_SKILL to 40,
+                BaseStat.MAX_HEALTH to 10)
         val derivedStats = mapOf<DerivedStats, Int>()
         val unit = Unit(
                 unitRef = "bob",
