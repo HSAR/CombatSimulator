@@ -14,7 +14,7 @@ class WorldCreatorTest {
     fun`Set up end to end test`() {
         // This unit test is mainly a vehicle for end to end testing
 
-        val enemyTestFile = getResourcePath("data/test-forces-file.json")
+        val enemyTestFile = getResourcePath("data/test-enemy-forces-file.json")
         val enemyForcesDTO: ForcesDTO = WorldCreatorTest.objectMapper.readValue(enemyTestFile)
 
         val friendlyTestFile = getResourcePath("data/test-friendly-forces-file.json")

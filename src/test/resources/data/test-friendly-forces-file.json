@@ -1,7 +1,7 @@
 {
   "units": [
     {
-      "unitRef": "HeroRanged",
+      "unitRef": "heroRanged",
       "description": "A heroic ranged fighter",
       "stats": {
         "baseStats": {
@@ -26,7 +26,7 @@
       ]
     },
     {
-      "unitRef": "HeroMelee",
+      "unitRef": "heroMelee",
       "description": "A melee fighter of heroic stature.",
       "stats": {
         "baseStats": {
@@ -52,13 +52,13 @@
     }
   ],
   "unitsToSpawn": {
-    "HeroRanged": [
-      "HeroRanged1",
-      "HeroRanged2"
+    "heroRanged": [
+      "heroRanged1",
+      "heroRanged2"
     ],
-    "HeroMelee": [
-      "HeroMelee1",
-      "HeroMelee2"
+    "heroMelee": [
+      "heroMelee1",
+      "heroMelee2"
     ]
   }
 }

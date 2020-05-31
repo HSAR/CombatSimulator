@@ -26,7 +26,7 @@ class InputParseTest {
     @Test
     fun `correctly parses a test forces file`() {
         // Arrange
-        val testFile = getResourcePath("data/test-forces-file.json")
+        val testFile = getResourcePath("data/test-enemy-forces-file.json")
 
         val expected = ForcesDTO(
                 units = listOf(
