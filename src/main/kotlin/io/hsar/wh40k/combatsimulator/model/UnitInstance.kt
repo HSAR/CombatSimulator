@@ -1,5 +1,6 @@
 package io.hsar.wh40k.combatsimulator.model
 
+import io.hsar.wh40k.combatsimulator.cli.Loggable
 import io.hsar.wh40k.combatsimulator.logic.*
 import io.hsar.wh40k.combatsimulator.model.unit.*
 import io.hsar.wh40k.combatsimulator.model.unit.Attribute.ACTIONS
@@ -8,6 +9,7 @@ import io.hsar.wh40k.combatsimulator.model.unit.Unit
 import io.hsar.wh40k.combatsimulator.random.RandomDice
 import io.hsar.wh40k.combatsimulator.random.RollResult
 import io.hsar.wh40k.combatsimulator.utils.sum
+
 
 /**
  * A single combatant.
@@ -20,12 +22,11 @@ class UnitInstance(
         val equipment: List<EquipmentItem>,
         val attackExecutor: AttackExecutor = AttackExecutor(), // open for test
         val startingAttributes: Map<Attribute, AttributeValue> =  // #TODO: Figure out whether this is good long-term solution
-                DEFAULT_ATTRIBUTES + equipment.map { it.modifiesAttributes }.sum(),
+                DEFAULT_ATTRIBUTES + equipment.map { it.modifiesAttributes }.sum()
+                        + (Attribute.CURRENT_HEALTH to NumericValue(unit.stats.baseStats.getValue(BaseStat.MAX_HEALTH))),
         val tacticalActionStrategy: TacticalActionStrategy = TacticalActionStrategy,
         val currentAttributes: MutableMap<Attribute, AttributeValue> = startingAttributes.toMutableMap()
-
 ) {
-
     val availableActionOptions: List<ActionOption>
         get() = (startingAttributes.getValue(ACTIONS) as? ActionValue
                 ?: throw IllegalStateException("Unit ${name} ACTION attribute should have actions but instead was: ${startingAttributes.getValue(ACTIONS)}"))
@@ -34,6 +35,7 @@ class UnitInstance(
     fun executeActions(actionsToExecute: List<TurnAction>) {
         actionsToExecute
                 .map { actionToExecute ->
+                    println("$name does ${actionToExecute.action}")
                     when (actionToExecute) {
                         is TargetedAction -> {
                             when (actionToExecute.action) {
@@ -44,6 +46,7 @@ class UnitInstance(
                                             action = actionToExecute.action as DamageCausingAction
                                             // forced to hard cast to avoid compiler error
                                     ).let { numberOfHits ->
+                                        println("$numberOfHits hits!")
                                         repeat(numberOfHits) {
                                             actionToExecute.target.receiveDamage(
                                                     attackExecutor.calcDamage(
@@ -80,13 +83,15 @@ class UnitInstance(
     }
 
     private fun receiveDamage(damage: Int) {
+        println("$name took $damage damage")
         when(val health = currentAttributes.getValue(CURRENT_HEALTH)) {
             is NumericValue -> currentAttributes[CURRENT_HEALTH] = NumericValue(health.value - damage)
             else -> throw IllegalStateException("Current health ought to be a NumericValue")
         }
     }
 
-    companion object {
+    companion object : Loggable {
+        val log = logger()
         val DEFAULT_ACTIONS = ActionValue(listOf(
                 HalfAim,
                 FullAim

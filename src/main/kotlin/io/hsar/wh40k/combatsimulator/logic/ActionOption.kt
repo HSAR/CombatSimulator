@@ -83,7 +83,7 @@ data class FullAutoBurstRangedAttack(
     }
 }
 
-data class WeaponReload(override val actionCost: ActionCost, val setsAmmunitionTo: Int) : ActionOption()
+data class WeaponReload(override val actionCost: ActionCost, val setsAmmunitionTo: Int) : ActionOption() {}
 
 object HalfAim : EffectCausingAction, ActionOption() {
     override val actionCost = HALF_ACTION
