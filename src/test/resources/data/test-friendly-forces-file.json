@@ -1,0 +1,64 @@
+{
+  "units": [
+    {
+      "unitRef": "HeroRanged",
+      "description": "A heroic ranged fighter",
+      "stats": {
+        "baseStats": {
+          "MAX_HEALTH": 12,
+          "WEAPON_SKILL": 30,
+          "BALLISTIC_SKILL": 40,
+          "STRENGTH": 20,
+          "TOUGHNESS": 20,
+          "AGILITY": 25,
+          "INTELLIGENCE": 20,
+          "WILLPOWER": 20,
+          "FELLOWSHIP": 20
+        },
+        "derivedStats": {
+          "DODGE": 0,
+          "PARRY": -20
+        }
+      },
+      "equipmentRefs": [
+        "wpn_pistol_stubRevolver",
+        "amr_basic_heavyLeather"
+      ]
+    },
+    {
+      "unitRef": "HeroMelee",
+      "description": "A melee fighter of heroic stature.",
+      "stats": {
+        "baseStats": {
+          "MAX_HEALTH": 15,
+          "WEAPON_SKILL": 40,
+          "BALLISTIC_SKILL": 30,
+          "STRENGTH": 20,
+          "TOUGHNESS": 20,
+          "AGILITY": 36,
+          "INTELLIGENCE": 20,
+          "WILLPOWER": 20,
+          "FELLOWSHIP": 20
+        },
+        "derivedStats": {
+          "DODGE": -20,
+          "PARRY": 0
+        }
+      },
+      "equipmentRefs": [
+        "wpn_melee_staff",
+        "amr_basic_heavyLeather"
+      ]
+    }
+  ],
+  "unitsToSpawn": {
+    "HeroRanged": [
+      "HeroRanged1",
+      "HeroRanged2"
+    ],
+    "HeroMelee": [
+      "HeroMelee1",
+      "HeroMelee2"
+    ]
+  }
+}

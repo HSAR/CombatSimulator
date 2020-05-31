@@ -39,7 +39,7 @@ class SimulateCombat : Command("simulate-combat") {
                     )
                 }
                 // Initiate combat
-                .run()
+                .runRound()
         // #TODO: Repeat and summarise results
     }
 

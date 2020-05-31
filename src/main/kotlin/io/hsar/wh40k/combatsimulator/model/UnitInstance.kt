@@ -10,6 +10,7 @@ import io.hsar.wh40k.combatsimulator.random.RandomDice
 import io.hsar.wh40k.combatsimulator.random.RollResult
 import io.hsar.wh40k.combatsimulator.utils.sum
 
+
 /**
  * A single combatant.
  * This class may contain dynamic information that changes as combat progresses.
@@ -21,10 +22,10 @@ class UnitInstance(
         val equipment: List<EquipmentItem>,
         val attackExecutor: AttackExecutor = AttackExecutor(), // open for test
         val startingAttributes: Map<Attribute, AttributeValue> =  // #TODO: Figure out whether this is good long-term solution
-                DEFAULT_ATTRIBUTES + equipment.map { it.modifiesAttributes }.sum(),
+                DEFAULT_ATTRIBUTES + equipment.map { it.modifiesAttributes }.sum()
+                        + Pair(Attribute.CURRENT_HEALTH, NumericValue(unit.stats.baseStats.getValue(BaseStat.MAX_HEALTH))),
         val tacticalActionStrategy: TacticalActionStrategy = TacticalActionStrategy,
         val currentAttributes: MutableMap<Attribute, AttributeValue> = startingAttributes.toMutableMap()
-
 ) {
     val availableActionOptions: List<ActionOption>
         get() = (startingAttributes.getValue(ACTIONS) as? ActionValue
@@ -34,6 +35,7 @@ class UnitInstance(
     fun executeActions(actionsToExecute: List<TurnAction>) {
         actionsToExecute
                 .map { actionToExecute ->
+                    println("$name ${actionToExecute.action}")
                     when (actionToExecute) {
                         is TargetedAction -> {
                             when (actionToExecute.action) {
@@ -44,6 +46,7 @@ class UnitInstance(
                                             action = actionToExecute.action as DamageCausingAction
                                             // forced to hard cast to avoid compiler error
                                     ).let { numberOfHits ->
+                                        println("$numberOfHits hits!")
                                         repeat(numberOfHits) {
                                             actionToExecute.target.receiveDamage(
                                                     attackExecutor.calcDamage(
@@ -80,7 +83,7 @@ class UnitInstance(
     }
 
     private fun receiveDamage(damage: Int) {
-        log.debug("$name took $damage damage")
+        println("$name took $damage damage")
         when(val health = currentAttributes.getValue(CURRENT_HEALTH)) {
             is NumericValue -> currentAttributes[CURRENT_HEALTH] = NumericValue(health.value - damage)
             else -> throw IllegalStateException("Current health ought to be a NumericValue")

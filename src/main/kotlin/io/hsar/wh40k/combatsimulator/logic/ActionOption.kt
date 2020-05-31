@@ -21,6 +21,7 @@ import io.hsar.wh40k.combatsimulator.random.RollResult
 @JsonIgnoreProperties(value = ["actionType"])
 sealed class ActionOption {
     abstract val actionCost: ActionCost
+    abstract override fun toString(): String
 }
 
 data class MeleeAttack(
@@ -35,6 +36,10 @@ data class MeleeAttack(
             Result.SUCCESS -> 1
             Result.FAILURE -> 0
         }
+    }
+
+    override fun toString(): String {
+        return "makes a melee attack"
     }
 }
 
@@ -51,6 +56,10 @@ data class SingleRangedAttack(
             Result.FAILURE -> 0
         }
     }
+
+    override fun toString(): String {
+        return "makes a single ranged attack"
+    }
 }
 
 data class SemiAutoBurstRangedAttack(
@@ -65,6 +74,10 @@ data class SemiAutoBurstRangedAttack(
             Result.SUCCESS -> 1 + rollResult.degreesOfResult / 2
             Result.FAILURE -> 0
         }
+    }
+
+    override fun toString(): String {
+        return "makes a semi-auto ranged attack"
     }
 }
 
@@ -81,18 +94,32 @@ data class FullAutoBurstRangedAttack(
             Result.FAILURE -> 0
         }
     }
+
+    override fun toString(): String {
+        return "makes a full-auto ranged attack"
+    }
 }
 
-data class WeaponReload(override val actionCost: ActionCost, val setsAmmunitionTo: Int) : ActionOption()
+data class WeaponReload(override val actionCost: ActionCost, val setsAmmunitionTo: Int) : ActionOption() {
+    override fun toString(): String {
+        return "reloads their weapon"
+    }
+}
 
 object HalfAim : EffectCausingAction, ActionOption() {
     override val actionCost = HALF_ACTION
     override val appliesEffects = listOf(AIMED_HALF)
+    override fun toString(): String {
+        return "half-aims their weapon"
+    }
 }
 
 object FullAim : EffectCausingAction, ActionOption() {
     override val actionCost = HALF_ACTION
     override val appliesEffects = listOf(AIMED_FULL)
+    override fun toString(): String {
+        return "full-aims their weapon"
+    }
 }
 
 interface MoveAction {
@@ -104,6 +131,10 @@ object HalfMove : MoveAction, ActionOption() {
     override val actionCost = HALF_ACTION
     override fun getMovementRange(agilityBonus: Int): Int {
         return agilityBonus
+    }
+
+    override fun toString(): String {
+        return "makes a half-move"
     }
 
     override fun isValidMovementPath(startPoint: MapPosition, endPoint: MapPosition): Boolean {
@@ -129,6 +160,10 @@ data class ChargeAttack(override val damage: String) : DamageCausingAction, Effe
 
     override fun isValidMovementPath(startPoint: MapPosition, endPoint: MapPosition): Boolean {
         return startPoint - endPoint >= 4
+    }
+
+    override fun toString(): String {
+        return "makes a charge attack"
     }
 }
 
