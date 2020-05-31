@@ -11,7 +11,7 @@ import kotlin.Exception
 
 class CombatSimulation(val world: World) {
 
-    private val initiativeOrder: MutableList<UnitInstance> = (world.friendlyForces + world.enemyForces)
+    private val initiativeOrder: List<UnitInstance> = (world.friendlyForces + world.enemyForces)
             .map { eachUnit ->
                 eachUnit.unit.stats.baseStats.getValue(AGILITY).getBonus()
                         .let { agilityBonus ->
@@ -20,7 +20,6 @@ class CombatSimulation(val world: World) {
             }
             .sortedByDescending { (initiativeRoll, _) -> initiativeRoll }
             .map { (_, eachUnit) -> eachUnit }
-            .toMutableList()
 
     fun runRound() {
         initiativeOrder.forEach { unit ->
