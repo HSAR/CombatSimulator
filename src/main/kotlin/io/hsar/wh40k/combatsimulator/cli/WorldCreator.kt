@@ -35,7 +35,7 @@ object WorldCreator {
                     forceDTO.unitsToSpawn
                             .map { (unitName, spawnList) ->
                                 val unitToSpawnFrom = unitsByUnitName[unitName]
-                                        ?: throw IllegalArgumentException("Attempting to spawn unit named '$unitName' but only these units are available: ${unitsByUnitName.values}")
+                                        ?: throw IllegalArgumentException("Attempting to spawn unit named '$unitName' but only these units are available: ${unitsByUnitName.values.map { it.unitRef }}")
                                 spawnList.map { spawnInstanceName ->
                                     UnitInstance(
                                             name = spawnInstanceName,
