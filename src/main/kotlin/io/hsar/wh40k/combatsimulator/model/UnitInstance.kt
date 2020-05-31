@@ -1,10 +1,24 @@
 package io.hsar.wh40k.combatsimulator.model
 
 import io.hsar.wh40k.combatsimulator.cli.Loggable
-import io.hsar.wh40k.combatsimulator.logic.*
-import io.hsar.wh40k.combatsimulator.model.unit.*
+import io.hsar.wh40k.combatsimulator.logic.ActionOption
+import io.hsar.wh40k.combatsimulator.logic.DamageCausingAction
+import io.hsar.wh40k.combatsimulator.logic.EffectCausingAction
+import io.hsar.wh40k.combatsimulator.logic.FullAim
+import io.hsar.wh40k.combatsimulator.logic.HalfAim
+import io.hsar.wh40k.combatsimulator.logic.TacticalActionStrategy
+import io.hsar.wh40k.combatsimulator.logic.TargetedAction
+import io.hsar.wh40k.combatsimulator.logic.TurnAction
+import io.hsar.wh40k.combatsimulator.model.unit.ActionValue
+import io.hsar.wh40k.combatsimulator.model.unit.Attribute
 import io.hsar.wh40k.combatsimulator.model.unit.Attribute.ACTIONS
 import io.hsar.wh40k.combatsimulator.model.unit.Attribute.CURRENT_HEALTH
+import io.hsar.wh40k.combatsimulator.model.unit.AttributeValue
+import io.hsar.wh40k.combatsimulator.model.unit.BaseStat
+import io.hsar.wh40k.combatsimulator.model.unit.Effect
+import io.hsar.wh40k.combatsimulator.model.unit.EffectValue
+import io.hsar.wh40k.combatsimulator.model.unit.EquipmentItem
+import io.hsar.wh40k.combatsimulator.model.unit.NumericValue
 import io.hsar.wh40k.combatsimulator.model.unit.Unit
 import io.hsar.wh40k.combatsimulator.random.RandomDice
 import io.hsar.wh40k.combatsimulator.random.RollResult
@@ -23,7 +37,7 @@ class UnitInstance(
         val attackExecutor: AttackExecutor = AttackExecutor(), // open for test
         val startingAttributes: Map<Attribute, AttributeValue> =  // #TODO: Figure out whether this is good long-term solution
                 DEFAULT_ATTRIBUTES + equipment.map { it.modifiesAttributes }.sum()
-                        + (Attribute.CURRENT_HEALTH to NumericValue(unit.stats.baseStats.getValue(BaseStat.MAX_HEALTH))),
+                        + (CURRENT_HEALTH to NumericValue(unit.stats.baseStats.getValue(BaseStat.MAX_HEALTH))),
         val tacticalActionStrategy: TacticalActionStrategy = TacticalActionStrategy,
         val currentAttributes: MutableMap<Attribute, AttributeValue> = startingAttributes.toMutableMap()
 ) {
@@ -35,7 +49,7 @@ class UnitInstance(
     fun executeActions(actionsToExecute: List<TurnAction>) {
         actionsToExecute
                 .map { actionToExecute ->
-                    println("$name does ${actionToExecute.action}")
+                    print("        $name does ${actionToExecute.action}")
                     when (actionToExecute) {
                         is TargetedAction -> {
                             when (actionToExecute.action) {
@@ -46,13 +60,21 @@ class UnitInstance(
                                             action = actionToExecute.action as DamageCausingAction
                                             // forced to hard cast to avoid compiler error
                                     ).let { numberOfHits ->
-                                        println("$numberOfHits hits!")
+                                        when {
+                                            (numberOfHits < 1) -> println(" but misses.")
+                                            (numberOfHits == 1) -> print(", hitting ")
+                                            else -> print(", making $numberOfHits hits")
+                                        }
                                         repeat(numberOfHits) {
-                                            actionToExecute.target.receiveDamage(
-                                                    attackExecutor.calcDamage(
+                                            attackExecutor
+                                                    .calcDamage(
                                                             attacker = this,
                                                             target = actionToExecute.target,
-                                                            action = actionToExecute.action as DamageCausingAction))
+                                                            action = actionToExecute.action as DamageCausingAction)
+                                                    .let { damage ->
+                                                        println("${actionToExecute.target.name} for $damage damage.")
+                                                        actionToExecute.target.receiveDamage(damage)
+                                                    }
                                         }
                                     }
                                 }
@@ -60,8 +82,8 @@ class UnitInstance(
                             }
                         }
                         else -> {  // deal with non-targeted actions, eg aiming
-                            when(actionToExecute.action) {
-                                is EffectCausingAction ->  {
+                            when (actionToExecute.action) {
+                                is EffectCausingAction -> {
                                     when (val existingEffects = this.currentAttributes[Attribute.EFFECTS]) {
                                         is EffectValue -> {
                                             this.currentAttributes[Attribute.EFFECTS] = EffectValue(listOf(existingEffects.value,
@@ -83,8 +105,7 @@ class UnitInstance(
     }
 
     private fun receiveDamage(damage: Int) {
-        println("$name took $damage damage")
-        when(val health = currentAttributes.getValue(CURRENT_HEALTH)) {
+        when (val health = currentAttributes.getValue(CURRENT_HEALTH)) {
             is NumericValue -> currentAttributes[CURRENT_HEALTH] = NumericValue(health.value - damage)
             else -> throw IllegalStateException("Current health ought to be a NumericValue")
         }

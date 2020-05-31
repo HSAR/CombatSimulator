@@ -21,6 +21,9 @@ class SimulateCombat : Command("simulate-combat") {
     @Parameter(names = arrayOf("--opfor", "--enemies"), description = "Path to an input file describing enemy units", required = true)
     private var enemyForcesFilePath = ""
 
+    @Parameter(names = arrayOf("--simulations", "--times"), description = "How many times to run the simulation (default: 10)", required = false)
+    private var numRuns = 10
+
     override fun run() {
         // Read and parse input files
         listOf(friendlyForcesFilePath, enemyForcesFilePath)
@@ -33,18 +36,58 @@ class SimulateCombat : Command("simulate-combat") {
                             }
                 }
                 .let { forcesList ->
-                    // Create World and CombatSimulation instances
-                    CombatSimulation(
-                            world = WorldCreator.createWorld(forcesList)
-                    )
+                    // Run the number of simulations requested
+                    (1..numRuns)
+                            .map { runNumber ->
+                                println("===== SIMULATION STARTING (#${runNumber.toString().padStart(3, '0')}) =====")
+                                // Create World and CombatSimulation instances, then initiate combat
+                                CombatSimulation(
+                                        world = WorldCreator.createWorld(forcesList)
+                                )
+                                        .runSimulation()
+                                        .also { result ->
+                                            println("===== SIMULATION RESULTS (#${runNumber.toString().padStart(3, '0')}) =====")
+                                            println(objectWriter.writeValueAsString(result))
+                                            println("===== SIMULATION COMPLETE (#${runNumber.toString().padStart(3, '0')}) =====")
+                                        }
+                            }
                 }
-                // Initiate combat
-                .runRound()
-        // #TODO: Repeat and summarise results
+                .let { results ->
+                    // Process results for summarised digest
+                    results
+                            .groupBy { result -> result.winner }
+                            .toList()
+                            .sortedByDescending { (_, roundsWonList) -> roundsWonList.count() }
+                            .let { results ->
+                                println("===== ALL SIMULATIONS COMPLETE ($numRuns) =====")
+                                println("===== SUMMARY STARTS =====")
+                                results
+                                        .forEach { (winner, roundsWonList) ->
+                                            val totalRoundsWon = roundsWonList.count()
+                                            println("    Winner in ${(totalRoundsWon / numRuns.toDouble()).toPercentage()}% of cases: $winner")
+
+                                            val remainingUnitsAverage = roundsWonList
+                                                    .map { roundWon -> roundWon.remainingUnits.count() }
+                                                    .average()
+                                            println("        Average remaining units: $remainingUnitsAverage")
+
+                                            val roundsTaken = roundsWonList
+                                                    .map { roundWon -> roundWon.rounds }
+                                                    .average()
+                                            println("        Average rounds taken to win: $remainingUnitsAverage")
+                                        }
+                                println("===== SUMMARY ENDS =====")
+                            }
+                }
     }
+
+    private fun List<Int>.average() = this.sum() / this.count().toDouble()
+
+    private fun Double.toPercentage() = this * 100
 
     companion object {
         private val objectMapper = jacksonObjectMapper()
+        private val objectWriter = objectMapper.writerWithDefaultPrettyPrinter()
     }
 }
 

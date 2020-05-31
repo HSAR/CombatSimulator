@@ -1,5 +1,7 @@
 package io.hsar.wh40k.combatsimulator
 
+import io.hsar.wh40k.combatsimulator.Winner.ENEMY
+import io.hsar.wh40k.combatsimulator.Winner.FRIENDLY
 import io.hsar.wh40k.combatsimulator.model.UnitInstance
 import io.hsar.wh40k.combatsimulator.model.World
 import io.hsar.wh40k.combatsimulator.model.unit.Attribute
@@ -7,7 +9,6 @@ import io.hsar.wh40k.combatsimulator.model.unit.BaseStat.AGILITY
 import io.hsar.wh40k.combatsimulator.model.unit.NumericValue
 import io.hsar.wh40k.combatsimulator.model.unit.StatUtils.getBonus
 import io.hsar.wh40k.combatsimulator.random.RandomDice.rollInitiative
-import kotlin.Exception
 
 class CombatSimulation(val world: World) {
 
@@ -23,7 +24,7 @@ class CombatSimulation(val world: World) {
 
     fun runRound() {
         initiativeOrder.forEach { unit ->
-            if((unit.currentAttributes.getValue(Attribute.CURRENT_HEALTH) as NumericValue).value > 0) {
+            if ((unit.currentAttributes.getValue(Attribute.CURRENT_HEALTH) as NumericValue).value > 0) {
                 // check if unit alive rather than try removing dead units from list as concurrency risks
                 // caller needs to exception handle this in case CURRENT_HEALTH not provided in json
                 unit.tacticalActionStrategy
@@ -32,11 +33,11 @@ class CombatSimulation(val world: World) {
                             unit.executeActions(actionsToExecute)
                         }
                         .also {
-                            world.findDead().let{ deadUnits ->
-                                deadUnits.forEach { deadUnit->
-                                    println("${deadUnit.name} died")
+                            world.findDead().let { deadUnits ->
+                                if (deadUnits.any()) {
+                                    println("    Deaths: ${deadUnits.map { it.name }}")
+                                    world.removeUnits(deadUnits)
                                 }
-                                world.removeUnits(deadUnits)
                             }
                         }
             }
@@ -44,24 +45,33 @@ class CombatSimulation(val world: World) {
         }
     }
 
-    fun runSimulation() {
-        var roundNum = 1
-        while(world.enemyForces.size > 0 && world.friendlyForces.size > 0) {
-            printRoundStartStatus(roundNum)
-            runRound()
-            roundNum++
-        }
-        if(world.enemyForces.size == 0) {
-            println("Party wins")
-        } else {
-            println("Enemies win")
-        }
+    fun runSimulation(): SimulationResult {
+        (1..Int.MAX_VALUE)
+                .forEach { roundNum ->
+                    printRoundStartStatus(roundNum)
+                    runRound()
+                    if (world.enemyForces.size == 0 || world.friendlyForces.size == 0) {
+                        val (winner, remainingForces) = when {
+                            world.enemyForces.size == 0 -> FRIENDLY to world.friendlyForces
+                            world.friendlyForces.size == 0 -> ENEMY to world.enemyForces
+                            else -> throw IllegalStateException("Unknown winner")
+                        }
+
+                        return SimulationResult(
+                                winner = winner,
+                                rounds = roundNum,
+                                remainingUnits = remainingForces.map { eachUnit -> UnitSummary(eachUnit) }
+                        )
+                    }
+                }
+
+        throw IllegalStateException("Combat didn't end after ${Int.MAX_VALUE} rounds. Some kind of stalemate has likely occurred.")
     }
 
     private fun printRoundStartStatus(roundNum: Int) {
         println("Start of combat round $roundNum")
-        println("Friendly units alive: ${world.friendlyForces}")
-        println("Enemy units alive: ${world.enemyForces.map{it.name}}")
+        println("    FRIENDLY units alive: ${world.friendlyForces.map { it.name }}")
+        println("    ENEMY units alive: ${world.enemyForces.map { it.name }}")
     }
 
 }
