@@ -35,7 +35,7 @@ class UnitInstance(
     fun executeActions(actionsToExecute: List<TurnAction>) {
         actionsToExecute
                 .map { actionToExecute ->
-                    println("$name ${actionToExecute.action}")
+                    println("$name does ${actionToExecute.action}")
                     when (actionToExecute) {
                         is TargetedAction -> {
                             when (actionToExecute.action) {
