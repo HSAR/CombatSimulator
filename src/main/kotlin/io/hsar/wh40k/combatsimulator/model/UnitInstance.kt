@@ -1,5 +1,6 @@
 package io.hsar.wh40k.combatsimulator.model
 
+import io.hsar.wh40k.combatsimulator.cli.Loggable
 import io.hsar.wh40k.combatsimulator.logic.*
 import io.hsar.wh40k.combatsimulator.model.unit.*
 import io.hsar.wh40k.combatsimulator.model.unit.Attribute.ACTIONS
@@ -25,7 +26,6 @@ class UnitInstance(
         val currentAttributes: MutableMap<Attribute, AttributeValue> = startingAttributes.toMutableMap()
 
 ) {
-
     val availableActionOptions: List<ActionOption>
         get() = (startingAttributes.getValue(ACTIONS) as? ActionValue
                 ?: throw IllegalStateException("Unit ${name} ACTION attribute should have actions but instead was: ${startingAttributes.getValue(ACTIONS)}"))
@@ -80,13 +80,15 @@ class UnitInstance(
     }
 
     private fun receiveDamage(damage: Int) {
+        log.debug("$name took $damage damage")
         when(val health = currentAttributes.getValue(CURRENT_HEALTH)) {
             is NumericValue -> currentAttributes[CURRENT_HEALTH] = NumericValue(health.value - damage)
             else -> throw IllegalStateException("Current health ought to be a NumericValue")
         }
     }
 
-    companion object {
+    companion object : Loggable {
+        val log = logger()
         val DEFAULT_ACTIONS = ActionValue(listOf(
                 HalfAim,
                 FullAim
