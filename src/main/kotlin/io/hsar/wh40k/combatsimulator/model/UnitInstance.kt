@@ -124,12 +124,12 @@ class UnitInstance(
         fun createInitialAttributeMap(unit: Unit, equipment: List<EquipmentItem>): Map<Attribute, AttributeValue> {
             val equipmentAttributes = equipment.map { it.modifiesAttributes }.sum()
 
-            val ammoMap = equipment.first { it.itemType == WEAPON } // #TODO: Handle this better than just "the first weapon to hand"
-                    .modifiesAttributes
-                    .let { weaponAttributes ->
+            val ammoMap = equipment.firstOrNull() { it.itemType == WEAPON } // #TODO: Handle this better than just "the first weapon to hand"
+                    ?.modifiesAttributes
+                    ?.let { weaponAttributes ->
                         if (weaponAttributes.getValue(WEAPON_TYPE) == WeaponTypeValue(MELEE)) {
                             // Melee weapons have no need for ammunition
-                            emptyMap()
+                            null
                         } else {
                             // Ranged weapons take their clip size from the ammo given from a reload
                             mapOf(Attribute.WEAPON_AMMUNITION to NumericValue((weaponAttributes.getValue(ACTIONS) as ActionValue)
@@ -138,7 +138,7 @@ class UnitInstance(
                                     .first().setsAmmunitionTo)
                             )
                         }
-                    }
+                    } ?: emptyMap()
 
             val dynamicAttributes = mapOf(
                     CURRENT_HEALTH to NumericValue(unit.stats.baseStats.getValue(BaseStat.MAX_HEALTH))
