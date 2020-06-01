@@ -2,7 +2,6 @@ package io.hsar.wh40k.combatsimulator.model.unit
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import io.hsar.wh40k.combatsimulator.content.AttributeValueDeserialiser
-import io.hsar.wh40k.combatsimulator.logic.TurnAction
 import io.hsar.wh40k.combatsimulator.logic.ActionOption
 
 /**

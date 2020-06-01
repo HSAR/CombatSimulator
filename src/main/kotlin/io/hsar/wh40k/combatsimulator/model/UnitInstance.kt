@@ -9,17 +9,22 @@ import io.hsar.wh40k.combatsimulator.logic.HalfAim
 import io.hsar.wh40k.combatsimulator.logic.TacticalActionStrategy
 import io.hsar.wh40k.combatsimulator.logic.TargetedAction
 import io.hsar.wh40k.combatsimulator.logic.TurnAction
+import io.hsar.wh40k.combatsimulator.logic.WeaponReload
 import io.hsar.wh40k.combatsimulator.model.unit.ActionValue
 import io.hsar.wh40k.combatsimulator.model.unit.Attribute
 import io.hsar.wh40k.combatsimulator.model.unit.Attribute.ACTIONS
 import io.hsar.wh40k.combatsimulator.model.unit.Attribute.CURRENT_HEALTH
+import io.hsar.wh40k.combatsimulator.model.unit.Attribute.EFFECTS
+import io.hsar.wh40k.combatsimulator.model.unit.Attribute.WEAPON_TYPE
 import io.hsar.wh40k.combatsimulator.model.unit.AttributeValue
 import io.hsar.wh40k.combatsimulator.model.unit.BaseStat
-import io.hsar.wh40k.combatsimulator.model.unit.Effect
 import io.hsar.wh40k.combatsimulator.model.unit.EffectValue
 import io.hsar.wh40k.combatsimulator.model.unit.EquipmentItem
+import io.hsar.wh40k.combatsimulator.model.unit.ItemType.WEAPON
 import io.hsar.wh40k.combatsimulator.model.unit.NumericValue
 import io.hsar.wh40k.combatsimulator.model.unit.Unit
+import io.hsar.wh40k.combatsimulator.model.unit.WeaponType.MELEE
+import io.hsar.wh40k.combatsimulator.model.unit.WeaponTypeValue
 import io.hsar.wh40k.combatsimulator.random.RandomDice
 import io.hsar.wh40k.combatsimulator.random.RollResult
 import io.hsar.wh40k.combatsimulator.utils.sum
@@ -35,9 +40,7 @@ class UnitInstance(
         val unit: Unit,
         val equipment: List<EquipmentItem>,
         val attackExecutor: AttackExecutor = AttackExecutor(), // open for test
-        val startingAttributes: Map<Attribute, AttributeValue> =  // #TODO: Figure out whether this is good long-term solution
-                DEFAULT_ATTRIBUTES + equipment.map { it.modifiesAttributes }.sum()
-                        + (CURRENT_HEALTH to NumericValue(unit.stats.baseStats.getValue(BaseStat.MAX_HEALTH))),
+        val startingAttributes: Map<Attribute, AttributeValue> = createInitialAttributeMap(unit, equipment),
         val tacticalActionStrategy: TacticalActionStrategy = TacticalActionStrategy,
         val currentAttributes: MutableMap<Attribute, AttributeValue> = startingAttributes.toMutableMap()
 ) {
@@ -84,9 +87,9 @@ class UnitInstance(
                         else -> {  // deal with non-targeted actions, eg aiming
                             when (actionToExecute.action) {
                                 is EffectCausingAction -> {
-                                    when (val existingEffects = this.currentAttributes[Attribute.EFFECTS]) {
+                                    when (val existingEffects = this.currentAttributes[EFFECTS]) {
                                         is EffectValue -> {
-                                            this.currentAttributes[Attribute.EFFECTS] = EffectValue(listOf(existingEffects.value,
+                                            this.currentAttributes[EFFECTS] = EffectValue(listOf(existingEffects.value,
                                                     (actionToExecute.action as EffectCausingAction).appliesEffects).flatten())
                                         }
                                         else -> throw IllegalStateException("Effects value should be of type EffectValue)")
@@ -112,11 +115,36 @@ class UnitInstance(
     }
 
     companion object : Loggable {
-        val log = logger()
         val DEFAULT_ACTIONS = ActionValue(listOf(
                 HalfAim,
                 FullAim
         ))
-        val DEFAULT_ATTRIBUTES = mapOf(ACTIONS to DEFAULT_ACTIONS, Attribute.EFFECTS to EffectValue(listOf<Effect>()))
+        val DEFAULT_ATTRIBUTES = mapOf(ACTIONS to DEFAULT_ACTIONS, EFFECTS to EffectValue(emptyList()))
+
+        fun createInitialAttributeMap(unit: Unit, equipment: List<EquipmentItem>): Map<Attribute, AttributeValue> {
+            val equipmentAttributes = equipment.map { it.modifiesAttributes }.sum()
+
+            val ammoMap = equipment.first { it.itemType == WEAPON } // #TODO: Handle this better than just "the first weapon to hand"
+                    .modifiesAttributes
+                    .let { weaponAttributes ->
+                        if (weaponAttributes.getValue(WEAPON_TYPE) == WeaponTypeValue(MELEE)) {
+                            // Melee weapons have no need for ammunition
+                            emptyMap()
+                        } else {
+                            // Ranged weapons take their clip size from the ammo given from a reload
+                            mapOf(Attribute.WEAPON_AMMUNITION to NumericValue((weaponAttributes.getValue(ACTIONS) as ActionValue)
+                                    .value
+                                    .filterIsInstance<WeaponReload>()
+                                    .first().setsAmmunitionTo)
+                            )
+                        }
+                    }
+
+            val dynamicAttributes = mapOf(
+                    CURRENT_HEALTH to NumericValue(unit.stats.baseStats.getValue(BaseStat.MAX_HEALTH))
+            ) + ammoMap
+
+            return DEFAULT_ATTRIBUTES + equipmentAttributes + dynamicAttributes
+        }
     }
 }

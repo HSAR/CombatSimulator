@@ -10,18 +10,17 @@
 * Item database, flesh out `data/items.json` to include a small variety of weapons and simplify input files.
     * Damage should have penetration values
     * Las weapons should have overload and overcharge settings costing extra ammo
+    * One-handed vs two-handed weapons?
 * Effects should have degrees (i.e. Primitive(7))
+* Handle when units have more than one weapon
 
 
 ### Simulation Computation
 
-* Turn simulation: units actually take actions
 * Ranged attacks
     * Consider range
-    * Roll hits
-    * Consider enemy unit damage reduction on appropriate body parts
     * Apply damage to enemy unit
-    * Reduce ammo on firing unit
+    * Reduce ammo on firing unit, remove actions that cannot be taken if ammunition is too low
     * Considers cover(?)
 * Repeated simulations: re-seed things and try again X times to produce a % nuance to results
 * Psyker stuff(?)
