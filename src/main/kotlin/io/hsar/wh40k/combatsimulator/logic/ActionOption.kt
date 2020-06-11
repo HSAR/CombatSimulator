@@ -91,11 +91,15 @@ data class WeaponReload(override val actionCost: ActionCost, val setsAmmunitionT
 object HalfAim : EffectCausingAction, ActionOption() {
     override val actionCost = HALF_ACTION
     override val appliesEffects = listOf(AIMED_HALF)
+
+    override fun toString(): String = "a half-aim"
 }
 
 object FullAim : EffectCausingAction, ActionOption() {
     override val actionCost = HALF_ACTION
     override val appliesEffects = listOf(AIMED_FULL)
+
+    override fun toString(): String = "a full-aim"
 }
 
 interface MoveAction {
