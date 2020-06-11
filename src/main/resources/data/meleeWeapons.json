@@ -18,5 +18,23 @@
                 "BALANCED"
             ]
         }
+    },
+    {
+        "itemRef": "wpn_melee_shield",
+        "itemName": "Staff",
+        "itemType": "WEAPON",
+        "modifiesAttributes": {
+            "COMMENT": "Should have the DEFENSIVE effect but this isn't supported yet",
+            "WEAPON_TYPE": "MELEE",
+            "ACTIONS": [
+                {
+                    "actionType": "MeleeAttack",
+                    "damage": "1d5"
+                }
+            ],
+            "DAMAGE_REDUCTION_ARM_L": 2,
+            "DAMAGE_REDUCTION_ARM_R": 2,
+            "DAMAGE_REDUCTION_TORSO": 2
+        }
     }
 ]

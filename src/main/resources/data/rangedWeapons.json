@@ -64,7 +64,7 @@
         "itemName": "Laspistol",
         "itemType": "WEAPON",
         "modifiesAttributes": {
-            "COMMENT": "Note that the overloaded shot should do +2 DAM +2 PEN not +4 DAM, but this cannot yet be represented properly.",
+            "COMMENT": "Overloaded shots should do +2 DAM +2 PEN not +4 DAM but this isn't supported yet",
             "WEAPON_TYPE": "PISTOL",
             "ACTIONS": [
                 {
