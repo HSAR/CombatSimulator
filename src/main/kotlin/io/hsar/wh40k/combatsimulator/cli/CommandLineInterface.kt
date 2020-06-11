@@ -74,7 +74,7 @@ class SimulateCombat : Command("simulate-combat") {
                                             val roundsTaken = roundsWonList
                                                     .map { roundWon -> roundWon.rounds }
                                                     .average()
-                                            println("        Average rounds taken to win: $remainingUnitsAverage")
+                                            println("        Average rounds taken to win: $roundsTaken")
                                         }
                                 println("===== SUMMARY ENDS =====")
                             }
