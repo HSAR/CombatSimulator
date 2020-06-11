@@ -41,6 +41,7 @@ data class MeleeAttack(
 data class SingleRangedAttack(
         override val range: Int,
         override val damage: String,
+        override val ammoCost: Int = 1,
         override val appliesEffects: List<Effect> = emptyList()
 ) : DamageCausingAction, RangedAttackAction, EffectCausingAction, ActionOption() {
     override val actionCost = HALF_ACTION
@@ -57,6 +58,7 @@ data class SemiAutoBurstRangedAttack(
         override val range: Int,
         override val damage: String,
         override val numberOfAttacks: Int,
+        override val ammoCost: Int = 1,
         override val appliesEffects: List<Effect> = emptyList()
 ) : DamageCausingAction, RangedAttackAction, EffectCausingAction, ActionOption() {
     override val actionCost = HALF_ACTION
@@ -72,6 +74,7 @@ data class FullAutoBurstRangedAttack(
         override val range: Int,
         override val damage: String,
         override val numberOfAttacks: Int,
+        override val ammoCost: Int = 1,
         override val appliesEffects: List<Effect> = emptyList()
 ) : DamageCausingAction, RangedAttackAction, EffectCausingAction, ActionOption() {
     override val actionCost = HALF_ACTION
@@ -144,6 +147,7 @@ interface EffectCausingAction {
 
 interface RangedAttackAction {
     val range: Int
+    val ammoCost: Int
 }
 
 interface TurnAction {

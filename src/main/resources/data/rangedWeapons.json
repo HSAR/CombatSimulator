@@ -64,6 +64,7 @@
         "itemName": "Laspistol",
         "itemType": "WEAPON",
         "modifiesAttributes": {
+            "COMMENT": "Note that the overloaded shot should do +2 DAM +2 PEN not +4 DAM, but this cannot yet be represented properly.",
             "WEAPON_TYPE": "PISTOL",
             "ACTIONS": [
                 {
@@ -72,8 +73,34 @@
                     "range": 30
                 },
                 {
+                    "actionType": "SingleRangedAttack",
+                    "damage": "1d10+3",
+                    "ammoCost": 2,
+                    "range": 30
+                },
+                {
+                    "actionType": "SingleRangedAttack",
+                    "damage": "1d10+6",
+                    "ammoCost": 4,
+                    "range": 30
+                },
+                {
                     "actionType": "SemiAutoBurstRangedAttack",
                     "damage": "1d10+2",
+                    "range": 30,
+                    "numberOfAttacks": 2
+                },
+                {
+                    "actionType": "SemiAutoBurstRangedAttack",
+                    "damage": "1d10+3",
+                    "ammoCost": 2,
+                    "range": 30,
+                    "numberOfAttacks": 2
+                },
+                {
+                    "actionType": "SemiAutoBurstRangedAttack",
+                    "damage": "1d10+6",
+                    "ammoCost": 4,
                     "range": 30,
                     "numberOfAttacks": 2
                 },

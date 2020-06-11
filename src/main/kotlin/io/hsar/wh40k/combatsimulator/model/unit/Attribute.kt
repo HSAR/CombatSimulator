@@ -8,6 +8,10 @@ import io.hsar.wh40k.combatsimulator.logic.ActionOption
  * Attributes are dynamic information that can change turn by turn.
  */
 enum class Attribute {
+    /**
+     * This has no effect and is used, as in code, to put human-readable machine-ignored text into the file.
+     */
+    COMMENT,
     CURRENT_HEALTH,
     POSITION,
     DAMAGE_REDUCTION_HEAD,
@@ -17,6 +21,7 @@ enum class Attribute {
     DAMAGE_REDUCTION_LEG_L,
     DAMAGE_REDUCTION_LEG_R,
     DAMAGE_OUTPUT,
+
     // DAMAGE_TYPES, // #TODO: Implement damage types later
     WEAPON_TYPE,
     WEAPON_AMMUNITION,
@@ -38,6 +43,9 @@ enum class WeaponType {
  */
 @JsonDeserialize(using = AttributeValueDeserialiser::class)
 sealed class AttributeValue
+
+@JsonDeserialize
+data class StringValue(val value: String) : AttributeValue()
 
 @JsonDeserialize
 data class NumericValue(val value: Int) : AttributeValue() {

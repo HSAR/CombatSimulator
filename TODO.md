@@ -18,6 +18,7 @@
 ### Simulation Computation
 
 * Ranged attacks
+    * Penetration
     * Consider range
     * Can jam the weapon, requiring unjamming and reloading
     * Reduce ammo on firing unit, remove actions that cannot be taken if ammunition is too low
