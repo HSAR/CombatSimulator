@@ -51,10 +51,7 @@ data class StringValue(val value: String) : AttributeValue()
 @JsonDeserialize
 data class NumericValue(val value: Int) : AttributeValue() {
     operator fun plus(other: NumericValue): NumericValue {
-        return (this.value + other.value)
-                .let { newValue ->
-                    NumericValue(newValue)
-                }
+        return NumericValue(this.value + other.value)
     }
 }
 
@@ -90,9 +87,6 @@ data class ActionValue(val value: List<ActionOption>) : AttributeValue() {
 @JsonDeserialize
 data class EffectValue(val value: List<Effect>) : AttributeValue() {
     operator fun plus(other: EffectValue): EffectValue {
-        return (this.value + other.value)
-                .let { newValue ->
-                    EffectValue(newValue)
-                }
+        return EffectValue(this.value + other.value)
     }
 }
