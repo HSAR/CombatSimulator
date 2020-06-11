@@ -33,6 +33,35 @@
         }
     },
     {
+        "itemRef": "wpn_pistol_handCannon",
+        "itemName": "Autopistol",
+        "itemType": "WEAPON",
+        "modifiesAttributes": {
+            "COMMENT": "Should have a -10 penalty when wielded one-handed but this isn't supported yet",
+            "COMMENT": "Should be 1d10+4 DAM 2 PEN not 1d10+6 DAM but this isn't supported yet",
+            "WEAPON_TYPE": "PISTOL",
+            "ACTIONS": [
+                {
+                    "actionType": "SingleRangedAttack",
+                    "damage": "1d10+6",
+                    "range": 30
+                },
+                {
+                    "actionType": "MeleeAttack",
+                    "damage": "1d10-1",
+                    "appliesEffects": [
+                        "PRIMITIVE"
+                    ]
+                },
+                {
+                    "actionType": "WeaponReload",
+                    "actionCost": "TWO_FULL_ACTIONS",
+                    "setsAmmunitionTo": 5
+                }
+            ]
+        }
+    },
+    {
         "itemRef": "wpn_pistol_stubRevolver",
         "itemName": "Stub Revolver",
         "itemType": "WEAPON",
