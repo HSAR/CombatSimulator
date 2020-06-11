@@ -33,6 +33,45 @@
         }
     },
     {
+        "itemRef": "wpn_basic_autogun",
+        "itemName": "Autogun",
+        "itemType": "WEAPON",
+        "modifiesAttributes": {
+            "WEAPON_TYPE": "BASIC",
+            "ACTIONS": [
+                {
+                    "actionType": "SingleRangedAttack",
+                    "damage": "1d10+3",
+                    "range": 100
+                },
+                {
+                    "actionType": "SemiAutoBurstRangedAttack",
+                    "damage": "1d10+3",
+                    "range": 100,
+                    "numberOfAttacks": 3
+                },
+                {
+                    "actionType": "FullAutoBurstRangedAttack",
+                    "damage": "1d10+3",
+                    "range": 100,
+                    "numberOfAttacks": 10
+                },
+                {
+                    "actionType": "MeleeAttack",
+                    "damage": "1d10-1",
+                    "appliesEffects": [
+                        "PRIMITIVE"
+                    ]
+                },
+                {
+                    "actionType": "WeaponReload",
+                    "actionCost": "FULL_ACTION",
+                    "setsAmmunitionTo": 30
+                }
+            ]
+        }
+    },
+    {
         "itemRef": "wpn_pistol_handCannon",
         "itemName": "Autopistol",
         "itemType": "WEAPON",
@@ -44,7 +83,7 @@
                 {
                     "actionType": "SingleRangedAttack",
                     "damage": "1d10+6",
-                    "range": 30
+                    "range": 35
                 },
                 {
                     "actionType": "MeleeAttack",
