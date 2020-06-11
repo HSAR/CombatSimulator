@@ -2,6 +2,7 @@ package io.hsar.wh40k.combatsimulator.utils
 
 import io.hsar.wh40k.combatsimulator.model.unit.ActionValue
 import io.hsar.wh40k.combatsimulator.model.unit.AttributeValue
+import io.hsar.wh40k.combatsimulator.model.unit.EffectValue
 import io.hsar.wh40k.combatsimulator.model.unit.NumericValue
 import io.hsar.wh40k.combatsimulator.model.unit.StringValue
 import io.hsar.wh40k.combatsimulator.model.unit.WeaponTypeValue
@@ -14,9 +15,11 @@ fun <K> Map<K, AttributeValue>.mergeWithAddition(otherMap: Map<K, AttributeValue
                         when {
                             (counterValueA is ActionValue && counterValueB is ActionValue) ->
                                 counterValueA + counterValueB
-                            (counterValueA is NumericValue && counterValueB is NumericValue) ->
-                                counterValueA + counterValueB
                             (counterValueA is WeaponTypeValue && counterValueB is WeaponTypeValue) ->
+                                counterValueA + counterValueB
+                            (counterValueA is EffectValue && counterValueB is EffectValue) ->
+                                counterValueA + counterValueB
+                            (counterValueA is NumericValue && counterValueB is NumericValue) ->
                                 counterValueA + counterValueB
                             (counterValueA is StringValue && counterValueB is StringValue) ->
                                 StringValue(counterValueA.value + "\n" + counterValueB.value)
