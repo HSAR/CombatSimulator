@@ -14,7 +14,14 @@ import io.hsar.wh40k.combatsimulator.model.unit.ActionValue
 import io.hsar.wh40k.combatsimulator.model.unit.Attribute
 import io.hsar.wh40k.combatsimulator.model.unit.Attribute.ACTIONS
 import io.hsar.wh40k.combatsimulator.model.unit.Attribute.CURRENT_HEALTH
+import io.hsar.wh40k.combatsimulator.model.unit.Attribute.DAMAGE_REDUCTION_ARM_L
+import io.hsar.wh40k.combatsimulator.model.unit.Attribute.DAMAGE_REDUCTION_ARM_R
+import io.hsar.wh40k.combatsimulator.model.unit.Attribute.DAMAGE_REDUCTION_HEAD
+import io.hsar.wh40k.combatsimulator.model.unit.Attribute.DAMAGE_REDUCTION_LEG_L
+import io.hsar.wh40k.combatsimulator.model.unit.Attribute.DAMAGE_REDUCTION_LEG_R
+import io.hsar.wh40k.combatsimulator.model.unit.Attribute.DAMAGE_REDUCTION_TORSO
 import io.hsar.wh40k.combatsimulator.model.unit.Attribute.EFFECTS
+import io.hsar.wh40k.combatsimulator.model.unit.Attribute.WEAPON_AMMUNITION
 import io.hsar.wh40k.combatsimulator.model.unit.Attribute.WEAPON_TYPE
 import io.hsar.wh40k.combatsimulator.model.unit.AttributeValue
 import io.hsar.wh40k.combatsimulator.model.unit.BaseStat
@@ -27,6 +34,7 @@ import io.hsar.wh40k.combatsimulator.model.unit.WeaponType.MELEE
 import io.hsar.wh40k.combatsimulator.model.unit.WeaponTypeValue
 import io.hsar.wh40k.combatsimulator.random.RandomDice
 import io.hsar.wh40k.combatsimulator.random.RollResult
+import io.hsar.wh40k.combatsimulator.utils.mergeWithAddition
 import io.hsar.wh40k.combatsimulator.utils.sum
 
 
@@ -135,7 +143,7 @@ class UnitInstance(
                             null
                         } else {
                             // Ranged weapons take their clip size from the ammo given from a reload
-                            mapOf(Attribute.WEAPON_AMMUNITION to NumericValue((weaponAttributes.getValue(ACTIONS) as ActionValue)
+                            mapOf(WEAPON_AMMUNITION to NumericValue((weaponAttributes.getValue(ACTIONS) as ActionValue)
                                     .value
                                     .filterIsInstance<WeaponReload>()
                                     .first().setsAmmunitionTo)
@@ -143,11 +151,29 @@ class UnitInstance(
                         }
                     } ?: emptyMap()
 
+            val toughnessMap = ((unit.stats.baseStats[BaseStat.TOUGHNESS] ?: 0) / 10)
+                    .let { toughnessBonus ->
+                        listOf(
+                                DAMAGE_REDUCTION_HEAD,
+                                DAMAGE_REDUCTION_ARM_L,
+                                DAMAGE_REDUCTION_ARM_R,
+                                DAMAGE_REDUCTION_TORSO,
+                                DAMAGE_REDUCTION_LEG_L,
+                                DAMAGE_REDUCTION_LEG_R
+                        ).map { damageReductionLocation ->
+                            damageReductionLocation to NumericValue(toughnessBonus)
+                        }.toMap()
+                    }
+
             val dynamicAttributes = mapOf(
                     CURRENT_HEALTH to NumericValue(unit.stats.baseStats.getValue(BaseStat.MAX_HEALTH))
-            ) + ammoMap
+            )
+                    .mergeWithAddition(ammoMap)
+                    .mergeWithAddition(toughnessMap)
 
-            return DEFAULT_ATTRIBUTES + equipmentAttributes + dynamicAttributes
+            return DEFAULT_ATTRIBUTES
+                    .mergeWithAddition(equipmentAttributes)
+                    .mergeWithAddition(dynamicAttributes)
         }
     }
 }
