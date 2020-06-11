@@ -12,6 +12,7 @@ enum class Attribute {
      * This has no effect and is used, as in code, to put human-readable machine-ignored text into the file.
      */
     COMMENT,
+
     CURRENT_HEALTH,
     POSITION,
     DAMAGE_REDUCTION_HEAD,

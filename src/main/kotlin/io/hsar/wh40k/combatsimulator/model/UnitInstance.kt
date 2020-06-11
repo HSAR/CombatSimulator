@@ -57,29 +57,31 @@ class UnitInstance(
                         is TargetedAction -> {
                             when (actionToExecute.action) {
                                 is DamageCausingAction -> {
-                                    attackExecutor.rollHits(
-                                            attacker = this,
-                                            target = actionToExecute.target,
-                                            action = actionToExecute.action as DamageCausingAction
-                                            // forced to hard cast to avoid compiler error
-                                    ).let { numberOfHits ->
-                                        when {
-                                            (numberOfHits < 1) -> println(" but misses.")
-                                            (numberOfHits == 1) -> print(", hitting ")
-                                            else -> print(", making $numberOfHits hits")
-                                        }
-                                        repeat(numberOfHits) {
-                                            attackExecutor
-                                                    .calcDamage(
-                                                            attacker = this,
-                                                            target = actionToExecute.target,
-                                                            action = actionToExecute.action as DamageCausingAction)
-                                                    .let { damage ->
-                                                        println("${actionToExecute.target.name} for $damage damage.")
-                                                        actionToExecute.target.receiveDamage(damage)
-                                                    }
-                                        }
-                                    }
+                                    attackExecutor
+                                            .rollHits(
+                                                    attacker = this,
+                                                    target = actionToExecute.target,
+                                                    action = actionToExecute.action as DamageCausingAction
+                                                    // forced to hard cast to avoid compiler error
+                                            )
+                                            .let { numberOfHits ->
+                                                when {
+                                                    (numberOfHits < 1) -> println(" but misses.")
+                                                    (numberOfHits == 1) -> print(", hitting ")
+                                                    else -> print(", making $numberOfHits hits")
+                                                }
+                                                repeat(numberOfHits) {
+                                                    attackExecutor
+                                                            .calcDamage(
+                                                                    attacker = this,
+                                                                    target = actionToExecute.target,
+                                                                    action = actionToExecute.action as DamageCausingAction)
+                                                            .let { damage ->
+                                                                println("${actionToExecute.target.name} for $damage damage.")
+                                                                actionToExecute.target.receiveDamage(damage)
+                                                            }
+                                                }
+                                            }
                                 }
                                 else -> TODO()
                             }
@@ -124,7 +126,8 @@ class UnitInstance(
         fun createInitialAttributeMap(unit: Unit, equipment: List<EquipmentItem>): Map<Attribute, AttributeValue> {
             val equipmentAttributes = equipment.map { it.modifiesAttributes }.sum()
 
-            val ammoMap = equipment.firstOrNull() { it.itemType == WEAPON } // #TODO: Handle this better than just "the first weapon to hand"
+            val ammoMap = equipment
+                    .firstOrNull { it.itemType == WEAPON } // #TODO: Handle this better than just "the first weapon to hand"
                     ?.modifiesAttributes
                     ?.let { weaponAttributes ->
                         if (weaponAttributes.getValue(WEAPON_TYPE) == WeaponTypeValue(MELEE)) {
