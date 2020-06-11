@@ -1,0 +1,92 @@
+{
+    "units": [
+        {
+            "unitRef": "playerSescae",
+            "description": "An oddly bloodthirsty ex-auxiliary of the Legiones Skitarius Nettelhorst.",
+            "stats": {
+                "baseStats": {
+                    "MAX_HEALTH": 12,
+                    "WEAPON_SKILL": 38,
+                    "BALLISTIC_SKILL": 55,
+                    "STRENGTH": 42,
+                    "TOUGHNESS": 41,
+                    "AGILITY": 37,
+                    "INTELLIGENCE": 40,
+                    "WILLPOWER": 43,
+                    "FELLOWSHIP": 31
+                },
+                "derivedStats": {
+                    "DODGE": 0,
+                    "PARRY": 10
+                }
+            },
+            "equipmentRefs": [
+                "amr_cybernetic_subskin",
+                "amr_flak_fullGuard",
+                "wpn_melee_shield",
+                "wpn_pistol_laspistol"
+            ]
+        },
+        {
+            "unitRef": "playerMagnus",
+            "description": "A carousing go-getter of the Adeptus Mechanicus Nettelhorst.",
+            "stats": {
+                "baseStats": {
+                    "MAX_HEALTH": 11,
+                    "WEAPON_SKILL": 40,
+                    "BALLISTIC_SKILL": 30,
+                    "STRENGTH": 20,
+                    "TOUGHNESS": 30,
+                    "AGILITY": 36,
+                    "INTELLIGENCE": 20,
+                    "WILLPOWER": 20,
+                    "FELLOWSHIP": 20
+                },
+                "derivedStats": {
+                    "DODGE": -20,
+                    "PARRY": -20
+                }
+            },
+            "equipmentRefs": [
+                "amr_basic_bodyglove",
+                "wpn_basic_autogun"
+            ]
+        },
+        {
+            "unitRef": "playerThesse",
+            "description": "A morally confused ex-enforcer of the Adeptus Arbites.",
+            "stats": {
+                "baseStats": {
+                    "MAX_HEALTH": 15,
+                    "WEAPON_SKILL": 38,
+                    "BALLISTIC_SKILL": 46,
+                    "STRENGTH": 38,
+                    "TOUGHNESS": 33,
+                    "AGILITY": 36,
+                    "INTELLIGENCE": 33,
+                    "WILLPOWER": 34,
+                    "FELLOWSHIP": 38
+                },
+                "derivedStats": {
+                    "DODGE": -20,
+                    "PARRY": -20
+                }
+            },
+            "equipmentRefs": [
+                "amr_carapace_fullEnforcer",
+                "wpn_pistol_handCannon"
+            ]
+        }
+    ],
+    "unitsToSpawn": {
+        "playerSescae": [
+            "Sescae"
+        ],
+        "playerMagnus": [
+            "Magnus"
+        ],
+        "playerThesse": [
+            "Thesse"
+        ]
+    }
+}
