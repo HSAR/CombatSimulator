@@ -108,6 +108,7 @@ class UnitInstance(
                                 }
                                 else -> TODO()
                             }
+                            println(".")
                         }
                     }
                 }
