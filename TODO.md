@@ -13,6 +13,7 @@
     * One-handed vs two-handed weapons?
 * Effects should have degrees (i.e. Primitive(7))
 * Handle when units have more than one weapon
+* Actions that take more than one full action (i.e. reloading a stub revolver)
 
 
 ### Simulation Computation
