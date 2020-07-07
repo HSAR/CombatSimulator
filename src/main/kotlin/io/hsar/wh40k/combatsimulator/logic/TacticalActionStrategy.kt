@@ -3,7 +3,6 @@ package io.hsar.wh40k.combatsimulator.logic
 import io.hsar.wh40k.combatsimulator.model.UnitInstance
 import io.hsar.wh40k.combatsimulator.model.World
 import io.hsar.wh40k.combatsimulator.model.unit.BaseStat
-import io.hsar.wh40k.combatsimulator.random.AverageDice
 
 object TacticalActionStrategy : ActionStrategy {
 
@@ -28,13 +27,7 @@ object TacticalActionStrategy : ActionStrategy {
                 }
                 .map { eachTargetedAction ->
                     // Associate each action with an estimate of its damage
-                    when (eachTargetedAction.action) {
-                        is DamageCausingAction -> eachTargetedAction.action.damage
-                                .let { damageString ->
-                                    eachTargetedAction to AverageDice.roll(damageString)
-                                }
-                        else -> eachTargetedAction to 0
-                    }
+                    eachTargetedAction to ExpectedDamageCalculator.calculate(eachTargetedAction)
                 }
                 .maxBy { (_, expectedDamage) -> expectedDamage }
                 ?.first

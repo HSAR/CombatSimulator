@@ -22,9 +22,9 @@ import io.hsar.wh40k.combatsimulator.model.unit.DerivedStats.PARRY
 import io.hsar.wh40k.combatsimulator.model.unit.Effect
 import io.hsar.wh40k.combatsimulator.model.unit.EffectValue
 import io.hsar.wh40k.combatsimulator.model.unit.NumericValue
-import io.hsar.wh40k.combatsimulator.random.AverageDice
-import io.hsar.wh40k.combatsimulator.random.RandomDice
-import io.hsar.wh40k.combatsimulator.random.Result
+import io.hsar.wh40k.combatsimulator.dice.AverageDice
+import io.hsar.wh40k.combatsimulator.dice.RandomDice
+import io.hsar.wh40k.combatsimulator.dice.Result
 import java.lang.Integer.max
 
 

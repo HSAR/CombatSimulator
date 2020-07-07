@@ -32,8 +32,8 @@ import io.hsar.wh40k.combatsimulator.model.unit.NumericValue
 import io.hsar.wh40k.combatsimulator.model.unit.Unit
 import io.hsar.wh40k.combatsimulator.model.unit.WeaponType.MELEE
 import io.hsar.wh40k.combatsimulator.model.unit.WeaponTypeValue
-import io.hsar.wh40k.combatsimulator.random.RandomDice
-import io.hsar.wh40k.combatsimulator.random.RollResult
+import io.hsar.wh40k.combatsimulator.dice.RandomDice
+import io.hsar.wh40k.combatsimulator.dice.RollResult
 import io.hsar.wh40k.combatsimulator.utils.mergeWithAddition
 import io.hsar.wh40k.combatsimulator.utils.sum
 

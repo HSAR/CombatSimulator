@@ -1,9 +1,8 @@
-package io.hsar.wh40k.combatsimulator.random
+package io.hsar.wh40k.combatsimulator.dice
 
 import com.bernardomg.tabletop.dice.interpreter.DiceRoller
 import com.bernardomg.tabletop.dice.parser.DefaultDiceParser
-import io.hsar.wh40k.combatsimulator.model.unit.BodyPart
-import io.hsar.wh40k.combatsimulator.random.Result.*
+import io.hsar.wh40k.combatsimulator.dice.Result.*
 
 enum class Result {
     SUCCESS,

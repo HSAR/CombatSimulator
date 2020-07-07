@@ -10,8 +10,8 @@ import io.hsar.wh40k.combatsimulator.model.unit.Effect
 import io.hsar.wh40k.combatsimulator.model.unit.Effect.AIMED_FULL
 import io.hsar.wh40k.combatsimulator.model.unit.Effect.AIMED_HALF
 import io.hsar.wh40k.combatsimulator.model.unit.Effect.CHARGING
-import io.hsar.wh40k.combatsimulator.random.Result
-import io.hsar.wh40k.combatsimulator.random.RollResult
+import io.hsar.wh40k.combatsimulator.dice.Result
+import io.hsar.wh40k.combatsimulator.dice.RollResult
 
 @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
