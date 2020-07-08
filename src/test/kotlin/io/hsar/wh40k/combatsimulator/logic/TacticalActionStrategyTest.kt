@@ -17,7 +17,7 @@ internal class TacticalActionStrategyTest {
         val unit = world.friendlyForces[0]
         val feasibleActions: List<TurnAction> = TacticalActionStrategy.decideTurnActions(world, unit, listOf(meleeAttack, singleRangedAttack, chargeAttack, aimAction))
         assertThat(feasibleActions.size, equalTo(2))
-        assertThat(feasibleActions[0] is AimAction, equalTo(true))
+        assertThat(feasibleActions[0] is SelfAction, equalTo(true))
         assertThat(feasibleActions[0].action as HalfAim, equalTo(aimAction))
         assertThat(feasibleActions[1].action is ChargeAttack, equalTo(true))
         assertThat(feasibleActions[1].action as ChargeAttack, equalTo(chargeAttack))
@@ -34,7 +34,7 @@ internal class TacticalActionStrategyTest {
 
         val feasibleActions: List<TurnAction> = TacticalActionStrategy.decideTurnActions(world, unit, listOf(meleeAttack, singleRangedAttack, chargeAttack, aimAction))
         assertThat(feasibleActions.size, equalTo(2))
-        assertThat(feasibleActions[0] is AimAction, equalTo(true))
+        assertThat(feasibleActions[0] is SelfAction, equalTo(true))
         assertThat(feasibleActions[1].action is ChargeAttack, equalTo(true))
         assertThat((feasibleActions[1] as TargetedAction).target, equalTo(extraEnemy))
     }

@@ -1,7 +1,7 @@
 package io.hsar.wh40k.combatsimulator.model
 
 import TestUtils
-import io.hsar.wh40k.combatsimulator.logic.AimAction
+import io.hsar.wh40k.combatsimulator.logic.SelfAction
 import io.hsar.wh40k.combatsimulator.logic.HalfAim
 import io.hsar.wh40k.combatsimulator.logic.SingleRangedAttack
 import io.hsar.wh40k.combatsimulator.logic.TargetedAction
@@ -21,7 +21,7 @@ import org.mockito.Mockito.mock
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class UnitInstanceTest {
 
-    private val aimAction = AimAction(HalfAim)
+    private val aimAction = SelfAction(HalfAim)
     private val singleRangedAttack = SingleRangedAttack(30, "1d10+4")
 
     private val mockAttackExecutor: AttackExecutor = mock(AttackExecutor::class.java)
