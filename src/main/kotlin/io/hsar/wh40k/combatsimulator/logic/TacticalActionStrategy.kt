@@ -4,15 +4,16 @@ import io.hsar.wh40k.combatsimulator.model.UnitInstance
 import io.hsar.wh40k.combatsimulator.model.World
 import io.hsar.wh40k.combatsimulator.model.unit.BaseStat
 import io.hsar.wh40k.combatsimulator.random.AverageDice
+import java.lang.IllegalArgumentException
 
 object TacticalActionStrategy : ActionStrategy {
 
-    override fun decideTurnActions(world: World, thisUnit: UnitInstance, possibleActionOptions: Collection<ActionOption>): List<TurnAction> {
+    override fun decideTurnActions(world: World, thisUnit: UnitInstance, possibleActionOptions: Collection<ActionOption>): List<TargetedAction> {
+        if (possibleActionOptions.isEmpty()) {
+            throw IllegalArgumentException("Cannot decide turn actions with no possibilities!")
+        }
+
         // Shit implementation - units will only ever aim and fire their max damage attack
-
-        /*
-
-         */
 
         // for each Action option, map to list of legal targets
 
@@ -20,16 +21,16 @@ object TacticalActionStrategy : ActionStrategy {
         val allies = world.getAllies(thisUnit)
         val adversaries = world.getAdversaries(thisUnit)
         val allUnits = allies + adversaries
-        val possibleTargetedActions = possibleActionOptions.map {actionOption ->
-            when(actionOption.targetType) {
-                TargetType.SELF_TARGET -> listOf<TargetedAction>(TargetedAction(actionOption, thisUnit))
-                TargetType.ADVERSARY_TARGET -> adversaries.map{ adversary ->
-                    TargetedAction(actionOption,adversary)
+        val possibleTargetedActions = possibleActionOptions.map { actionOption ->
+            when (actionOption.targetType) {
+                TargetType.SELF_TARGET -> listOf(TargetedAction(actionOption, thisUnit))
+                TargetType.ADVERSARY_TARGET -> adversaries.map { adversary ->
+                    TargetedAction(actionOption, adversary)
                 }
-                TargetType.ALLY_TARGET -> allies.map{ally ->
-                    TargetedAction(actionOption,ally)
+                TargetType.ALLY_TARGET -> allies.map { ally ->
+                    TargetedAction(actionOption, ally)
                 }
-                TargetType.ANY_TARGET -> allUnits.map{ anyUnit ->
+                TargetType.ANY_TARGET -> allUnits.map { anyUnit ->
                     TargetedAction(actionOption, anyUnit)
                 }
             }
@@ -46,43 +47,42 @@ object TacticalActionStrategy : ActionStrategy {
         }
 
         val allHalfActionCombos = halfActionTargetedActions.map { targetedAction ->
-            (halfActionTargetedActions - targetedAction).map {otherAction ->
-                listOf<TargetedAction>(targetedAction, otherAction)
+            (halfActionTargetedActions - targetedAction).map { otherAction ->
+                listOf(targetedAction, otherAction)
             }
         }.flatten()
         //TODO test this thoroughly
 
-        val allLegalHalfActionCombos = allHalfActionCombos.filter{ halfActionCombo ->
+        val allLegalHalfActionCombos = allHalfActionCombos.filter { halfActionCombo ->
             isLegalActionPair(halfActionCombo)
         }
 
-        val allLegalActionCombos = fullActionTargetedActions + allLegalHalfActionCombos
+        val mostValuableActionCombo = (fullActionTargetedActions + allLegalHalfActionCombos)
+                .map { eachLegalActionCombo ->
+                    getExpectedValue(world, thisUnit, eachLegalActionCombo) to eachLegalActionCombo
+                }
+                .maxBy { (expectedValue, _) -> expectedValue }!!
+                .second
 
-        // now, work out EV for each combo
-
-        val maxDamageAttackAction = getMaxDamageAttackAction(possibleActionOptions, world, thisUnit)
-
-        if(maxDamageAttackAction == null) {
-            // try to work out if moving closer would help us
-            // could we just run get possible targeted actions once and get a list containing range values
-            //ie work out the difference between attack range and current distance
-
-
-        }
-
-        return listOfNotNull(aimAction, maxDamageAttackAction)
+        return mostValuableActionCombo
     }
 
-    fun getExpectedValue(world: World, thisUnit: UnitInstance, actionCombo: List<TargetedAction>) {
+    fun getExpectedValue(world: World, thisUnit: UnitInstance, actionCombo: List<TargetedAction>): Float {
         // set up clone of world
-        val tempWorld = world.createCopy()
-        var valueCount = 0f
-        actionCombo.forEach { targetedAction->
-            if(targetedAction.action.isLegal(tempWorld, thisUnit, targetedAction.target)) {
-                valueCount += targetedAction.action.expectedValue(tempWorld, thisUnit, targetedAction.target)
-                targetedAction.action.apply(tempWorld, thisUnit, targetedAction.target)
-            }
-        }
+        return world.createCopy()
+                .let { tempWorld ->
+                    actionCombo
+                            .filter { attemptedAction ->
+                                attemptedAction.action.isLegal(tempWorld, thisUnit, attemptedAction.target)
+                            }
+                            .map { targetedAction ->
+                                targetedAction.action.expectedValue(tempWorld, thisUnit, targetedAction.target)
+                                        .also {
+                                            targetedAction.action.apply(tempWorld, thisUnit, targetedAction.target)
+                                        }
+                            }
+                            .sum()
+                }
     }
 
     fun isLegalActionPair(actionPair: List<TargetedAction>): Boolean {
@@ -91,7 +91,7 @@ object TacticalActionStrategy : ActionStrategy {
     }
 
     fun isTwoAttacks(actionPair: List<TargetedAction>): Boolean {
-        return when(actionPair[0].action) {
+        return when (actionPair[0].action) {
             is DamageCausingAction -> actionPair[1].action !is DamageCausingAction
             else -> true
         }
@@ -133,18 +133,19 @@ object TacticalActionStrategy : ActionStrategy {
                 TargetedAction(possibleAttack as ActionOption, adversary)
             }
         }.flatten()
-        .filter { targetedAction -> // filter out options that are not possible due to range etc
-            when (targetedAction.action) {
-                is RangedAttackAction -> targetedAction.action.range >= world.distanceApart(thisUnit, targetedAction.target)
-                is ChargeAttack ->
-                    targetedAction.action.isValidMovementPath(world.getPosition(thisUnit), world.getPosition(targetedAction.target))
-                            && targetedAction.action.getMovementRange(thisUnit.unit.stats.baseStats.getValue(BaseStat.AGILITY)) >
-                            world.distanceApart(thisUnit, targetedAction.target)
-                is MeleeAttack -> world.distanceApart(thisUnit, targetedAction.target) == 1
-                else -> false
-            }
+                .filter { targetedAction ->
+                    // filter out options that are not possible due to range etc
+                    when (targetedAction.action) {
+                        is RangedAttackAction -> targetedAction.action.range >= world.distanceApart(thisUnit, targetedAction.target)
+                        is ChargeAttack ->
+                            targetedAction.action.isValidMovementPath(world.getPosition(thisUnit), world.getPosition(targetedAction.target))
+                                    && targetedAction.action.getMovementRange(thisUnit.unit.stats.baseStats.getValue(BaseStat.AGILITY)) >
+                                    world.distanceApart(thisUnit, targetedAction.target)
+                        is MeleeAttack -> world.distanceApart(thisUnit, targetedAction.target) == 1
+                        else -> false
+                    }
 
-        }
+                }
     }
 
 }
