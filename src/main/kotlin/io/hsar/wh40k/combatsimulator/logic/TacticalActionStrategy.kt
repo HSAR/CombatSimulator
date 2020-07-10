@@ -11,12 +11,7 @@ object TacticalActionStrategy : ActionStrategy {
         // Shit implementation - units will only ever aim and fire their max damage attack
 
         /*
-        Mark's cunning guide to AI logic v0.3
 
-        Calc every single permutation of actions / enemy, filter by those in range and then sort by expected dmg
-
-        Have a general function called isInRange - targetedaction -> bool
-        create a map of possible action option pairs then filter to ones with only one attack
          */
 
         // for each Action option, map to list of legal targets
@@ -78,20 +73,17 @@ object TacticalActionStrategy : ActionStrategy {
         return listOfNotNull(aimAction, maxDamageAttackAction)
     }
 
-    fun expectedDamage(world: World, thisUnit: UnitInstance, actionCombo: List<ActionOption> ): Int {
-        // to start with just get to work for movement and attacks
-        // if is attack, check range and return a negative expected damage if out of range
-        // if is move, track local state of position
-        var totalDamage = 0;
-        var originalPosition = world.getPosition(thisUnit)
-        actionCombo.forEach { action ->
-            when(action) {
-                is MoveAction -> world.improvePosition(thisUnit, action)
-                is RangedAttackAction ->
+    fun getExpectedValue(world: World, thisUnit: UnitInstance, actionCombo: List<TargetedAction>) {
+        // set up clone of world
+        val tempWorld = world.createCopy()
+        var valueCount = 0f
+        actionCombo.forEach { targetedAction->
+            if(targetedAction.action.isLegal(tempWorld, thisUnit, targetedAction.target)) {
+                valueCount += targetedAction.action.expectedValue(tempWorld, thisUnit, targetedAction.target)
+                targetedAction.action.apply(tempWorld, thisUnit, targetedAction.target)
             }
         }
     }
-
 
     fun isLegalActionPair(actionPair: List<TargetedAction>): Boolean {
         return isTwoAttacks()

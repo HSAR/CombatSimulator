@@ -1,10 +1,8 @@
 package io.hsar.wh40k.combatsimulator.model
 
-import io.hsar.wh40k.combatsimulator.logic.DamageCausingAction
-import io.hsar.wh40k.combatsimulator.logic.EffectCausingAction
 import io.hsar.wh40k.combatsimulator.logic.MoveAction
 import io.hsar.wh40k.combatsimulator.logic.TargetedAction
-import io.hsar.wh40k.combatsimulator.logic.TurnAction
+
 import io.hsar.wh40k.combatsimulator.model.unit.Attribute
 import io.hsar.wh40k.combatsimulator.model.unit.BaseStat
 import io.hsar.wh40k.combatsimulator.model.unit.EffectValue
@@ -30,43 +28,44 @@ data class World(
                 .distanceToPosition(unitPositions.getValue(otherUnit))
     }
 
-    fun canMoveToUnit(unit: UnitInstance, otherUnit: UnitInstance, moveType: MoveAction): Boolean {
-        return (distanceApart(unit, otherUnit) - 1 <=
-                calcMovementRange(unit, moveType))
-                && moveType.isValidMovementPath(unitPositions.getValue(unit), unitPositions.getValue(otherUnit))
-    }
-
     fun moveTowards(unit: UnitInstance, otherUnit: UnitInstance, maxMovement: Int): Unit {
-        //TODO need to work out whether to return a new position or actually update the unit's position
-
-        val movementRange = calcMovementRange(unit, moveType)
+        
         val unitPosition = getPosition(unit)
         val otherPosition = getPosition(otherUnit)
         val deltaX = otherPosition.x - unitPosition.x
         val deltaY = otherPosition.y - unitPosition.y
 
-
-        var workingPosition = MapPosition(getPosition(unit))
-        var tempPosition
-        var movementLeft = movementRange
+        var workingPosition = MapPosition(unitPosition)
+        var tempPosition = MapPosition(unitPosition)
+        var movementLeft = maxMovement
+        var squaresMoved = 0
         while(movementLeft > 0) {
             // work out which direction to move in
             val direction = getDirection(deltaX, deltaY)
 
             //check to see if anything in that space
-            val spaceContents = getSpaceContents(getPosition(unit) + direction)
-            when(spaceContents) {
-                null -> TODO()  // update working position AND actual position
-                in getAllies(unit) -> TODO() // will take two moves to move through. Only update workingposition
+            when(getSpaceContents(getPosition(unit) + direction)) {
+                null ->  {  // free to use space
+                    if(squaresMoved <= movementLeft) {
+                        workingPosition = tempPosition + direction
+                        tempPosition = MapPosition(unitPosition)
+                        movementLeft -= squaresMoved
+                        squaresMoved = 0
+                    } else {
+                        movementLeft = 0 // can't reach the square with remaining movement
+                    }
+
+                }
+                in getAllies(unit) -> {
+                    tempPosition = tempPosition + direction
+                    squaresMoved += 1
+                } // will take two moves to move through. Only update workingposition
                 // Need to think about position caching as could try to move through ally and no space on other side
-                in getAdversaries(unit) -> TODO() //stop goind
-                else -> TODO()
+                in getAdversaries(unit) -> movementLeft = 0 //stop going
+                else -> throw RuntimeException("Square neither empty or occupied")
             }
         }
-
-        // move as far diagonally as possible
-        val diagDistance = minOf(abs(deltaX), abs(deltaY))
-        // TODO fix movement to have a more thorough implementation that checks for whether space is free etc
+        setPosition(unit, workingPosition)
     }
 
     fun getDirection(deltaX: Int, deltaY: Int): MapPosition {
@@ -83,22 +82,6 @@ data class World(
         }
         return MapPosition(xDir, yDir)
 
-    }
-
-    fun improvePosition(unit: UnitInstance, moveType: MoveAction) {
-        //TODO
-        // Initial implementation is just to find closest adversary and move towards it
-        val closestAdversary = getAdversaries(unit).minBy { adversary ->
-            distanceApart(unit, adversary)
-        }!!
-        moveTowards(unit, closestAdversary, moveType)
-    }
-
-    fun calcMovementRange(unit: UnitInstance, moveType: MoveAction): Int {
-        return unit.unit.stats.baseStats.getValue(BaseStat.AGILITY).getBonus()
-                .let { bonus ->
-                    moveType.getMovementRange(bonus)
-                }
     }
 
     fun getAdversaries(unit: UnitInstance): List<UnitInstance> {
@@ -119,6 +102,10 @@ data class World(
 
     fun getPosition(unit: UnitInstance): MapPosition {
         return this.unitPositions.getValue(unit)
+    }
+
+    fun setPosition(unit: UnitInstance, position: MapPosition) {
+        this.unitPositions[unit] = position
     }
 
     fun getSpaceContents(mapPosition: MapPosition): UnitInstance? {
@@ -150,6 +137,13 @@ data class World(
 
     fun isInMeleeRange(user: UnitInstance, target: UnitInstance): Boolean {
         return distanceApart(user, target) == 1
+    }
+
+    fun createCopy(): World {
+        val tempUnitPositions = unitPositions.mapValues { it ->
+            MapPosition(it.value)
+        }.toMutableMap()
+        return World(friendlyForces, enemyForces, tempUnitPositions)
     }
 }
 
