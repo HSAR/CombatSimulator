@@ -78,6 +78,7 @@ object TacticalActionStrategy : ActionStrategy {
                             .map { targetedAction ->
                                 targetedAction.action.expectedValue(tempWorld, thisUnit, targetedAction.target)
                                         .also {
+                                            // TODO: This actually affects the world even though it should be rolled back.
                                             targetedAction.action.apply(tempWorld, thisUnit, targetedAction.target)
                                         }
                             }
