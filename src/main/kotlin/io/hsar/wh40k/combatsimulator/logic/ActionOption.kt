@@ -127,6 +127,7 @@ class StandardMeleeAttack(override val damage: String):  MeleeAttack() {
         }
 
     }
+
 }
 
 class SingleRangedAttack(override val damage: String, val range: Int): RangedAttack() {
@@ -186,12 +187,10 @@ class FullAim : ActionOption() {
 
 abstract class MoveAction: ActionOption() {
     //provide some common logic for moving
-    abstract val maxDistance: Int
-
     abstract fun getMaxMoveDistance(user: UnitInstance): Int
 
     override fun isLegal(world: World, user: UnitInstance, target: UnitInstance): Boolean {
-        TODO("Not yet implemented")
+        return true  // can always at least try and move
     }
 
     override fun expectedValue(world: World, user: UnitInstance, target: UnitInstance): Float {
@@ -203,38 +202,50 @@ abstract class MoveAction: ActionOption() {
     }
 }
 
-object HalfMove : MoveAction, ActionOption() {
+class HalfMove : MoveAction() {
     override val actionCost = HALF_ACTION
     override val targetType = TargetType.ANY_TARGET  // can move towards any character
-    override fun getMovementRange(agilityBonus: Int): Int {
-        return agilityBonus
-    }
 
-    override fun isValidMovementPath(startPoint: MapPosition, endPoint: MapPosition): Boolean {
-        return true  // unlike charge etc, there are no special restrictions on half move pathing
+    override fun getMaxMoveDistance(user: UnitInstance): Int {
+        return user.getBaseStatBonus(BaseStat.AGILITY)
     }
 }
 
-data class ChargeAttack(override val damage: String) : DamageCausingAction, EffectCausingAction, MoveAction, ActionOption() {
+class FullMove : MoveAction() {
+    override val actionCost = FULL_ACTION
+    override val targetType = TargetType.ANY_TARGET  // can move towards any character
+
+    override fun getMaxMoveDistance(user: UnitInstance): Int {
+        return user.getBaseStatBonus(BaseStat.AGILITY) * 2
+    }
+}
+
+class ChargeAttack(override val damage: String) : MeleeAttack() {
     override val actionCost = FULL_ACTION
     override val targetType = TargetType.ADVERSARY_TARGET
-    override val appliesEffects = listOf(CHARGING)
-    override val numberOfAttacks = 1
+    override val bonusToHit = 20
+    override fun isLegal(world: World, user: UnitInstance, target: UnitInstance): Boolean {
+        return world.distanceApart(user, target) <= user.getBaseStatBonus(BaseStat.AGILITY) * 3
+        // TODO implement this more thoroughly
+    }
 
-    override fun determineHitCount(rollResult: RollResult): Int {
-        return when(rollResult.result) {
-            Result.SUCCESS -> 1
-            Result.FAILURE -> 0
+    override fun expectedValue(world: World, user: UnitInstance, target: UnitInstance): Float {
+        return getHitChance(user) * getAverageDamage(target)
+    }
+
+    override fun apply(world: World, user: UnitInstance, target: UnitInstance) {
+        world.moveTowards(user, target, user.getBaseStatBonus(BaseStat.AGILITY) * 3)
+        if(world.isInMeleeRange(user, target)) {
+            rollToHit(user).let { rollResult ->
+                when(rollResult.result) {
+                    Result.SUCCESS -> applyHits(target, 1)
+                    Result.FAILURE -> return
+                }
+            }
         }
+
     }
 
-    override fun getMovementRange(agilityBonus: Int): Int {
-        return (3 * agilityBonus)
-    }
-
-    override fun isValidMovementPath(startPoint: MapPosition, endPoint: MapPosition): Boolean {
-        return startPoint - endPoint >= 4
-    }
 }
 
 class TargetedAction(val action: ActionOption, val target: UnitInstance){}

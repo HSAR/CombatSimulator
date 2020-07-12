@@ -12,18 +12,6 @@ import org.junit.Test
 class WorldTest {
 
     @Test
-    fun testCanMoveToUnitInRange() {
-        val world = TestUtils.getGenericTwoUnitWorld(MapPosition(1, 6), MapPosition(5, 4))
-        assertThat(world.canMoveToUnit(world.friendlyForces[0], world.enemyForces[0], HalfMove), equalTo(true))
-    }
-
-    @Test
-    fun testCanMoveToUnitOutOfRange() {
-        val world = TestUtils.getGenericTwoUnitWorld(MapPosition(1, 6), MapPosition(6, 4))
-        assertThat(world.canMoveToUnit(world.friendlyForces[0], world.enemyForces[0], HalfMove), equalTo(false))
-    }
-
-    @Test
     fun testDistanceApart() {
         val world = TestUtils.getGenericTwoUnitWorld(MapPosition(1, 6), MapPosition(10, 4))
         assertThat(world.distanceApart(world.friendlyForces[0], world.enemyForces[0]), equalTo(9))

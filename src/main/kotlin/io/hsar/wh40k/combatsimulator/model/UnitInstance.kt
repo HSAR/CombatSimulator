@@ -2,14 +2,12 @@ package io.hsar.wh40k.combatsimulator.model
 
 import io.hsar.wh40k.combatsimulator.cli.Loggable
 import io.hsar.wh40k.combatsimulator.logic.ActionOption
-import io.hsar.wh40k.combatsimulator.logic.DamageCausingAction
-import io.hsar.wh40k.combatsimulator.logic.EffectCausingAction
+
 import io.hsar.wh40k.combatsimulator.logic.FullAim
 import io.hsar.wh40k.combatsimulator.logic.HalfAim
 import io.hsar.wh40k.combatsimulator.logic.TacticalActionStrategy
 import io.hsar.wh40k.combatsimulator.logic.TargetedAction
-import io.hsar.wh40k.combatsimulator.logic.TurnAction
-import io.hsar.wh40k.combatsimulator.logic.WeaponReload
+
 import io.hsar.wh40k.combatsimulator.model.unit.*
 import io.hsar.wh40k.combatsimulator.model.unit.Attribute.ACTIONS
 import io.hsar.wh40k.combatsimulator.model.unit.Attribute.CURRENT_HEALTH
@@ -32,7 +30,6 @@ class UnitInstance(
         val description: String,
         val unit: Unit,
         val equipment: List<EquipmentItem>,
-        val attackExecutor: AttackExecutor = AttackExecutor(), // open for test
         val startingAttributes: Map<Attribute, AttributeValue> = createInitialAttributeMap(unit, equipment),
         val tacticalActionStrategy: TacticalActionStrategy = TacticalActionStrategy,
         val currentAttributes: MutableMap<Attribute, AttributeValue> = startingAttributes.toMutableMap()
@@ -61,6 +58,10 @@ class UnitInstance(
         }
     }
 
+    fun getBaseStatBonus(stat: BaseStat): Int {
+        return  unit.stats.baseStats.getValue(stat)  / 10  // integer division
+    }
+
     fun getAimBonus(): Int {
         return when(val effects = currentAttributes[Attribute.EFFECTS] ?: EffectValue(listOf<Effect>())) {
             is EffectValue -> {
@@ -81,17 +82,34 @@ class UnitInstance(
         }
     }
 
+    fun createCopy(): UnitInstance {
+        val copiedAttributes = currentAttributes.mapValues {attribute ->
+            attribute.value.copy()
+        }.toMutableMap()
+        return UnitInstance(
+                name,
+                description,
+                unit,
+                equipment,
+                startingAttributes,
+                tacticalActionStrategy,
+                copiedAttributes
+        )
+    }
+
     companion object : Loggable {
         val DEFAULT_ACTIONS = ActionValue(listOf(
-                HalfAim,
-                FullAim
+                HalfAim(),
+                FullAim()
         ))
         val DEFAULT_ATTRIBUTES = mapOf(ACTIONS to DEFAULT_ACTIONS, EFFECTS to EffectValue(emptyList()))
+
+
 
         fun createInitialAttributeMap(unit: Unit, equipment: List<EquipmentItem>): Map<Attribute, AttributeValue> {
             val equipmentAttributes = equipment.map { it.modifiesAttributes }.sum()
 
-            val ammoMap = equipment.firstOrNull() { it.itemType == WEAPON } // #TODO: Handle this better than just "the first weapon to hand"
+           /* val ammoMap = equipment.firstOrNull() { it.itemType == WEAPON } // #TODO: Handle this better than just "the first weapon to hand"
                     ?.modifiesAttributes
                     ?.let { weaponAttributes ->
                         if (weaponAttributes.getValue(WEAPON_TYPE) == WeaponTypeValue(MELEE)) {
@@ -105,31 +123,30 @@ class UnitInstance(
                                     .first().setsAmmunitionTo)
                             )
                         }
-                    } ?: emptyMap()
+                    } ?: emptyMap()*/
 
             val dynamicAttributes = mapOf(
                     CURRENT_HEALTH to NumericValue(unit.stats.baseStats.getValue(BaseStat.MAX_HEALTH))
-            ) + ammoMap
+            ) //+ ammoMap
 
             return DEFAULT_ATTRIBUTES + equipmentAttributes + dynamicAttributes
         }
 
         fun randomBodyPart() : BodyPart {
-            fun randomBodyPart(): BodyPart {
-                return RandomDice.roll("1d100")
-                        .let { diceRoll ->
-                            when (diceRoll) {
-                                in 0..10 -> BodyPart.HEAD
-                                in 11..20 -> BodyPart.RIGHT_ARM
-                                in 21..30 -> BodyPart.LEFT_ARM
-                                in 31..70 -> BodyPart.BODY
-                                in 71..85 -> BodyPart.RIGHT_LEG
-                                in 86..100 -> BodyPart.LEFT_LEG
-                                else -> throw RuntimeException("d100 roll outside of 1-100")
-                            }
-                        }
 
+            return RandomDice.roll("1d100")
+            .let { diceRoll ->
+                when (diceRoll) {
+                    in 0..10 -> BodyPart.HEAD
+                    in 11..20 -> BodyPart.RIGHT_ARM
+                    in 21..30 -> BodyPart.LEFT_ARM
+                    in 31..70 -> BodyPart.BODY
+                    in 71..85 -> BodyPart.RIGHT_LEG
+                    in 86..100 -> BodyPart.LEFT_LEG
+                    else -> throw RuntimeException("d100 roll outside of 1-100")
+                }
             }
+
         }
     }
 }

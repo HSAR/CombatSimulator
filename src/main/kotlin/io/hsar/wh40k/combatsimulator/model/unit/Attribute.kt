@@ -37,7 +37,9 @@ enum class WeaponType {
  * Attribute values, whatever they are, must be capable of being added to one another in order to combine effects.
  */
 @JsonDeserialize(using = AttributeValueDeserialiser::class)
-sealed class AttributeValue
+sealed class AttributeValue {
+    abstract fun copy(): AttributeValue
+}
 
 @JsonDeserialize
 data class NumericValue(val value: Int) : AttributeValue() {
@@ -46,6 +48,10 @@ data class NumericValue(val value: Int) : AttributeValue() {
                 .let { newValue ->
                     NumericValue(newValue)
                 }
+    }
+
+    override fun copy(): NumericValue {
+        return NumericValue(value)
     }
 }
 
@@ -60,6 +66,10 @@ data class WeaponTypeValue(val value: WeaponType) : AttributeValue() {
                     WeaponTypeValue(newValue)
                 }
     }
+
+    override fun copy(): AttributeValue {
+        return WeaponTypeValue(value)
+    }
 }
 
 /**
@@ -73,6 +83,10 @@ data class ActionValue(val value: List<ActionOption>) : AttributeValue() {
                     ActionValue(newValue)
                 }
     }
+
+    override fun copy(): AttributeValue {
+        return ActionValue(value)
+    }
 }
 
 /**
@@ -85,5 +99,8 @@ data class EffectValue(val value: List<Effect>) : AttributeValue() {
                 .let { newValue ->
                     EffectValue(newValue)
                 }
+    }
+    override fun copy(): AttributeValue {
+        return EffectValue(value.toList()) // explicit toList call to copy the list items by value
     }
 }

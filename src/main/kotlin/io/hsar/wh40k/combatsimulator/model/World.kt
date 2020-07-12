@@ -29,11 +29,9 @@ data class World(
     }
 
     fun moveTowards(unit: UnitInstance, otherUnit: UnitInstance, maxMovement: Int): Unit {
-        
+
         val unitPosition = getPosition(unit)
         val otherPosition = getPosition(otherUnit)
-        val deltaX = otherPosition.x - unitPosition.x
-        val deltaY = otherPosition.y - unitPosition.y
 
         var workingPosition = MapPosition(unitPosition)
         var tempPosition = MapPosition(unitPosition)
@@ -41,15 +39,20 @@ data class World(
         var squaresMoved = 0
         while(movementLeft > 0) {
             // work out which direction to move in
+            val deltaX = otherPosition.x - tempPosition.x
+            val deltaY = otherPosition.y - tempPosition.y
+            if(deltaX <=1 && deltaY <=1) {
+                break // we are in square next to unit
+            }
             val direction = getDirection(deltaX, deltaY)
 
             //check to see if anything in that space
             when(getSpaceContents(getPosition(unit) + direction)) {
                 null ->  {  // free to use space
-                    if(squaresMoved <= movementLeft) {
+                    if(squaresMoved + 1 <= movementLeft) {
                         workingPosition = tempPosition + direction
-                        tempPosition = MapPosition(unitPosition)
-                        movementLeft -= squaresMoved
+                        tempPosition = MapPosition(workingPosition)
+                        movementLeft -= squaresMoved + 1
                         squaresMoved = 0
                     } else {
                         movementLeft = 0 // can't reach the square with remaining movement
@@ -57,8 +60,8 @@ data class World(
 
                 }
                 in getAllies(unit) -> {
-                    tempPosition = tempPosition + direction
-                    squaresMoved += 1
+                    tempPosition += direction
+                    squaresMoved += 2
                 } // will take two moves to move through. Only update workingposition
                 // Need to think about position caching as could try to move through ally and no space on other side
                 in getAdversaries(unit) -> movementLeft = 0 //stop going
@@ -68,7 +71,7 @@ data class World(
         setPosition(unit, workingPosition)
     }
 
-    fun getDirection(deltaX: Int, deltaY: Int): MapPosition {
+    private fun getDirection(deltaX: Int, deltaY: Int): MapPosition {
         val xDir = when {
             deltaX > 0 -> 1
             deltaX < 0 -> -1
@@ -108,7 +111,7 @@ data class World(
         this.unitPositions[unit] = position
     }
 
-    fun getSpaceContents(mapPosition: MapPosition): UnitInstance? {
+    private fun getSpaceContents(mapPosition: MapPosition): UnitInstance? {
         val matchingUnits = unitPositions.filter { it.value == mapPosition }.toList()
         // use overloaded == operator to check x & y are same
         return when {
@@ -140,10 +143,37 @@ data class World(
     }
 
     fun createCopy(): World {
-        val tempUnitPositions = unitPositions.mapValues { it ->
-            MapPosition(it.value)
-        }.toMutableMap()
-        return World(friendlyForces, enemyForces, tempUnitPositions)
+        // clone the unitpositions and copy the forces lists into new list objects so that if we then swap
+        //out entries in the copies of the lists, they will not be swapped out in the original lists
+
+         val tempUnitPositions = unitPositions.mapValues { unitPosition ->
+            MapPosition(unitPosition.value)
+         }.toMutableMap()
+         return World(friendlyForces.toMutableList(), enemyForces.toMutableList(), tempUnitPositions)
+    }
+
+    fun replaceUnitInstanceWithCopy(unitInstance: UnitInstance): UnitInstance {
+        val tempUnitInstance = unitInstance.createCopy()
+        when (unitInstance) {
+            in friendlyForces -> {
+                friendlyForces[friendlyForces.indexOf(unitInstance)] = tempUnitInstance
+            }
+            in enemyForces -> {
+                enemyForces[enemyForces.indexOf(unitInstance)] = tempUnitInstance
+            }
+            else -> {
+                // do nothing as this unitinstance is not in the world (may be an existing copy)
+            }
+        }
+
+        // replace unit with the copy in unitPositions so that the references line
+        // up for doing logic on it
+        val position = unitPositions[unitInstance]
+        if(position != null) {
+            unitPositions.remove(unitInstance)
+            unitPositions[tempUnitInstance] = position
+        }
+        return tempUnitInstance
     }
 }
 
