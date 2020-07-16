@@ -2,7 +2,6 @@ package io.hsar.wh40k.combatsimulator.logic
 
 import io.hsar.wh40k.combatsimulator.model.UnitInstance
 import io.hsar.wh40k.combatsimulator.model.World
-import io.hsar.wh40k.combatsimulator.model.unit.BaseStat
 
 object TacticalActionStrategy : ActionStrategy {
 
@@ -19,30 +18,35 @@ object TacticalActionStrategy : ActionStrategy {
         val allies = world.getAllies(thisUnit)
         val adversaries = world.getAdversaries(thisUnit)
         val allUnits = allies + adversaries
-        val possibleTargetedActions = possibleActionOptions.map { actionOption ->
-            when (actionOption.targetType) {
-                TargetType.SELF_TARGET -> listOf(TargetedAction(actionOption, thisUnit))
-                TargetType.ADVERSARY_TARGET -> adversaries.map { adversary ->
-                    TargetedAction(actionOption, adversary)
+        val possibleTargetedActions = possibleActionOptions
+                .map { actionOption ->
+                    when (actionOption.targetType) {
+                        TargetType.SELF_TARGET -> listOf(TargetedAction(actionOption, thisUnit))
+                        TargetType.ADVERSARY_TARGET -> adversaries.map { adversary ->
+                            TargetedAction(actionOption, adversary)
+                        }
+                        TargetType.ALLY_TARGET -> allies.map { ally ->
+                            TargetedAction(actionOption, ally)
+                        }
+                        TargetType.ANY_TARGET -> allUnits.map { anyUnit ->
+                            TargetedAction(actionOption, anyUnit)
+                        }
+                    }
                 }
-                TargetType.ALLY_TARGET -> allies.map { ally ->
-                    TargetedAction(actionOption, ally)
-                }
-                TargetType.ANY_TARGET -> allUnits.map { anyUnit ->
-                    TargetedAction(actionOption, anyUnit)
-                }
-            }
-        }.flatten()
+                .flatten()
 
-        val fullActionTargetedActions = possibleTargetedActions.filter { targetedAction ->
-            targetedAction.action.actionCost == ActionCost.FULL_ACTION
-        }.map { fullActionTargetedAction ->
-            listOf(fullActionTargetedAction) // wrap each in list so that can merge with legal half action combos
-        }
+        val fullActionTargetedActions = possibleTargetedActions
+                .filter { targetedAction ->
+                    targetedAction.action.actionCost == ActionCost.FULL_ACTION
+                }
+                .map { fullActionTargetedAction ->
+                    listOf(fullActionTargetedAction) // wrap each in list so that can merge with legal half action combos
+                }
 
-        val halfActionTargetedActions = possibleTargetedActions.filter { targetedAction ->
-            targetedAction !in fullActionTargetedActions.flatten()
-        }
+        val halfActionTargetedActions = possibleTargetedActions
+                .filter { targetedAction ->
+                    targetedAction !in fullActionTargetedActions.flatten()
+                }
 
         val allHalfActionCombos = halfActionTargetedActions.map { targetedAction ->
             (halfActionTargetedActions - targetedAction).map { otherAction ->
@@ -55,9 +59,14 @@ object TacticalActionStrategy : ActionStrategy {
             isLegalActionPair(halfActionCombo)
         }
 
+        println("fullActionTargetedActions: " + fullActionTargetedActions)
+        println("allLegalHalfActionCombos: " + allLegalHalfActionCombos)
         return (fullActionTargetedActions + allLegalHalfActionCombos)
                 .map { eachLegalActionCombo ->
                     getExpectedValue(world, thisUnit, eachLegalActionCombo) to eachLegalActionCombo
+                }
+                .also { test ->
+                    println("actions: " + test)
                 }
                 .maxBy { (expectedValue, _) -> expectedValue }!!
                 .second

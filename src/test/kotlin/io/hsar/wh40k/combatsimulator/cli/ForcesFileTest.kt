@@ -51,7 +51,7 @@ class InputParseTest {
                                         )
                                 ),
                                 equipmentRefs = listOf(
-                                        "wpn_pistol_stubRevolver",
+                                        "wpn_pistol_autopistol",
                                         "amr_basic_heavyLeather"
                                 )
                         ),
