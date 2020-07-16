@@ -5,13 +5,14 @@ import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import io.hsar.wh40k.combatsimulator.logic.ActionCost.FULL_ACTION
 import io.hsar.wh40k.combatsimulator.logic.ActionCost.HALF_ACTION
-import io.hsar.wh40k.combatsimulator.model.MapPosition
 import io.hsar.wh40k.combatsimulator.model.UnitInstance
 import io.hsar.wh40k.combatsimulator.model.World
-import io.hsar.wh40k.combatsimulator.model.unit.*
+import io.hsar.wh40k.combatsimulator.model.unit.Attribute
+import io.hsar.wh40k.combatsimulator.model.unit.BaseStat
+import io.hsar.wh40k.combatsimulator.model.unit.BodyPart
 import io.hsar.wh40k.combatsimulator.model.unit.Effect.AIMED_FULL
 import io.hsar.wh40k.combatsimulator.model.unit.Effect.AIMED_HALF
-import io.hsar.wh40k.combatsimulator.model.unit.Effect.CHARGING
+import io.hsar.wh40k.combatsimulator.model.unit.NumericValue
 import io.hsar.wh40k.combatsimulator.random.AverageDice
 import io.hsar.wh40k.combatsimulator.random.RandomDice
 import io.hsar.wh40k.combatsimulator.random.Result
@@ -23,7 +24,7 @@ import io.hsar.wh40k.combatsimulator.random.RollResult
         property = "actionType",
         visible = true)
 @JsonIgnoreProperties(value = ["actionType"])
-@JsonSubTypes(
+@JsonSubTypes( // NB: No elegant way to do this without specifying class names, see https://github.com/FasterXML/jackson-databind/issues/374
         JsonSubTypes.Type(value = StandardMeleeAttack::class, name = "StandardMeleeAttack"),
         JsonSubTypes.Type(value = SingleRangedAttack::class, name = "SingleRangedAttack")
 )

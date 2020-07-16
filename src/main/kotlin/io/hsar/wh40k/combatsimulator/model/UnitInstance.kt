@@ -2,22 +2,25 @@ package io.hsar.wh40k.combatsimulator.model
 
 import io.hsar.wh40k.combatsimulator.cli.Loggable
 import io.hsar.wh40k.combatsimulator.logic.ActionOption
-
 import io.hsar.wh40k.combatsimulator.logic.FullAim
 import io.hsar.wh40k.combatsimulator.logic.HalfAim
 import io.hsar.wh40k.combatsimulator.logic.TacticalActionStrategy
-import io.hsar.wh40k.combatsimulator.logic.TargetedAction
-
-import io.hsar.wh40k.combatsimulator.model.unit.*
+import io.hsar.wh40k.combatsimulator.model.unit.ActionValue
+import io.hsar.wh40k.combatsimulator.model.unit.Attribute
 import io.hsar.wh40k.combatsimulator.model.unit.Attribute.ACTIONS
 import io.hsar.wh40k.combatsimulator.model.unit.Attribute.CURRENT_HEALTH
 import io.hsar.wh40k.combatsimulator.model.unit.Attribute.EFFECTS
-import io.hsar.wh40k.combatsimulator.model.unit.Attribute.WEAPON_TYPE
-import io.hsar.wh40k.combatsimulator.model.unit.ItemType.WEAPON
+import io.hsar.wh40k.combatsimulator.model.unit.AttributeValue
+import io.hsar.wh40k.combatsimulator.model.unit.BaseStat
+import io.hsar.wh40k.combatsimulator.model.unit.BodyPart
+import io.hsar.wh40k.combatsimulator.model.unit.Effect
+import io.hsar.wh40k.combatsimulator.model.unit.EffectValue
+import io.hsar.wh40k.combatsimulator.model.unit.EquipmentItem
+import io.hsar.wh40k.combatsimulator.model.unit.NumericValue
 import io.hsar.wh40k.combatsimulator.model.unit.Unit
-import io.hsar.wh40k.combatsimulator.model.unit.WeaponType.MELEE
 import io.hsar.wh40k.combatsimulator.random.RandomDice
 import io.hsar.wh40k.combatsimulator.random.RollResult
+import io.hsar.wh40k.combatsimulator.utils.mergeWithAddition
 import io.hsar.wh40k.combatsimulator.utils.sum
 
 
@@ -39,8 +42,6 @@ class UnitInstance(
                 ?: throw IllegalStateException("Unit ${name} ACTION attribute should have actions but instead was: ${startingAttributes.getValue(ACTIONS)}"))
                 .value
 
-
-
     fun rollBaseStat(stat: BaseStat, bonus: Int): RollResult {
         return RandomDice.roll(unit.stats.baseStats.getValue(stat) + bonus)
     }
@@ -50,20 +51,22 @@ class UnitInstance(
     }
 
     fun setEffect(effect: Effect) {
-        when(val effects = currentAttributes[EFFECTS] ?: EffectValue(listOf<Effect>())) {
+        when (val effects = currentAttributes[EFFECTS] ?: EffectValue(listOf())) {
             is EffectValue -> {
-                if(effect !in effects.value) { currentAttributes[EFFECTS] = effects + EffectValue(listOf(effect)) }
+                if (effect !in effects.value) {
+                    currentAttributes[EFFECTS] = effects + EffectValue(listOf(effect))
+                }
             }
             else -> return
         }
     }
 
     fun getBaseStatBonus(stat: BaseStat): Int {
-        return  unit.stats.baseStats.getValue(stat)  / 10  // integer division
+        return unit.stats.baseStats.getValue(stat) / 10  // integer division
     }
 
     fun getAimBonus(): Int {
-        return when(val effects = currentAttributes[Attribute.EFFECTS] ?: EffectValue(listOf<Effect>())) {
+        return when (val effects = currentAttributes[Attribute.EFFECTS] ?: EffectValue(listOf())) {
             is EffectValue -> {
                 when {
                     Effect.AIMED_FULL in effects.value -> 20
@@ -82,20 +85,19 @@ class UnitInstance(
         }
     }
 
-    fun createCopy(): UnitInstance {
-        val copiedAttributes = currentAttributes.mapValues {attribute ->
-            attribute.value.copy()
-        }.toMutableMap()
-        return UnitInstance(
-                name,
-                description,
-                unit,
-                equipment,
-                startingAttributes,
-                tacticalActionStrategy,
-                copiedAttributes
-        )
-    }
+    fun createCopy(): UnitInstance = UnitInstance(
+            name = name,
+            description = description,
+            unit = unit,
+            equipment = equipment,
+            startingAttributes = startingAttributes,
+            tacticalActionStrategy = tacticalActionStrategy,
+            currentAttributes = currentAttributes
+                    .mapValues { attribute ->
+                        attribute.value.copy()
+                    }
+                    .toMutableMap()
+    )
 
     companion object : Loggable {
         val DEFAULT_ACTIONS = ActionValue(listOf(
@@ -107,43 +109,45 @@ class UnitInstance(
         fun createInitialAttributeMap(unit: Unit, equipment: List<EquipmentItem>): Map<Attribute, AttributeValue> {
             val equipmentAttributes = equipment.map { it.modifiesAttributes }.sum()
 
-           /* val ammoMap = equipment.firstOrNull() { it.itemType == WEAPON } // #TODO: Handle this better than just "the first weapon to hand"
-                    ?.modifiesAttributes
-                    ?.let { weaponAttributes ->
-                        if (weaponAttributes.getValue(WEAPON_TYPE) == WeaponTypeValue(MELEE)) {
-                            // Melee weapons have no need for ammunition
-                            null
-                        } else {
-                            // Ranged weapons take their clip size from the ammo given from a reload
-                            mapOf(Attribute.WEAPON_AMMUNITION to NumericValue((weaponAttributes.getValue(ACTIONS) as ActionValue)
-                                    .value
-                                    .filterIsInstance<WeaponReload>()
-                                    .first().setsAmmunitionTo)
-                            )
-                        }
-                    } ?: emptyMap()*/
+            /* val ammoMap = equipment.firstOrNull() { it.itemType == WEAPON } // #TODO: Handle this better than just "the first weapon to hand"
+                     ?.modifiesAttributes
+                     ?.let { weaponAttributes ->
+                         if (weaponAttributes.getValue(WEAPON_TYPE) == WeaponTypeValue(MELEE)) {
+                             // Melee weapons have no need for ammunition
+                             null
+                         } else {
+                             // Ranged weapons take their clip size from the ammo given from a reload
+                             mapOf(Attribute.WEAPON_AMMUNITION to NumericValue((weaponAttributes.getValue(ACTIONS) as ActionValue)
+                                     .value
+                                     .filterIsInstance<WeaponReload>()
+                                     .first().setsAmmunitionTo)
+                             )
+                         }
+                     } ?: emptyMap()*/
 
             val dynamicAttributes = mapOf(
                     CURRENT_HEALTH to NumericValue(unit.stats.baseStats.getValue(BaseStat.MAX_HEALTH))
             ) //+ ammoMap
 
-            return DEFAULT_ATTRIBUTES + equipmentAttributes + dynamicAttributes
+            return DEFAULT_ATTRIBUTES
+                    .mergeWithAddition(equipmentAttributes)
+                    .mergeWithAddition(dynamicAttributes)
         }
 
-        fun randomBodyPart() : BodyPart {
+        fun randomBodyPart(): BodyPart {
 
             return RandomDice.roll("1d100")
-            .let { diceRoll ->
-                when (diceRoll) {
-                    in 0..10 -> BodyPart.HEAD
-                    in 11..20 -> BodyPart.RIGHT_ARM
-                    in 21..30 -> BodyPart.LEFT_ARM
-                    in 31..70 -> BodyPart.BODY
-                    in 71..85 -> BodyPart.RIGHT_LEG
-                    in 86..100 -> BodyPart.LEFT_LEG
-                    else -> throw RuntimeException("d100 roll outside of 1-100")
-                }
-            }
+                    .let { diceRoll ->
+                        when (diceRoll) {
+                            in 0..10 -> BodyPart.HEAD
+                            in 11..20 -> BodyPart.RIGHT_ARM
+                            in 21..30 -> BodyPart.LEFT_ARM
+                            in 31..70 -> BodyPart.BODY
+                            in 71..85 -> BodyPart.RIGHT_LEG
+                            in 86..100 -> BodyPart.LEFT_LEG
+                            else -> throw RuntimeException("d100 roll outside of 1-100")
+                        }
+                    }
 
         }
     }

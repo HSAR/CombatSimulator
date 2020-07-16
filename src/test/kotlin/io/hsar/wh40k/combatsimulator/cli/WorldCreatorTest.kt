@@ -15,10 +15,10 @@ class WorldCreatorTest {
         // This unit test is mainly a vehicle for end to end testing
 
         val enemyTestFile = getResourcePath("data/test-enemy-forces-file.json")
-        val enemyForcesDTO: ForcesDTO = WorldCreatorTest.objectMapper.readValue(enemyTestFile)
+        val enemyForcesDTO: ForcesDTO = objectMapper.readValue(enemyTestFile)
 
         val friendlyTestFile = getResourcePath("data/test-friendly-forces-file.json")
-        val friendlyForcesDTO: ForcesDTO = WorldCreatorTest.objectMapper.readValue(friendlyTestFile)
+        val friendlyForcesDTO: ForcesDTO = objectMapper.readValue(friendlyTestFile)
 
         val world = WorldCreator.createWorld(listOf(friendlyForcesDTO, enemyForcesDTO));
         val sim = CombatSimulation(world);
