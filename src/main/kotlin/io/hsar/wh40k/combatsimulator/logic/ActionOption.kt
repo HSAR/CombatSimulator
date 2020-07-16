@@ -1,6 +1,7 @@
 package io.hsar.wh40k.combatsimulator.logic
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
+import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import io.hsar.wh40k.combatsimulator.logic.ActionCost.FULL_ACTION
 import io.hsar.wh40k.combatsimulator.logic.ActionCost.HALF_ACTION
@@ -22,6 +23,10 @@ import io.hsar.wh40k.combatsimulator.random.RollResult
         property = "actionType",
         visible = true)
 @JsonIgnoreProperties(value = ["actionType"])
+@JsonSubTypes(
+        JsonSubTypes.Type(value = StandardMeleeAttack::class, name = "StandardMeleeAttack"),
+        JsonSubTypes.Type(value = SingleRangedAttack::class, name = "SingleRangedAttack")
+)
 abstract class ActionOption {
     abstract val actionCost: ActionCost
     abstract val targetType: TargetType
@@ -34,6 +39,8 @@ abstract class ActionOption {
         val HALF_AIMING_INHERENT_VALUE = 0.5f
         val FULL_AIMING_INHERENT_VALUE = 0.8f
         val MOVING_INHERENT_VALUE = 1.0f
+
+
     }
 }
 
@@ -103,6 +110,7 @@ abstract class RangedAttack: AttackActionOption() {
         return user.getBaseStatSuccessChance(BaseStat.BALLISTIC_SKILL, user.getAimBonus() + bonusToHit)
     }
 }
+
 
 class StandardMeleeAttack(override val damage: String):  MeleeAttack() {
 

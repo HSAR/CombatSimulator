@@ -17,7 +17,7 @@ data class World(
         val enemyForces: MutableList<UnitInstance>,
         val unitPositions: MutableMap<UnitInstance, MapPosition>
 ) {
-
+     private var isLoggable = true
     /**
      * Used by things like TacticalActionStrategy to work out how far away units are from each other
      * This will give the inclusive distance from square to square, so callers need to subtract 1 when working out
@@ -149,7 +149,9 @@ data class World(
          val tempUnitPositions = unitPositions.mapValues { unitPosition ->
             MapPosition(unitPosition.value)
          }.toMutableMap()
-         return World(friendlyForces.toMutableList(), enemyForces.toMutableList(), tempUnitPositions)
+         val tempWorld = World(friendlyForces.toMutableList(), enemyForces.toMutableList(), tempUnitPositions)
+        tempWorld.isLoggable = false // don't want to log actions when applying them as part of EV calculation
+        return tempWorld
     }
 
     fun replaceUnitInstanceWithCopy(unitInstance: UnitInstance): UnitInstance {

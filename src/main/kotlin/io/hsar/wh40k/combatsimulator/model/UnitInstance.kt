@@ -104,8 +104,6 @@ class UnitInstance(
         ))
         val DEFAULT_ATTRIBUTES = mapOf(ACTIONS to DEFAULT_ACTIONS, EFFECTS to EffectValue(emptyList()))
 
-
-
         fun createInitialAttributeMap(unit: Unit, equipment: List<EquipmentItem>): Map<Attribute, AttributeValue> {
             val equipmentAttributes = equipment.map { it.modifiesAttributes }.sum()
 

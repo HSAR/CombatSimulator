@@ -7,11 +7,8 @@
             "WEAPON_TYPE": "MELEE",
             "ACTIONS": [
                 {
-                    "actionType": "MeleeAttack",
-                    "damage": "1d10",
-                    "appliesEffects": [
-                        "PRIMITIVE"
-                    ]
+                    "actionType": "StandardMeleeAttack",
+                    "damage": "1d10"
                 }
             ],
             "EFFECTS": [
