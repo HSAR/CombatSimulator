@@ -43,18 +43,29 @@ object TacticalActionStrategy : ActionStrategy {
                     listOf(fullActionTargetedAction) // wrap each in list so that can merge with legal half action combos
                 }
 
-        val halfActionTargetedActions = possibleTargetedActions - fullActionTargetedActions.flatten()
-
-        val allHalfActionCombos = halfActionTargetedActions.map { targetedAction ->
-            (halfActionTargetedActions - targetedAction).map { otherAction ->
-                listOf(targetedAction, otherAction)
-            }
-        }.flatten()
-        //TODO test this thoroughly
-
-        val allLegalHalfActionCombos = allHalfActionCombos.filter { halfActionCombo ->
-            isLegalActionPair(halfActionCombo)
-        }
+        val allLegalHalfActionCombos = possibleTargetedActions
+                .filter { targetedAction ->
+                    targetedAction.action.actionCost == ActionCost.HALF_ACTION
+                }
+                //TODO test this thoroughly
+                .let { halfActionTargetedActions ->
+                    halfActionTargetedActions
+                            .map { targetedAction ->
+                                // Create a list of all possible pairings of half actions
+                                halfActionTargetedActions.map { anotherAction ->
+                                    listOf(targetedAction, anotherAction)
+                                }
+                            }
+                            .flatten()
+                }
+                // Remove all half action combos where both actions are the same
+                .filterNot { (firstAction, secondAction) ->
+                    firstAction == secondAction
+                }
+                // Remove illegal combinations
+                .filter { halfActionCombo ->
+                    isLegalActionPair(halfActionCombo)
+                }
 
         return (fullActionTargetedActions + allLegalHalfActionCombos)
                 .map { eachLegalActionCombo ->
