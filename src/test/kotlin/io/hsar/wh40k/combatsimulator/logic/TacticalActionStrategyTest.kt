@@ -1,14 +1,10 @@
 package io.hsar.wh40k.combatsimulator.logic
 
 import TestUtils
+import com.geospock.MockitoExtensions.any
 import io.hsar.wh40k.combatsimulator.model.MapPosition
-import io.hsar.wh40k.combatsimulator.model.UnitInstance
-import io.hsar.wh40k.combatsimulator.model.World
-import org.hamcrest.CoreMatchers.equalTo
-import org.hamcrest.MatcherAssert.assertThat
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito
-import org.mockito.ArgumentMatchers.any
 
 internal class TacticalActionStrategyTest {
     private val meleeAttack = StandardMeleeAttack("1d10+4")
