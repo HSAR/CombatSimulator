@@ -1,10 +1,11 @@
 package io.hsar.wh40k.combatsimulator.logic
 
 import TestUtils
-import com.geospock.MockitoExtensions.any
+import com.nhaarman.mockito_kotlin.any
 import io.hsar.wh40k.combatsimulator.model.MapPosition
 import org.junit.jupiter.api.Test
-import org.mockito.Mockito
+import org.mockito.Mockito.`when`
+import org.mockito.Mockito.mock
 
 internal class TacticalActionStrategyTest {
     private val meleeAttack = StandardMeleeAttack("1d10+4")
@@ -20,8 +21,8 @@ internal class TacticalActionStrategyTest {
         val possibleActions = TestUtils.getBasicActions()
 
         val tas = TacticalActionStrategy
-        val halfAimMock = Mockito.mock(HalfAim::class.java)
-        Mockito.`when`(halfAimMock.isLegal(any(), any(), any()))
+        val halfAimMock = mock(HalfAim::class.java)
+        `when`(halfAimMock.isLegal(any(), any(), any()))
                 .thenReturn(false)
 
         val x = 1
