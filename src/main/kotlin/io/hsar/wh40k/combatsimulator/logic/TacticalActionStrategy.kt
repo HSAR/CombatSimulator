@@ -3,16 +3,23 @@ package io.hsar.wh40k.combatsimulator.logic
 import io.hsar.wh40k.combatsimulator.model.UnitInstance
 import io.hsar.wh40k.combatsimulator.model.World
 
+/**
+ * This class is responsible for working out the best actions for a unit to take on its turn, given the options
+ * available to it and the context of the world around it.
+ *
+ * It has one public function, which is relied on by UnitInstances every turn to calculate the optimum actions
+ * to take based on the state of combat at that time.
+ */
 object TacticalActionStrategy : ActionStrategy {
 
+    /**
+     * Given a list of ActionOptions that the unit can carry out, returns a list of TargetedActions for that turn
+     * with the highest expected value
+     */
     override fun decideTurnActions(world: World, thisUnit: UnitInstance, possibleActionOptions: Collection<ActionOption>): List<TargetedAction> {
         if (possibleActionOptions.isEmpty()) {
             throw IllegalArgumentException("Cannot decide turn actions with no possibilities!")
         }
-
-        // Shit implementation - units will only ever aim and fire their max damage attack
-
-        // for each Action option, map to list of legal targets
 
         // cache some lists of units to avoid re-calling methods
         val allies = world.getAllies(thisUnit)
@@ -47,7 +54,7 @@ object TacticalActionStrategy : ActionStrategy {
                 .filter { targetedAction ->
                     targetedAction.action.actionCost == ActionCost.HALF_ACTION
                 }
-                //TODO test this thoroughly
+
                 .let { halfActionTargetedActions ->
                     halfActionTargetedActions
                             .map { targetedAction ->
@@ -75,18 +82,14 @@ object TacticalActionStrategy : ActionStrategy {
                 .second
     }
 
-    private fun getExpectedValue(world: World, thisUnit: UnitInstance, actionCombo: List<TargetedAction>): Float {
-        // set up clone of world
-
-        // TODO need to set up unit and target to use the tempworld versions
-
+    fun getExpectedValue(world: World, thisUnit: UnitInstance, actionCombo: List<TargetedAction>): Float {
         return world.createCopy()
                 .let { tempWorld ->
                     tempWorld.replaceUnitInstanceWithCopy(thisUnit)
                             .let { tempUser ->
                                 actionCombo.map { targetedAction ->
                                     tempWorld.replaceUnitInstanceWithCopy(targetedAction.target)
-                                            // TODO not a massive issue but if both actipns of a combo have the same target then any changes to the target won't carry over
+                                            // TODO not a massive issue but if both actions of a combo have the same target then any changes to the target won't carry over
                                             .let { tempTarget ->
                                                 if (targetedAction.action.isLegal(tempWorld, tempUser, tempTarget)) {
                                                     targetedAction.action.expectedValue(tempWorld, tempUser, tempTarget)

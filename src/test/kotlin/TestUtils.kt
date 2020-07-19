@@ -1,4 +1,5 @@
 
+import io.hsar.wh40k.combatsimulator.logic.*
 import io.hsar.wh40k.combatsimulator.model.MapPosition
 import io.hsar.wh40k.combatsimulator.model.UnitInstance
 import io.hsar.wh40k.combatsimulator.model.World
@@ -42,5 +43,13 @@ object TestUtils {
                 mutableListOf(otherUnitInstance),
                 unitPositions
         )
+    }
+
+    fun getBasicActions(): List<ActionOption> {
+        return listOf(HalfAim(), HalfMove(), SingleRangedAttack("1d10+3", 30))
+    }
+
+    fun getDefaultActions(): List<ActionOption> {
+        return listOf(HalfAim(), FullAim(), HalfMove(), FullMove(), SingleRangedAttack("1d10+3", 30))
     }
 }
