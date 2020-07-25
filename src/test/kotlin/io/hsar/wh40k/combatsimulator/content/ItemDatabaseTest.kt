@@ -9,8 +9,10 @@ import io.hsar.wh40k.combatsimulator.model.unit.EquipmentItem
 import io.hsar.wh40k.combatsimulator.model.unit.ItemType
 import io.hsar.wh40k.combatsimulator.model.unit.WeaponType.PISTOL
 import io.hsar.wh40k.combatsimulator.model.unit.WeaponTypeValue
+import org.hamcrest.CoreMatchers.instanceOf
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.equalTo
+
 import org.junit.jupiter.api.Test
 
 class ItemDatabaseTest {
@@ -48,8 +50,8 @@ class ItemDatabaseTest {
 
         // and that both expected and actual have the action as the same class of ActionOption
         assertThat(
-                (result.modifiesAttributes[ACTIONS] as ActionValue).value[0]::class,
-                equalTo((expectedItem.modifiesAttributes[ACTIONS] as ActionValue).value[0]::class))
+                (result.modifiesAttributes[ACTIONS] as ActionValue).value[0],
+                        instanceOf((expectedItem.modifiesAttributes[ACTIONS] as ActionValue).value[0]::class.java))
 
 
         /*
