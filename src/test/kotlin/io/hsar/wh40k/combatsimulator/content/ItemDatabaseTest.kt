@@ -46,7 +46,7 @@ class ItemDatabaseTest {
                 (result.modifiesAttributes[ACTIONS] as ActionValue).value.size,
                 equalTo((expectedItem.modifiesAttributes[ACTIONS] as ActionValue).value.size))
 
-        // and that both expected and actual have the action as the same class of ActonOption
+        // and that both expected and actual have the action as the same class of ActionOption
         assertThat(
                 (result.modifiesAttributes[ACTIONS] as ActionValue).value[0]::class,
                 equalTo((expectedItem.modifiesAttributes[ACTIONS] as ActionValue).value[0]::class))
