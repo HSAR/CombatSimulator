@@ -1,13 +1,10 @@
 package io.hsar.wh40k.combatsimulator.content
 
-import io.hsar.wh40k.combatsimulator.logic.ActionCost.TWO_FULL_ACTIONS
-import io.hsar.wh40k.combatsimulator.logic.MeleeAttack
-import io.hsar.wh40k.combatsimulator.logic.SingleRangedAttack
+import io.hsar.wh40k.combatsimulator.logic.actionoptions.SingleRangedAttack
 // import io.hsar.wh40k.combatsimulator.logic.WeaponReload
 import io.hsar.wh40k.combatsimulator.model.unit.ActionValue
 import io.hsar.wh40k.combatsimulator.model.unit.Attribute.ACTIONS
 import io.hsar.wh40k.combatsimulator.model.unit.Attribute.WEAPON_TYPE
-import io.hsar.wh40k.combatsimulator.model.unit.Effect.PRIMITIVE
 import io.hsar.wh40k.combatsimulator.model.unit.EquipmentItem
 import io.hsar.wh40k.combatsimulator.model.unit.ItemType
 import io.hsar.wh40k.combatsimulator.model.unit.WeaponType.PISTOL

@@ -1,14 +1,12 @@
 
-import io.hsar.wh40k.combatsimulator.logic.*
+import com.nhaarman.mockito_kotlin.any
+import io.hsar.wh40k.combatsimulator.logic.actionoptions.*
 import io.hsar.wh40k.combatsimulator.model.MapPosition
 import io.hsar.wh40k.combatsimulator.model.UnitInstance
 import io.hsar.wh40k.combatsimulator.model.World
-import io.hsar.wh40k.combatsimulator.model.unit.Attribute
-import io.hsar.wh40k.combatsimulator.model.unit.BaseStat
-import io.hsar.wh40k.combatsimulator.model.unit.DerivedStats
-import io.hsar.wh40k.combatsimulator.model.unit.NumericValue
-import io.hsar.wh40k.combatsimulator.model.unit.Stats
+import io.hsar.wh40k.combatsimulator.model.unit.*
 import io.hsar.wh40k.combatsimulator.model.unit.Unit
+import org.mockito.Mockito
 
 object TestUtils {
     fun getGenericUnitInstance(): UnitInstance {
@@ -45,8 +43,102 @@ object TestUtils {
         )
     }
 
-    fun getBasicActions(): List<ActionOption> {
-        return listOf(HalfAim(), HalfMove(), SingleRangedAttack("1d10+3", 30))
+    fun getMockedBasicActions(): Map<String, ActionOption> {
+        val halfAimMock = Mockito.mock(HalfAim::class.java)
+        Mockito.`when`(halfAimMock.actionCost).thenReturn(ActionCost.HALF_ACTION)
+        Mockito.`when`(halfAimMock.targetType).thenReturn(TargetType.SELF_TARGET)
+        Mockito.`when`(halfAimMock.isLegal(any(), any(), any()))
+                .thenReturn(true)
+        Mockito.`when`(halfAimMock.expectedValue(any(), any(), any()))
+                .thenReturn(5f)
+        Mockito.`when`(halfAimMock.apply(any(), any(), any()))
+                .then {
+                    (it.arguments[1] as UnitInstance).setEffect(Effect.AIMED_HALF)
+                }
+
+
+        val halfMoveMock = Mockito.mock(HalfMove::class.java)
+        Mockito.`when`(halfMoveMock.actionCost).thenReturn(ActionCost.HALF_ACTION)
+        Mockito.`when`(halfMoveMock.targetType).thenReturn(TargetType.ANY_TARGET)
+        Mockito.`when`(halfMoveMock.isLegal(any(), any(), any()))
+                .thenReturn(true)
+        Mockito.`when`(halfMoveMock.expectedValue(any(), any(), any()))
+                .thenReturn(4f)
+        Mockito.`when`(halfMoveMock.apply(any(), any(), any()))
+                .then {
+                    // move map position so that we can subsequently test it is not moved in real world
+                    (it.arguments[0] as World).unitPositions.set((it.arguments[1] as UnitInstance), MapPosition(99,99))
+                }
+
+
+
+        val singleRangedAttackMock = Mockito.mock(SingleRangedAttack::class.java)
+        Mockito.`when`(singleRangedAttackMock.actionCost).thenReturn(ActionCost.HALF_ACTION)
+        Mockito.`when`(singleRangedAttackMock.targetType).thenReturn(TargetType.ADVERSARY_TARGET)
+        Mockito.`when`(singleRangedAttackMock.isLegal(any(), any(), any()))
+                .thenReturn(true)
+        Mockito.`when`(singleRangedAttackMock.expectedValue(any(), any(), any()))
+                .then {
+                    if((it.arguments[1] as UnitInstance).getAimBonus() > 0) {
+                        10f  // increase EV if aimed
+                    } else {
+                        6f
+                    }
+                }
+        Mockito.`when`(singleRangedAttackMock.apply(any(), any(), any()))
+                .then {
+                    (it.arguments[2] as UnitInstance).receiveDamage(1000);
+                }
+        return mapOf("HalfAim" to halfAimMock, "HalfMove" to halfMoveMock, "SingleRangedAttack" to singleRangedAttackMock)
+    }
+
+    fun getMockedIllegalAction(): ActionOption {
+        val mockedIllegalHalfAim = Mockito.mock(HalfAim::class.java)
+        Mockito.`when`(mockedIllegalHalfAim.actionCost).thenReturn(ActionCost.HALF_ACTION)
+        Mockito.`when`(mockedIllegalHalfAim.targetType).thenReturn(TargetType.SELF_TARGET)
+        Mockito.`when`(mockedIllegalHalfAim.isLegal(any(), any(), any()))
+                .thenReturn(false)
+        Mockito.`when`(mockedIllegalHalfAim.expectedValue(any(), any(), any()))
+                .thenReturn(100f)
+        return mockedIllegalHalfAim
+    }
+
+    fun getMockedRawFullAction(): ActionOption {
+        val mockedRawFullAction = Mockito.mock(ActionOption::class.java)
+        Mockito.`when`(mockedRawFullAction.actionCost).thenReturn(ActionCost.FULL_ACTION)
+        Mockito.`when`(mockedRawFullAction.targetType).thenReturn(TargetType.ANY_TARGET)
+        Mockito.`when`(mockedRawFullAction.isLegal(any(), any(), any()))
+                .thenReturn(true)
+        return mockedRawFullAction
+
+    }
+
+    fun getMockedHighValueFullAction(): ActionOption {
+        val mockedFullAction = getMockedRawFullAction()
+        Mockito.`when`(mockedFullAction.expectedValue(any(), any(), any()))
+                .thenReturn(100f)
+        return mockedFullAction
+    }
+
+    fun getMockedLowValueFullAction(): ActionOption {
+        val mockedFullAction = getMockedRawFullAction()
+        Mockito.`when`(mockedFullAction.expectedValue(any(), any(), any()))
+                .thenReturn(1f)
+        return mockedFullAction
+    }
+
+    fun getMockedPositionDependentAction(): ActionOption {
+        val mockedFullAction = getMockedRawFullAction()
+        Mockito.`when`(mockedFullAction.expectedValue(any(), any(), any()))
+                .then {
+                    if((it.arguments[0] as World).unitPositions.getValue((it.arguments[2] as UnitInstance))
+                    == MapPosition(99,99)) {  // if target is at position 99,99
+                        100f
+                    } else {
+                        1f
+                    }
+                }
+        return mockedFullAction
     }
 
     fun getDefaultActions(): List<ActionOption> {

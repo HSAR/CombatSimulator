@@ -6,7 +6,7 @@ import com.fasterxml.jackson.core.ObjectCodec
 import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer
-import io.hsar.wh40k.combatsimulator.logic.ActionOption
+import io.hsar.wh40k.combatsimulator.logic.actionoptions.ActionOption
 import io.hsar.wh40k.combatsimulator.model.unit.ActionValue
 import io.hsar.wh40k.combatsimulator.model.unit.AttributeValue
 import io.hsar.wh40k.combatsimulator.model.unit.Effect

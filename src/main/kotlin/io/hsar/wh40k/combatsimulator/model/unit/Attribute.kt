@@ -2,7 +2,7 @@ package io.hsar.wh40k.combatsimulator.model.unit
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import io.hsar.wh40k.combatsimulator.content.AttributeValueDeserialiser
-import io.hsar.wh40k.combatsimulator.logic.ActionOption
+import io.hsar.wh40k.combatsimulator.logic.actionoptions.ActionOption
 
 /**
  * Attributes are dynamic information that can change turn by turn.

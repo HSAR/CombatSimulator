@@ -1,5 +1,6 @@
 package io.hsar.wh40k.combatsimulator.logic
 
+import io.hsar.wh40k.combatsimulator.logic.actionoptions.*
 import io.hsar.wh40k.combatsimulator.model.UnitInstance
 import io.hsar.wh40k.combatsimulator.model.World
 
@@ -88,7 +89,13 @@ object TacticalActionStrategy : ActionStrategy {
                     tempWorld.replaceUnitInstanceWithCopy(thisUnit)
                             .let { tempUser ->
                                 actionCombo.map { targetedAction ->
-                                    tempWorld.replaceUnitInstanceWithCopy(targetedAction.target)
+                                    // only replace target if not the same as user (eg for aim action) or the user reference will not line up
+                                    // and make sure to copy user for each action combo
+                                    if(thisUnit != targetedAction.target) {
+                                        tempWorld.replaceUnitInstanceWithCopy(targetedAction.target)
+                                    } else {
+                                        tempUser  // already temp as we have copied the user
+                                    }
                                             // TODO not a massive issue but if both actions of a combo have the same target then any changes to the target won't carry over
                                             .let { tempTarget ->
                                                 if (targetedAction.action.isLegal(tempWorld, tempUser, tempTarget)) {

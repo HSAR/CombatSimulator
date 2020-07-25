@@ -1,13 +1,7 @@
 package io.hsar.wh40k.combatsimulator.model
 
-import io.hsar.wh40k.combatsimulator.logic.MoveAction
-import io.hsar.wh40k.combatsimulator.logic.TargetedAction
-
 import io.hsar.wh40k.combatsimulator.model.unit.Attribute
-import io.hsar.wh40k.combatsimulator.model.unit.BaseStat
-import io.hsar.wh40k.combatsimulator.model.unit.EffectValue
 import io.hsar.wh40k.combatsimulator.model.unit.NumericValue
-import io.hsar.wh40k.combatsimulator.model.unit.StatUtils.getBonus
 import kotlin.math.abs
 import kotlin.math.absoluteValue
 import kotlin.math.max
@@ -28,8 +22,15 @@ data class World(
                 .distanceToPosition(unitPositions.getValue(otherUnit))
     }
 
+    /*
+    Given a user and another UnitInstance that the user wants to move towards, this will handle the low level
+    mechanics of moving the unit as close as it can get for its movement range, stoppign if it comes within melee
+    distance
+     */
     fun moveTowards(unit: UnitInstance, otherUnit: UnitInstance, maxMovement: Int): Unit {
-
+        if(unit === otherUnit) {
+            throw IllegalArgumentException("A UnitInstance cannot move towards itself")
+        }
         val unitPosition = getPosition(unit)
         val otherPosition = getPosition(otherUnit)
 
@@ -41,13 +42,13 @@ data class World(
             // work out which direction to move in
             val deltaX = otherPosition.x - tempPosition.x
             val deltaY = otherPosition.y - tempPosition.y
-            if(deltaX <=1 && deltaY <=1) {
+            if(abs(deltaX) <=1 && abs(deltaY) <=1) {
                 break // we are in square next to unit
             }
             val direction = getDirection(deltaX, deltaY)
 
             //check to see if anything in that space
-            when(getSpaceContents(getPosition(unit) + direction)) {
+            when(getSpaceContents(tempPosition + direction)) {
                 null ->  {  // free to use space
                     if(squaresMoved + 1 <= movementLeft) {
                         workingPosition = tempPosition + direction
@@ -71,6 +72,10 @@ data class World(
         setPosition(unit, workingPosition)
     }
 
+    /*
+    Used by moveTowards to work out which direction to move a step in on the cartesian plane based on the vector to
+    the target
+     */
     private fun getDirection(deltaX: Int, deltaY: Int): MapPosition {
         val xDir = when {
             deltaX > 0 -> 1
@@ -142,10 +147,17 @@ data class World(
         return distanceApart(user, target) == 1
     }
 
-    fun createCopy(): World {
-        // clone the unitpositions and copy the forces lists into new list objects so that if we then swap
-        //out entries in the copies of the lists, they will not be swapped out in the original lists
+    /*
+    This returns a copy of the world that can be updated without affecting the original world.
+    This is used during combat logic when applying actions to see what the best combination is
 
+    Caution - to update a UnitInstance inside the copy of the world, you still need to call replaceWithCopy first
+    to work on a deep copy of that unit instance, as this only clones the containers, not their contents
+
+    This clones the unitPositions and copy the forces lists into new list objects so that if we then swap
+    out entries in the copies of the lists, they will not be swapped out in the original lists
+     */
+    fun createCopy(): World {
          val tempUnitPositions = unitPositions.mapValues { unitPosition ->
             MapPosition(unitPosition.value)
          }.toMutableMap()

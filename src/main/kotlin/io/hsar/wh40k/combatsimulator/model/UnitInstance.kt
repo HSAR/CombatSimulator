@@ -1,9 +1,9 @@
 package io.hsar.wh40k.combatsimulator.model
 
 import io.hsar.wh40k.combatsimulator.cli.Loggable
-import io.hsar.wh40k.combatsimulator.logic.ActionOption
-import io.hsar.wh40k.combatsimulator.logic.FullAim
-import io.hsar.wh40k.combatsimulator.logic.HalfAim
+import io.hsar.wh40k.combatsimulator.logic.actionoptions.ActionOption
+import io.hsar.wh40k.combatsimulator.logic.actionoptions.FullAim
+import io.hsar.wh40k.combatsimulator.logic.actionoptions.HalfAim
 import io.hsar.wh40k.combatsimulator.logic.TacticalActionStrategy
 import io.hsar.wh40k.combatsimulator.model.unit.ActionValue
 import io.hsar.wh40k.combatsimulator.model.unit.Attribute
@@ -85,6 +85,10 @@ class UnitInstance(
         }
     }
 
+    /*
+    This creates a copy that has deep copies of the current attributes, allowing these to be modified eg
+    when calculating optimum combat actions without affecting the original
+     */
     fun createCopy(): UnitInstance = UnitInstance(
             name = name,
             description = description,
