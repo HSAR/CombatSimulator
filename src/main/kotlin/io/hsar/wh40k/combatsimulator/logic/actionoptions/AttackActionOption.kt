@@ -8,10 +8,11 @@ import io.hsar.wh40k.combatsimulator.random.AverageDice
 import io.hsar.wh40k.combatsimulator.random.RandomDice
 import io.hsar.wh40k.combatsimulator.random.RollResult
 
-abstract class AttackActionOption: ActionOption() {
-    /*
+/*
     Provide some concrete implementations of common damage calculation tasks that can be re-used by child classes
-     */
+*/
+abstract class AttackActionOption: ActionOption() {
+
     abstract val damage: String
     abstract val bonusToHit: Int
 
