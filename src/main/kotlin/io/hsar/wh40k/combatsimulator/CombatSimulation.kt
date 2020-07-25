@@ -9,7 +9,7 @@ import io.hsar.wh40k.combatsimulator.model.unit.BaseStat.AGILITY
 import io.hsar.wh40k.combatsimulator.model.unit.NumericValue
 import io.hsar.wh40k.combatsimulator.model.unit.StatUtils.getBonus
 import io.hsar.wh40k.combatsimulator.random.RandomDice.rollInitiative
-import kotlin.contracts.contract
+
 
 class CombatSimulation(val world: World) {
 

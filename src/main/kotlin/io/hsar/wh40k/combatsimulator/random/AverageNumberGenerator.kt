@@ -1,8 +1,6 @@
 package io.hsar.wh40k.combatsimulator.random
 
 import com.bernardomg.tabletop.dice.Dice
-import com.bernardomg.tabletop.dice.interpreter.DiceRoller
-import com.bernardomg.tabletop.dice.parser.DefaultDiceParser
 import com.bernardomg.tabletop.dice.random.NumberGenerator
 import kotlin.math.roundToInt
 

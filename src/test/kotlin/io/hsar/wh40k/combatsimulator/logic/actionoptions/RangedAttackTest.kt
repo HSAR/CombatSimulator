@@ -6,8 +6,6 @@ import io.hsar.wh40k.combatsimulator.model.unit.BaseStat
 import org.hamcrest.CoreMatchers
 import org.hamcrest.MatcherAssert
 import org.junit.jupiter.api.Test
-
-import org.junit.jupiter.api.Assertions.*
 import org.mockito.Mockito
 
 internal class RangedAttackTest {
