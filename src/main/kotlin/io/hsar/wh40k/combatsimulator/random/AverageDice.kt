@@ -9,8 +9,5 @@ object AverageDice {
     private val roller = DiceRoller(AverageNumberGenerator())
 
     fun roll(diceString: String): Int = parser.parse(diceString, roller).totalRoll
-
-    fun averageDegrees(skillTarget: Int) {
-
-    }
+    
 }
