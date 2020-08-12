@@ -2,7 +2,7 @@ package io.hsar.wh40k.combatsimulator.model.unit
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import io.hsar.wh40k.combatsimulator.content.AttributeValueDeserialiser
-import io.hsar.wh40k.combatsimulator.logic.ActionOption
+import io.hsar.wh40k.combatsimulator.logic.actionoptions.ActionOption
 
 /**
  * Attributes are dynamic information that can change turn by turn.
@@ -43,15 +43,23 @@ enum class WeaponType {
  * Attribute values, whatever they are, must be capable of being added to one another in order to combine effects.
  */
 @JsonDeserialize(using = AttributeValueDeserialiser::class)
-sealed class AttributeValue
+sealed class AttributeValue {
+    abstract fun copy(): AttributeValue
+}
 
 @JsonDeserialize
-data class StringValue(val value: String) : AttributeValue()
+data class StringValue(val value: String) : AttributeValue() {
+    override fun copy(): AttributeValue = StringValue(this.value)
+}
 
 @JsonDeserialize
 data class NumericValue(val value: Int) : AttributeValue() {
     operator fun plus(other: NumericValue): NumericValue {
         return NumericValue(this.value + other.value)
+    }
+
+    override fun copy(): NumericValue {
+        return NumericValue(value)
     }
 }
 
@@ -66,6 +74,10 @@ data class WeaponTypeValue(val value: WeaponType) : AttributeValue() {
                     WeaponTypeValue(newValue)
                 }
     }
+
+    override fun copy(): AttributeValue {
+        return WeaponTypeValue(value)
+    }
 }
 
 /**
@@ -79,6 +91,10 @@ data class ActionValue(val value: List<ActionOption>) : AttributeValue() {
                     ActionValue(newValue)
                 }
     }
+
+    override fun copy(): AttributeValue {
+        return ActionValue(value)
+    }
 }
 
 /**
@@ -88,5 +104,8 @@ data class ActionValue(val value: List<ActionOption>) : AttributeValue() {
 data class EffectValue(val value: List<Effect>) : AttributeValue() {
     operator fun plus(other: EffectValue): EffectValue {
         return EffectValue(this.value + other.value)
+    }
+    override fun copy(): AttributeValue {
+        return EffectValue(value.toList()) // explicit toList call to copy the list items by value
     }
 }

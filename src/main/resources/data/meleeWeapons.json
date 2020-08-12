@@ -5,10 +5,10 @@
         "itemType": "WEAPON",
         "modifiesAttributes": {
             "COMMENT": "Should have the TEARING effect but this isn't supported yet",
-            "WEAPON_TYPE": "MELEE",
+            "WEAPON_TYPE": "MeleeAttack",
             "ACTIONS": [
                 {
-                    "actionType": "MeleeAttack",
+                    "actionType": "StandardMeleeAttack",
                     "damage": "1d10+2"
                 }
             ],
@@ -25,11 +25,8 @@
             "WEAPON_TYPE": "MELEE",
             "ACTIONS": [
                 {
-                    "actionType": "MeleeAttack",
-                    "damage": "1d10",
-                    "appliesEffects": [
-                        "PRIMITIVE"
-                    ]
+                    "actionType": "StandardMeleeAttack",
+                    "damage": "1d10"
                 }
             ],
             "EFFECTS": [
@@ -46,7 +43,7 @@
             "WEAPON_TYPE": "MELEE",
             "ACTIONS": [
                 {
-                    "actionType": "MeleeAttack",
+                    "actionType": "StandardMeleeAttack",
                     "damage": "1d5"
                 }
             ],

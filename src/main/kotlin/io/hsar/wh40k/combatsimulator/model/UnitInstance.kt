@@ -1,15 +1,13 @@
 package io.hsar.wh40k.combatsimulator.model
 
 import io.hsar.wh40k.combatsimulator.cli.Loggable
-import io.hsar.wh40k.combatsimulator.logic.ActionOption
-import io.hsar.wh40k.combatsimulator.logic.DamageCausingAction
-import io.hsar.wh40k.combatsimulator.logic.EffectCausingAction
-import io.hsar.wh40k.combatsimulator.logic.FullAim
-import io.hsar.wh40k.combatsimulator.logic.HalfAim
+import io.hsar.wh40k.combatsimulator.dice.RandomDice
+import io.hsar.wh40k.combatsimulator.dice.RollResult
 import io.hsar.wh40k.combatsimulator.logic.TacticalActionStrategy
-import io.hsar.wh40k.combatsimulator.logic.TargetedAction
-import io.hsar.wh40k.combatsimulator.logic.TurnAction
-import io.hsar.wh40k.combatsimulator.logic.WeaponReload
+import io.hsar.wh40k.combatsimulator.logic.actionoptions.ActionOption
+import io.hsar.wh40k.combatsimulator.logic.actionoptions.FullAim
+import io.hsar.wh40k.combatsimulator.logic.actionoptions.HalfAim
+import io.hsar.wh40k.combatsimulator.logic.actionoptions.WeaponReload
 import io.hsar.wh40k.combatsimulator.model.unit.ActionValue
 import io.hsar.wh40k.combatsimulator.model.unit.Attribute
 import io.hsar.wh40k.combatsimulator.model.unit.Attribute.ACTIONS
@@ -25,6 +23,8 @@ import io.hsar.wh40k.combatsimulator.model.unit.Attribute.WEAPON_AMMUNITION
 import io.hsar.wh40k.combatsimulator.model.unit.Attribute.WEAPON_TYPE
 import io.hsar.wh40k.combatsimulator.model.unit.AttributeValue
 import io.hsar.wh40k.combatsimulator.model.unit.BaseStat
+import io.hsar.wh40k.combatsimulator.model.unit.BodyPart
+import io.hsar.wh40k.combatsimulator.model.unit.Effect
 import io.hsar.wh40k.combatsimulator.model.unit.EffectValue
 import io.hsar.wh40k.combatsimulator.model.unit.EquipmentItem
 import io.hsar.wh40k.combatsimulator.model.unit.ItemType.WEAPON
@@ -32,8 +32,6 @@ import io.hsar.wh40k.combatsimulator.model.unit.NumericValue
 import io.hsar.wh40k.combatsimulator.model.unit.Unit
 import io.hsar.wh40k.combatsimulator.model.unit.WeaponType.MELEE
 import io.hsar.wh40k.combatsimulator.model.unit.WeaponTypeValue
-import io.hsar.wh40k.combatsimulator.dice.RandomDice
-import io.hsar.wh40k.combatsimulator.dice.RollResult
 import io.hsar.wh40k.combatsimulator.utils.mergeWithAddition
 import io.hsar.wh40k.combatsimulator.utils.sum
 
@@ -47,7 +45,6 @@ class UnitInstance(
         val description: String,
         val unit: Unit,
         val equipment: List<EquipmentItem>,
-        val attackExecutor: AttackExecutor = AttackExecutor(), // open for test
         val startingAttributes: Map<Attribute, AttributeValue> = createInitialAttributeMap(unit, equipment),
         val tacticalActionStrategy: TacticalActionStrategy = TacticalActionStrategy,
         val currentAttributes: MutableMap<Attribute, AttributeValue> = startingAttributes.toMutableMap()
@@ -57,83 +54,78 @@ class UnitInstance(
                 ?: throw IllegalStateException("Unit ${name} ACTION attribute should have actions but instead was: ${startingAttributes.getValue(ACTIONS)}"))
                 .value
 
-    fun executeActions(actionsToExecute: List<TurnAction>) {
-        actionsToExecute
-                .map { actionToExecute ->
-                    print("        $name does ${actionToExecute.action}")
-                    when (actionToExecute) {
-                        is TargetedAction -> {
-                            when (actionToExecute.action) {
-                                is DamageCausingAction -> {
-                                    attackExecutor
-                                            .rollHits(
-                                                    attacker = this,
-                                                    target = actionToExecute.target,
-                                                    action = actionToExecute.action as DamageCausingAction
-                                                    // forced to hard cast to avoid compiler error
-                                            )
-                                            .let { numberOfHits ->
-                                                when {
-                                                    (numberOfHits < 1) -> println(" but misses.")
-                                                    (numberOfHits == 1) -> print(", hitting ")
-                                                    else -> print(", making $numberOfHits hits")
-                                                }
-                                                repeat(numberOfHits) {
-                                                    attackExecutor
-                                                            .calcDamage(
-                                                                    attacker = this,
-                                                                    target = actionToExecute.target,
-                                                                    action = actionToExecute.action as DamageCausingAction)
-                                                            .let { damage ->
-                                                                println("${actionToExecute.target.name} for $damage damage.")
-                                                                actionToExecute.target.receiveDamage(damage)
-                                                            }
-                                                }
-                                            }
-                                }
-                                else -> TODO()
-                            }
-                        }
-                        else -> {  // deal with non-targeted actions, eg aiming
-                            when (actionToExecute.action) {
-                                is EffectCausingAction -> {
-                                    when (val existingEffects = this.currentAttributes[EFFECTS]) {
-                                        is EffectValue -> {
-                                            this.currentAttributes[EFFECTS] = EffectValue(listOf(existingEffects.value,
-                                                    (actionToExecute.action as EffectCausingAction).appliesEffects).flatten())
-                                        }
-                                        else -> throw IllegalStateException("Effects value should be of type EffectValue)")
-                                    }
-
-                                }
-                                else -> TODO()
-                            }
-                            println(".")
-                        }
-                    }
-                }
-    }
-
     fun rollBaseStat(stat: BaseStat, bonus: Int): RollResult {
         return RandomDice.roll(unit.stats.baseStats.getValue(stat) + bonus)
     }
 
-    private fun receiveDamage(damage: Int) {
+    fun getBaseStatSuccessChance(stat: BaseStat, bonus: Int): Float {
+        return minOf(unit.stats.baseStats.getValue(stat) + bonus, 100) / 100f
+    }
+
+    fun setEffect(effect: Effect) {
+        when (val effects = currentAttributes[EFFECTS] ?: EffectValue(listOf())) {
+            is EffectValue -> {
+                if (effect !in effects.value) {
+                    currentAttributes[EFFECTS] = effects + EffectValue(listOf(effect))
+                }
+            }
+            else -> return
+        }
+    }
+
+    fun getBaseStatBonus(stat: BaseStat): Int {
+        return unit.stats.baseStats.getValue(stat) / 10  // integer division
+    }
+
+    fun getAimBonus(): Int {
+        return when (val effects = currentAttributes[EFFECTS] ?: EffectValue(listOf())) {
+            is EffectValue -> {
+                when {
+                    Effect.AIMED_FULL in effects.value -> 20
+                    Effect.AIMED_HALF in effects.value -> 10
+                    else -> 0
+                }
+            }
+            else -> throw IllegalStateException("Effects must be of type EffectValue")
+        }
+    }
+
+    fun receiveDamage(damage: Int) {
         when (val health = currentAttributes.getValue(CURRENT_HEALTH)) {
             is NumericValue -> currentAttributes[CURRENT_HEALTH] = NumericValue(health.value - damage)
             else -> throw IllegalStateException("Current health ought to be a NumericValue")
         }
     }
 
+    /*
+    This creates a copy that has deep copies of the current attributes, allowing these to be modified eg
+    when calculating optimum combat actions without affecting the original
+     */
+    fun createCopy(): UnitInstance = UnitInstance(
+            name = name,
+            description = description,
+            unit = unit,
+            equipment = equipment,
+            startingAttributes = startingAttributes,
+            tacticalActionStrategy = tacticalActionStrategy,
+            currentAttributes = currentAttributes
+                    .mapValues { attribute ->
+                        attribute.value.copy()
+                    }
+                    .toMutableMap()
+    )
+
     companion object : Loggable {
         val DEFAULT_ACTIONS = ActionValue(listOf(
-                HalfAim,
-                FullAim
+                HalfAim(),
+                FullAim()
         ))
         val DEFAULT_ATTRIBUTES = mapOf(ACTIONS to DEFAULT_ACTIONS, EFFECTS to EffectValue(emptyList()))
 
         fun createInitialAttributeMap(unit: Unit, equipment: List<EquipmentItem>): Map<Attribute, AttributeValue> {
-            val equipmentAttributes = equipment.map { it.modifiesAttributes }.sum()
+            val equipmentAttributes = equipment
+                    .map { equipmentItem -> equipmentItem.modifiesAttributes }
+                    .sum()
 
             val ammoMap = equipment
                     .firstOrNull { it.itemType == WEAPON } // #TODO: Handle this better than just "the first weapon to hand"
@@ -175,6 +167,23 @@ class UnitInstance(
             return DEFAULT_ATTRIBUTES
                     .mergeWithAddition(equipmentAttributes)
                     .mergeWithAddition(dynamicAttributes)
+        }
+
+        fun randomBodyPart(): BodyPart {
+
+            return RandomDice.roll("1d100")
+                    .let { diceRoll ->
+                        when (diceRoll) {
+                            in 0..10 -> BodyPart.HEAD
+                            in 11..20 -> BodyPart.RIGHT_ARM
+                            in 21..30 -> BodyPart.LEFT_ARM
+                            in 31..70 -> BodyPart.BODY
+                            in 71..85 -> BodyPart.RIGHT_LEG
+                            in 86..100 -> BodyPart.LEFT_LEG
+                            else -> throw RuntimeException("d100 roll outside of 1-100")
+                        }
+                    }
+
         }
     }
 }

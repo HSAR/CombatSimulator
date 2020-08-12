@@ -18,7 +18,7 @@
                     "numberOfAttacks": 6
                 },
                 {
-                    "actionType": "MeleeAttack",
+                    "actionType": "StandardMeleeAttack",
                     "damage": "1d10-1",
                     "appliesEffects": [
                         "PRIMITIVE"
@@ -57,7 +57,7 @@
                     "numberOfAttacks": 10
                 },
                 {
-                    "actionType": "MeleeAttack",
+                    "actionType": "StandardMeleeAttack",
                     "damage": "1d10-1",
                     "appliesEffects": [
                         "PRIMITIVE"
@@ -86,7 +86,7 @@
                     "range": 35
                 },
                 {
-                    "actionType": "MeleeAttack",
+                    "actionType": "StandardMeleeAttack",
                     "damage": "1d10-1",
                     "appliesEffects": [
                         "PRIMITIVE"
@@ -113,7 +113,7 @@
                     "range": 30
                 },
                 {
-                    "actionType": "MeleeAttack",
+                    "actionType": "StandardMeleeAttack",
                     "damage": "1d10-1",
                     "appliesEffects": [
                         "PRIMITIVE"
@@ -173,7 +173,7 @@
                     "numberOfAttacks": 2
                 },
                 {
-                    "actionType": "MeleeAttack",
+                    "actionType": "StandardMeleeAttack",
                     "damage": "1d10-1",
                     "appliesEffects": [
                         "PRIMITIVE"

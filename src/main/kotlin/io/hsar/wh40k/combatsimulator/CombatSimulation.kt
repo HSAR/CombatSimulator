@@ -2,13 +2,14 @@ package io.hsar.wh40k.combatsimulator
 
 import io.hsar.wh40k.combatsimulator.Winner.ENEMY
 import io.hsar.wh40k.combatsimulator.Winner.FRIENDLY
+import io.hsar.wh40k.combatsimulator.dice.RandomDice.rollInitiative
 import io.hsar.wh40k.combatsimulator.model.UnitInstance
 import io.hsar.wh40k.combatsimulator.model.World
 import io.hsar.wh40k.combatsimulator.model.unit.Attribute
 import io.hsar.wh40k.combatsimulator.model.unit.BaseStat.AGILITY
 import io.hsar.wh40k.combatsimulator.model.unit.NumericValue
 import io.hsar.wh40k.combatsimulator.model.unit.StatUtils.getBonus
-import io.hsar.wh40k.combatsimulator.dice.RandomDice.rollInitiative
+
 
 class CombatSimulation(val world: World) {
 
@@ -29,8 +30,13 @@ class CombatSimulation(val world: World) {
                 // caller needs to exception handle this in case CURRENT_HEALTH not provided in json
                 unit.tacticalActionStrategy
                         .decideTurnActions(world, unit, unit.availableActionOptions)
-                        .let { actionsToExecute ->
-                            unit.executeActions(actionsToExecute)
+                        .forEach { targetedAction ->
+                            if(targetedAction.action.isLegal(world, unit, targetedAction.target)) {
+                                // need to check iteratively rather than a filter as previous actions in the
+                                // combo may have affected whether this is now legal
+                                targetedAction.action.apply(world, unit, targetedAction.target)
+                            }
+
                         }
                         .also {
                             world.findDead().let { deadUnits ->

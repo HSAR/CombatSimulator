@@ -2,7 +2,8 @@ package io.hsar.wh40k.combatsimulator.dice
 
 import com.bernardomg.tabletop.dice.interpreter.DiceRoller
 import com.bernardomg.tabletop.dice.parser.DefaultDiceParser
-import io.hsar.wh40k.combatsimulator.dice.Result.*
+import io.hsar.wh40k.combatsimulator.dice.Result.FAILURE
+import io.hsar.wh40k.combatsimulator.dice.Result.SUCCESS
 
 enum class Result {
     SUCCESS,

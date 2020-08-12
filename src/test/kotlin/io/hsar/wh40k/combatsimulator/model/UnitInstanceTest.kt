@@ -1,64 +1,145 @@
 package io.hsar.wh40k.combatsimulator.model
 
 import TestUtils
-import io.hsar.wh40k.combatsimulator.logic.AimAction
-import io.hsar.wh40k.combatsimulator.logic.HalfAim
-import io.hsar.wh40k.combatsimulator.logic.SingleRangedAttack
-import io.hsar.wh40k.combatsimulator.logic.TargetedAction
-import io.hsar.wh40k.combatsimulator.logic.TurnAction
-import io.hsar.wh40k.combatsimulator.model.unit.Attribute
+import io.hsar.wh40k.combatsimulator.model.unit.ActionValue
+import io.hsar.wh40k.combatsimulator.model.unit.Attribute.CURRENT_HEALTH
+import io.hsar.wh40k.combatsimulator.model.unit.Attribute.DAMAGE_REDUCTION_HEAD
+import io.hsar.wh40k.combatsimulator.model.unit.Attribute.EFFECTS
+import io.hsar.wh40k.combatsimulator.model.unit.Attribute.WEAPON_TYPE
+import io.hsar.wh40k.combatsimulator.model.unit.BaseStat
 import io.hsar.wh40k.combatsimulator.model.unit.Effect
 import io.hsar.wh40k.combatsimulator.model.unit.EffectValue
+import io.hsar.wh40k.combatsimulator.model.unit.EquipmentItem
+import io.hsar.wh40k.combatsimulator.model.unit.ItemType
 import io.hsar.wh40k.combatsimulator.model.unit.NumericValue
+import io.hsar.wh40k.combatsimulator.model.unit.StringValue
+import io.hsar.wh40k.combatsimulator.model.unit.WeaponType
+import io.hsar.wh40k.combatsimulator.model.unit.WeaponTypeValue
 import org.hamcrest.CoreMatchers.equalTo
-import org.hamcrest.CoreMatchers.hasItem
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Test
 import org.junit.jupiter.api.TestInstance
-import org.mockito.Mockito.`when`
-import org.mockito.Mockito.mock
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class UnitInstanceTest {
 
-    private val aimAction = AimAction(HalfAim)
-    private val singleRangedAttack = SingleRangedAttack(30, "1d10+4")
+    @Test
+    fun `getBaseStatSuccessChance returns the correct value`() {
+        val unit = TestUtils.getGenericUnitInstance()  // Ws of 35
+        assertThat("getBaseStatSuccess chance returns correct value",
+                unit.getBaseStatSuccessChance(BaseStat.WEAPON_SKILL,10), equalTo(0.45f))
+    }
 
-    private val mockAttackExecutor: AttackExecutor = mock(AttackExecutor::class.java)
-    private val world: World = TestUtils.getGenericTwoUnitWorld(MapPosition(1, 6), MapPosition(5, 4), mockAttackExecutor)
-            .also { world ->
-                `when`(mockAttackExecutor.rollHits(world.friendlyForces[0], world.enemyForces[0], singleRangedAttack)).thenReturn(1)
-                `when`(mockAttackExecutor.calcDamage(world.friendlyForces[0], world.enemyForces[0], singleRangedAttack)).thenReturn(5)
+    @Test
+    fun `getBaseStatSuccessChance is bounded at 1`() {
+        val unit = TestUtils.getGenericUnitInstance()
+        assertThat("getBaseStatSuccess bounded at max 1",
+                unit.getBaseStatSuccessChance(BaseStat.WEAPON_SKILL,100), equalTo(1f))
+    }
+
+    @Test
+    fun `setEffect adds effect if not present`() {
+        val unit = TestUtils.getGenericUnitInstance()
+        unit.setEffect(Effect.AIMED_HALF)
+        val isAimed = (unit.currentAttributes.getValue(EFFECTS) as EffectValue).value.contains(Effect.AIMED_HALF)
+        assertThat("HalfAim effect added to unit",
+            isAimed, equalTo(true))
+        assertThat("No other effects added",
+                (unit.currentAttributes.getValue(EFFECTS) as EffectValue).value.size, equalTo(1))
+    }
+
+    @Test
+    fun `setEffect doesn't add effect if already present`() {
+        val unit = TestUtils.getGenericUnitInstance()
+        unit.setEffect(Effect.AIMED_HALF)
+        unit.setEffect(Effect.AIMED_HALF)
+        assertThat("Effect not added twice",
+                (unit.currentAttributes.getValue(EFFECTS) as EffectValue).value.size, equalTo(1))
+    }
+
+    @Test
+    fun `getBaseStatBonus returns correct value`() {
+        val unit = TestUtils.getGenericUnitInstance()
+        assertThat("getBaseStatBonus gets correct value",
+                unit.getBaseStatBonus(BaseStat.WEAPON_SKILL), equalTo(3))
+    }
+
+    @Test
+    fun `getAimBonus returns correct value`() {
+        val unit = TestUtils.getGenericUnitInstance()
+        assertThat(unit.getAimBonus(), equalTo(0))
+        unit.setEffect(Effect.AIMED_HALF)
+        assertThat(unit.getAimBonus(), equalTo(10))
+        unit.setEffect(Effect.AIMED_FULL)
+        assertThat(unit.getAimBonus(), equalTo(20))
+    }
+
+    @Test
+    fun `receiveDamage modifies health correctly`() {
+        val unit = TestUtils.getGenericUnitInstance()
+        unit.currentAttributes[CURRENT_HEALTH] = NumericValue(10)
+        unit.receiveDamage(6)
+        val health = (unit.currentAttributes[CURRENT_HEALTH] as NumericValue).value
+        assertThat(health, equalTo(4))
+    }
+
+    @Test
+    fun `createCopy deep copies attributes correctly but changes object refs`() {
+        val unit = TestUtils.getGenericUnitInstance()
+        val copy = unit.createCopy()
+        unit.currentAttributes.forEach {
+            assertThat(it.value === copy.currentAttributes[it.key], equalTo(false))
+            when(it.value) {
+                is NumericValue -> {
+                    assertThat((it.value as NumericValue).value,
+                            equalTo((copy.currentAttributes[it.key] as NumericValue).value))
+                    assertThat(it.value === copy.currentAttributes[it.key], equalTo(false))
+                }
+                is EffectValue -> {
+                    assertThat((it.value as EffectValue).value,
+                            equalTo((copy.currentAttributes[it.key] as EffectValue).value))
+                }
+                is ActionValue -> {
+                    assertThat((it.value as ActionValue).value,
+                            equalTo((copy.currentAttributes[it.key] as ActionValue).value))
+                }
+                is WeaponTypeValue -> {
+                    assertThat((it.value as WeaponTypeValue).value,
+                            equalTo((copy.currentAttributes[it.key] as WeaponTypeValue).value))
+                }
+                is StringValue -> {
+                    assertThat((it.value as WeaponTypeValue).value,
+                            equalTo((copy.currentAttributes[it.key] as WeaponTypeValue).value))
+                }
             }
-
-    private val targetedAction: TargetedAction = TargetedAction(singleRangedAttack, world.enemyForces[0])
-
-    @Test
-    fun `executeActions handles damage application correctly`() {
-        // Arrange
-        val actionsToExecute: List<TurnAction> = listOf(aimAction, targetedAction)
-
-        // Act
-        world.friendlyForces[0].executeActions(actionsToExecute)
-
-        val targetHealth = (world.enemyForces[0].currentAttributes[Attribute.CURRENT_HEALTH] as NumericValue).value
-
-        // Assert
-        val expectedHealth = 5
-        assertThat(targetHealth, equalTo(expectedHealth))
+        }
     }
 
     @Test
-    fun `executeActions applies aim effects correctly`() {
-        // Arrange
-        val actionsToExecute: List<TurnAction> = listOf(aimAction, targetedAction)
-
-        // Act
-        world.friendlyForces[0].executeActions(actionsToExecute)
-
-        // Assert
-        val attackerEffects = (world.friendlyForces[0].currentAttributes[Attribute.EFFECTS] as EffectValue)
-        assertThat(attackerEffects.value, hasItem(Effect.AIMED_HALF))
+    fun `createInitialAttributeMap creates correct attributes`() {
+        val unit = TestUtils.getGenericUnitInstance()
+        val equipmentModifiers = mapOf(
+                WEAPON_TYPE to WeaponTypeValue(WeaponType.MELEE),
+                DAMAGE_REDUCTION_HEAD to NumericValue(1)
+        )
+        val equipment = EquipmentItem(
+                "ref",
+                "name",
+                ItemType.WEAPON,
+                equipmentModifiers
+        )
+        val attributeMap = UnitInstance.createInitialAttributeMap(unit.unit, listOf(equipment))
+        assertThat((attributeMap[CURRENT_HEALTH] as NumericValue).value, equalTo(10))
+        //assertThat(UnitInstance.DEFAULT_ATTRIBUTES)
+        assertThat(attributeMap.entries.containsAll(UnitInstance.DEFAULT_ATTRIBUTES.entries), equalTo(true))
+        assertThat(attributeMap.entries.containsAll(equipmentModifiers.entries), equalTo(true))
     }
+
+
+
+
+
+
+
 
 }
