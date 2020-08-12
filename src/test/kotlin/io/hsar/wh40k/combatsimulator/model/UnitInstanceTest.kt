@@ -1,8 +1,16 @@
 package io.hsar.wh40k.combatsimulator.model
 
 import TestUtils
-
-import io.hsar.wh40k.combatsimulator.model.unit.*
+import io.hsar.wh40k.combatsimulator.model.unit.ActionValue
+import io.hsar.wh40k.combatsimulator.model.unit.Attribute
+import io.hsar.wh40k.combatsimulator.model.unit.BaseStat
+import io.hsar.wh40k.combatsimulator.model.unit.Effect
+import io.hsar.wh40k.combatsimulator.model.unit.EffectValue
+import io.hsar.wh40k.combatsimulator.model.unit.EquipmentItem
+import io.hsar.wh40k.combatsimulator.model.unit.ItemType
+import io.hsar.wh40k.combatsimulator.model.unit.NumericValue
+import io.hsar.wh40k.combatsimulator.model.unit.StringValue
+import io.hsar.wh40k.combatsimulator.model.unit.WeaponTypeValue
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Test
@@ -92,6 +100,10 @@ class UnitInstanceTest {
                             equalTo((copy.currentAttributes[it.key] as ActionValue).value))
                 }
                 is WeaponTypeValue -> {
+                    assertThat((it.value as WeaponTypeValue).value,
+                            equalTo((copy.currentAttributes[it.key] as WeaponTypeValue).value))
+                }
+                is StringValue -> {
                     assertThat((it.value as WeaponTypeValue).value,
                             equalTo((copy.currentAttributes[it.key] as WeaponTypeValue).value))
                 }

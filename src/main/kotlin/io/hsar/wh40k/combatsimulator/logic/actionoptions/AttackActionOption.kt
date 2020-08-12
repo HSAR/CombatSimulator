@@ -1,12 +1,12 @@
 package io.hsar.wh40k.combatsimulator.logic.actionoptions
 
+import io.hsar.wh40k.combatsimulator.dice.AverageDice
+import io.hsar.wh40k.combatsimulator.dice.RandomDice
+import io.hsar.wh40k.combatsimulator.dice.RollResult
 import io.hsar.wh40k.combatsimulator.model.UnitInstance
 import io.hsar.wh40k.combatsimulator.model.unit.Attribute
 import io.hsar.wh40k.combatsimulator.model.unit.BodyPart
 import io.hsar.wh40k.combatsimulator.model.unit.NumericValue
-import io.hsar.wh40k.combatsimulator.random.AverageDice
-import io.hsar.wh40k.combatsimulator.random.RandomDice
-import io.hsar.wh40k.combatsimulator.random.RollResult
 
 /*
     Provide some concrete implementations of common damage calculation tasks that can be re-used by child classes

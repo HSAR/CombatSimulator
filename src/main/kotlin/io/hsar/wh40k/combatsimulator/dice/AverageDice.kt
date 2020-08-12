@@ -1,4 +1,4 @@
-package io.hsar.wh40k.combatsimulator.random
+package io.hsar.wh40k.combatsimulator.dice
 
 import com.bernardomg.tabletop.dice.interpreter.DiceRoller
 import com.bernardomg.tabletop.dice.parser.DefaultDiceParser

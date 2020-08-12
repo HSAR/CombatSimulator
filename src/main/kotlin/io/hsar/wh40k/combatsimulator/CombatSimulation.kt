@@ -2,13 +2,13 @@ package io.hsar.wh40k.combatsimulator
 
 import io.hsar.wh40k.combatsimulator.Winner.ENEMY
 import io.hsar.wh40k.combatsimulator.Winner.FRIENDLY
+import io.hsar.wh40k.combatsimulator.dice.RandomDice.rollInitiative
 import io.hsar.wh40k.combatsimulator.model.UnitInstance
 import io.hsar.wh40k.combatsimulator.model.World
 import io.hsar.wh40k.combatsimulator.model.unit.Attribute
 import io.hsar.wh40k.combatsimulator.model.unit.BaseStat.AGILITY
 import io.hsar.wh40k.combatsimulator.model.unit.NumericValue
 import io.hsar.wh40k.combatsimulator.model.unit.StatUtils.getBonus
-import io.hsar.wh40k.combatsimulator.random.RandomDice.rollInitiative
 
 
 class CombatSimulation(val world: World) {

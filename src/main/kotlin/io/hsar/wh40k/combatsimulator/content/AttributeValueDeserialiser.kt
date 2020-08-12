@@ -12,6 +12,7 @@ import io.hsar.wh40k.combatsimulator.model.unit.AttributeValue
 import io.hsar.wh40k.combatsimulator.model.unit.Effect
 import io.hsar.wh40k.combatsimulator.model.unit.EffectValue
 import io.hsar.wh40k.combatsimulator.model.unit.NumericValue
+import io.hsar.wh40k.combatsimulator.model.unit.StringValue
 import io.hsar.wh40k.combatsimulator.model.unit.WeaponType
 import io.hsar.wh40k.combatsimulator.model.unit.WeaponTypeValue
 
@@ -48,6 +49,7 @@ class AttributeValueDeserialiser(vc: Class<*>? = null) : StdDeserializer<Attribu
                                 else -> throw JsonParseException(localParser, "Unknown attribute value found: $jsonNode")
                             }
                         }
+                        jsonNode.isTextual -> StringValue(jsonNode.textValue()) // Weapon types are also strings so the order of these checks matters
                         else -> throw JsonParseException(localParser, "Unknown attribute value found: $jsonNode")
                     }
                 }

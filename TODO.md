@@ -13,13 +13,15 @@
     * One-handed vs two-handed weapons?
 * Effects should have degrees (i.e. Primitive(7))
 * Handle when units have more than one weapon
+* Actions that take more than one full action (i.e. reloading a stub revolver)
 
 
 ### Simulation Computation
 
 * Ranged attacks
+    * Penetration
     * Consider range
-    * Apply damage to enemy unit
+    * Can jam the weapon, requiring unjamming and reloading
     * Reduce ammo on firing unit, remove actions that cannot be taken if ammunition is too low
     * Considers cover(?)
 * Repeated simulations: re-seed things and try again X times to produce a % nuance to results

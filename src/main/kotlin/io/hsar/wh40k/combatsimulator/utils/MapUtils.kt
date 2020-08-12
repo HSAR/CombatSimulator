@@ -20,6 +20,10 @@ fun <K> Map<K, AttributeValue>.mergeWithAddition(otherMap: Map<K, AttributeValue
                                 counterValueA + counterValueB
                             (counterValueA is WeaponTypeValue && counterValueB is WeaponTypeValue) ->
                                 counterValueA + counterValueB
+                            (counterValueA is EffectValue && counterValueB is EffectValue) ->
+                                counterValueA + counterValueB
+                            (counterValueA is NumericValue && counterValueB is NumericValue) ->
+                                counterValueA + counterValueB
                             // Not working yet
                             //  (counterValueA is StackingValue<*> && counterValueB is StackingValue<*>) ->
                             //      counterValueA + counterValueB

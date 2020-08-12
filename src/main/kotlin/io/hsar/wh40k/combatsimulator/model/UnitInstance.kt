@@ -1,14 +1,22 @@
 package io.hsar.wh40k.combatsimulator.model
 
 import io.hsar.wh40k.combatsimulator.cli.Loggable
+import io.hsar.wh40k.combatsimulator.dice.RandomDice
+import io.hsar.wh40k.combatsimulator.dice.RollResult
+import io.hsar.wh40k.combatsimulator.logic.TacticalActionStrategy
 import io.hsar.wh40k.combatsimulator.logic.actionoptions.ActionOption
 import io.hsar.wh40k.combatsimulator.logic.actionoptions.FullAim
 import io.hsar.wh40k.combatsimulator.logic.actionoptions.HalfAim
-import io.hsar.wh40k.combatsimulator.logic.TacticalActionStrategy
 import io.hsar.wh40k.combatsimulator.model.unit.ActionValue
 import io.hsar.wh40k.combatsimulator.model.unit.Attribute
 import io.hsar.wh40k.combatsimulator.model.unit.Attribute.ACTIONS
 import io.hsar.wh40k.combatsimulator.model.unit.Attribute.CURRENT_HEALTH
+import io.hsar.wh40k.combatsimulator.model.unit.Attribute.DAMAGE_REDUCTION_ARM_L
+import io.hsar.wh40k.combatsimulator.model.unit.Attribute.DAMAGE_REDUCTION_ARM_R
+import io.hsar.wh40k.combatsimulator.model.unit.Attribute.DAMAGE_REDUCTION_HEAD
+import io.hsar.wh40k.combatsimulator.model.unit.Attribute.DAMAGE_REDUCTION_LEG_L
+import io.hsar.wh40k.combatsimulator.model.unit.Attribute.DAMAGE_REDUCTION_LEG_R
+import io.hsar.wh40k.combatsimulator.model.unit.Attribute.DAMAGE_REDUCTION_TORSO
 import io.hsar.wh40k.combatsimulator.model.unit.Attribute.EFFECTS
 import io.hsar.wh40k.combatsimulator.model.unit.AttributeValue
 import io.hsar.wh40k.combatsimulator.model.unit.BaseStat
@@ -18,8 +26,6 @@ import io.hsar.wh40k.combatsimulator.model.unit.EffectValue
 import io.hsar.wh40k.combatsimulator.model.unit.EquipmentItem
 import io.hsar.wh40k.combatsimulator.model.unit.NumericValue
 import io.hsar.wh40k.combatsimulator.model.unit.Unit
-import io.hsar.wh40k.combatsimulator.random.RandomDice
-import io.hsar.wh40k.combatsimulator.random.RollResult
 import io.hsar.wh40k.combatsimulator.utils.mergeWithAddition
 import io.hsar.wh40k.combatsimulator.utils.sum
 
@@ -113,25 +119,43 @@ class UnitInstance(
         fun createInitialAttributeMap(unit: Unit, equipment: List<EquipmentItem>): Map<Attribute, AttributeValue> {
             val equipmentAttributes = equipment.map { it.modifiesAttributes }.sum()
 
-            /* val ammoMap = equipment.firstOrNull() { it.itemType == WEAPON } // #TODO: Handle this better than just "the first weapon to hand"
-                     ?.modifiesAttributes
-                     ?.let { weaponAttributes ->
-                         if (weaponAttributes.getValue(WEAPON_TYPE) == WeaponTypeValue(MELEE)) {
-                             // Melee weapons have no need for ammunition
-                             null
-                         } else {
-                             // Ranged weapons take their clip size from the ammo given from a reload
-                             mapOf(Attribute.WEAPON_AMMUNITION to NumericValue((weaponAttributes.getValue(ACTIONS) as ActionValue)
-                                     .value
-                                     .filterIsInstance<WeaponReload>()
-                                     .first().setsAmmunitionTo)
-                             )
-                         }
-                     } ?: emptyMap()*/
+//            val ammoMap = equipment
+//                    .firstOrNull { it.itemType == WEAPON } // #TODO: Handle this better than just "the first weapon to hand"
+//                    ?.modifiesAttributes
+//                    ?.let { weaponAttributes ->
+//                        if (weaponAttributes.getValue(WEAPON_TYPE) == WeaponTypeValue(MELEE)) {
+//                            // Melee weapons have no need for ammunition
+//                            null
+//                        } else {
+//                            // Ranged weapons take their clip size from the ammo given from a reload
+//                            mapOf(WEAPON_AMMUNITION to NumericValue((weaponAttributes.getValue(ACTIONS) as ActionValue)
+//                                    .value
+//                                    .filterIsInstance<WeaponReload>()
+//                                    .first().setsAmmunitionTo)
+//                            )
+//                        }
+//                    } ?: emptyMap()
+            val ammoMap = emptyMap<Attribute, NumericValue>() // FIXME
+
+            val toughnessMap = ((unit.stats.baseStats[BaseStat.TOUGHNESS] ?: 0) / 10)
+                    .let { toughnessBonus ->
+                        listOf(
+                                DAMAGE_REDUCTION_HEAD,
+                                DAMAGE_REDUCTION_ARM_L,
+                                DAMAGE_REDUCTION_ARM_R,
+                                DAMAGE_REDUCTION_TORSO,
+                                DAMAGE_REDUCTION_LEG_L,
+                                DAMAGE_REDUCTION_LEG_R
+                        ).map { damageReductionLocation ->
+                            damageReductionLocation to NumericValue(toughnessBonus)
+                        }.toMap()
+                    }
 
             val dynamicAttributes = mapOf(
                     CURRENT_HEALTH to NumericValue(unit.stats.baseStats.getValue(BaseStat.MAX_HEALTH))
-            ) //+ ammoMap
+            )
+                    .mergeWithAddition(ammoMap)
+                    .mergeWithAddition(toughnessMap)
 
             return DEFAULT_ATTRIBUTES
                     .mergeWithAddition(equipmentAttributes)

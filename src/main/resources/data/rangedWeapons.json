@@ -8,8 +8,181 @@
             "ACTIONS": [
                 {
                     "actionType": "SingleRangedAttack",
+                    "damage": "1d10+2",
+                    "range": 30
+                },
+                {
+                    "actionType": "FullAutoBurstRangedAttack",
+                    "damage": "1d10+2",
+                    "range": 30,
+                    "numberOfAttacks": 6
+                },
+                {
+                    "actionType": "MeleeAttack",
+                    "damage": "1d10-1",
+                    "appliesEffects": [
+                        "PRIMITIVE"
+                    ]
+                },
+                {
+                    "actionType": "WeaponReload",
+                    "actionCost": "FULL_ACTION",
+                    "setsAmmunitionTo": 18
+                }
+            ]
+        }
+    },
+    {
+        "itemRef": "wpn_basic_autogun",
+        "itemName": "Autogun",
+        "itemType": "WEAPON",
+        "modifiesAttributes": {
+            "WEAPON_TYPE": "BASIC",
+            "ACTIONS": [
+                {
+                    "actionType": "SingleRangedAttack",
+                    "damage": "1d10+3",
+                    "range": 100
+                },
+                {
+                    "actionType": "SemiAutoBurstRangedAttack",
+                    "damage": "1d10+3",
+                    "range": 100,
+                    "numberOfAttacks": 3
+                },
+                {
+                    "actionType": "FullAutoBurstRangedAttack",
+                    "damage": "1d10+3",
+                    "range": 100,
+                    "numberOfAttacks": 10
+                },
+                {
+                    "actionType": "MeleeAttack",
+                    "damage": "1d10-1",
+                    "appliesEffects": [
+                        "PRIMITIVE"
+                    ]
+                },
+                {
+                    "actionType": "WeaponReload",
+                    "actionCost": "FULL_ACTION",
+                    "setsAmmunitionTo": 30
+                }
+            ]
+        }
+    },
+    {
+        "itemRef": "wpn_pistol_handCannon",
+        "itemName": "Autopistol",
+        "itemType": "WEAPON",
+        "modifiesAttributes": {
+            "COMMENT": "Should have a -10 penalty when wielded one-handed but this isn't supported yet",
+            "COMMENT": "Should be 1d10+4 DAM 2 PEN not 1d10+6 DAM but this isn't supported yet",
+            "WEAPON_TYPE": "PISTOL",
+            "ACTIONS": [
+                {
+                    "actionType": "SingleRangedAttack",
+                    "damage": "1d10+6",
+                    "range": 35
+                },
+                {
+                    "actionType": "MeleeAttack",
+                    "damage": "1d10-1",
+                    "appliesEffects": [
+                        "PRIMITIVE"
+                    ]
+                },
+                {
+                    "actionType": "WeaponReload",
+                    "actionCost": "TWO_FULL_ACTIONS",
+                    "setsAmmunitionTo": 5
+                }
+            ]
+        }
+    },
+    {
+        "itemRef": "wpn_pistol_stubRevolver",
+        "itemName": "Stub Revolver",
+        "itemType": "WEAPON",
+        "modifiesAttributes": {
+            "WEAPON_TYPE": "PISTOL",
+            "ACTIONS": [
+                {
+                    "actionType": "SingleRangedAttack",
                     "damage": "1d10+3",
                     "range": 30
+                },
+                {
+                    "actionType": "MeleeAttack",
+                    "damage": "1d10-1",
+                    "appliesEffects": [
+                        "PRIMITIVE"
+                    ]
+                },
+                {
+                    "actionType": "WeaponReload",
+                    "actionCost": "TWO_FULL_ACTIONS",
+                    "setsAmmunitionTo": 6
+                }
+            ]
+        }
+    },
+    {
+        "itemRef": "wpn_pistol_laspistol",
+        "itemName": "Laspistol",
+        "itemType": "WEAPON",
+        "modifiesAttributes": {
+            "COMMENT": "Overloaded shots should do +2 DAM +2 PEN not +4 DAM but this isn't supported yet",
+            "WEAPON_TYPE": "PISTOL",
+            "ACTIONS": [
+                {
+                    "actionType": "SingleRangedAttack",
+                    "damage": "1d10+2",
+                    "range": 30
+                },
+                {
+                    "actionType": "SingleRangedAttack",
+                    "damage": "1d10+3",
+                    "ammoCost": 2,
+                    "range": 30
+                },
+                {
+                    "actionType": "SingleRangedAttack",
+                    "damage": "1d10+6",
+                    "ammoCost": 4,
+                    "range": 30
+                },
+                {
+                    "actionType": "SemiAutoBurstRangedAttack",
+                    "damage": "1d10+2",
+                    "range": 30,
+                    "numberOfAttacks": 2
+                },
+                {
+                    "actionType": "SemiAutoBurstRangedAttack",
+                    "damage": "1d10+3",
+                    "ammoCost": 2,
+                    "range": 30,
+                    "numberOfAttacks": 2
+                },
+                {
+                    "actionType": "SemiAutoBurstRangedAttack",
+                    "damage": "1d10+6",
+                    "ammoCost": 4,
+                    "range": 30,
+                    "numberOfAttacks": 2
+                },
+                {
+                    "actionType": "MeleeAttack",
+                    "damage": "1d10-1",
+                    "appliesEffects": [
+                        "PRIMITIVE"
+                    ]
+                },
+                {
+                    "actionType": "WeaponReload",
+                    "actionCost": "HALF_ACTION",
+                    "setsAmmunitionTo": 30
                 }
             ]
         }

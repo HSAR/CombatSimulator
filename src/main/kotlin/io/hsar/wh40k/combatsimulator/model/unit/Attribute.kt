@@ -8,6 +8,11 @@ import io.hsar.wh40k.combatsimulator.logic.actionoptions.ActionOption
  * Attributes are dynamic information that can change turn by turn.
  */
 enum class Attribute {
+    /**
+     * This has no effect and is used, as in code, to put human-readable machine-ignored text into the file.
+     */
+    COMMENT,
+
     CURRENT_HEALTH,
     POSITION,
     DAMAGE_REDUCTION_HEAD,
@@ -17,6 +22,7 @@ enum class Attribute {
     DAMAGE_REDUCTION_LEG_L,
     DAMAGE_REDUCTION_LEG_R,
     DAMAGE_OUTPUT,
+
     // DAMAGE_TYPES, // #TODO: Implement damage types later
     WEAPON_TYPE,
     WEAPON_AMMUNITION,
@@ -42,12 +48,14 @@ sealed class AttributeValue {
 }
 
 @JsonDeserialize
+data class StringValue(val value: String) : AttributeValue() {
+    override fun copy(): AttributeValue = StringValue(this.value)
+}
+
+@JsonDeserialize
 data class NumericValue(val value: Int) : AttributeValue() {
     operator fun plus(other: NumericValue): NumericValue {
-        return (this.value + other.value)
-                .let { newValue ->
-                    NumericValue(newValue)
-                }
+        return NumericValue(this.value + other.value)
     }
 
     override fun copy(): NumericValue {
@@ -95,10 +103,7 @@ data class ActionValue(val value: List<ActionOption>) : AttributeValue() {
 @JsonDeserialize
 data class EffectValue(val value: List<Effect>) : AttributeValue() {
     operator fun plus(other: EffectValue): EffectValue {
-        return (this.value + other.value)
-                .let { newValue ->
-                    EffectValue(newValue)
-                }
+        return EffectValue(this.value + other.value)
     }
     override fun copy(): AttributeValue {
         return EffectValue(value.toList()) // explicit toList call to copy the list items by value

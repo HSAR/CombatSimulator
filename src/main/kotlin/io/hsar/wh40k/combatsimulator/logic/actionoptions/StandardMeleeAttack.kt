@@ -1,8 +1,9 @@
 package io.hsar.wh40k.combatsimulator.logic.actionoptions
 
+import io.hsar.wh40k.combatsimulator.dice.Result.FAILURE
+import io.hsar.wh40k.combatsimulator.dice.Result.SUCCESS
 import io.hsar.wh40k.combatsimulator.model.UnitInstance
 import io.hsar.wh40k.combatsimulator.model.World
-import io.hsar.wh40k.combatsimulator.random.Result
 
 class StandardMeleeAttack(override val damage: String):  MeleeAttack() {
 
@@ -20,9 +21,9 @@ class StandardMeleeAttack(override val damage: String):  MeleeAttack() {
 
     override fun apply(world: World, user: UnitInstance, target: UnitInstance): Unit {
         rollToHit(user).let { rollResult ->
-            when(rollResult.result) {
-                Result.SUCCESS -> applyHits(target, 1)
-                Result.FAILURE -> return
+            when (rollResult.result) {
+                SUCCESS -> applyHits(target, 1)
+                FAILURE -> return
             }
         }
 

@@ -1,8 +1,8 @@
 package io.hsar.wh40k.combatsimulator.logic.actionoptions
 
+import io.hsar.wh40k.combatsimulator.dice.RollResult
 import io.hsar.wh40k.combatsimulator.model.UnitInstance
 import io.hsar.wh40k.combatsimulator.model.unit.BaseStat
-import io.hsar.wh40k.combatsimulator.random.RollResult
 
 abstract class RangedAttack: AttackActionOption() {
     override fun rollToHit(user: UnitInstance): RollResult {

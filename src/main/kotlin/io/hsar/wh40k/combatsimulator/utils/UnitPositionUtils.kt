@@ -12,6 +12,7 @@ object UnitPositionUtils {
         return forcesUnits
                 .mapIndexed { forceIndex, force ->
                     force
+                            .shuffled() // Inject randomness to avoid biasing some units to the middle
                             .mapIndexed { unitIndex, unit ->
                                 unit to MapPosition(unitIndex, forceIndex * 2)
                             }

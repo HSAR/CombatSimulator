@@ -1,0 +1,46 @@
+{
+    "units": [
+        {
+            "unitRef": "arbitesElite",
+            "description": "Elite tactical enforcers of the Adeptus Arbites Desoleum.",
+            "stats": {
+                "baseStats": {
+                    "MAX_HEALTH": 10,
+                    "WEAPON_SKILL": 35,
+                    "BALLISTIC_SKILL": 37,
+                    "STRENGTH": 35,
+                    "TOUGHNESS": 41,
+                    "AGILITY": 32,
+                    "INTELLIGENCE": 28,
+                    "WILLPOWER": 32,
+                    "FELLOWSHIP": 25
+                },
+                "derivedStats": {
+                    "DODGE": -20,
+                    "PARRY": -20
+                }
+            },
+            "equipmentRefs": [
+                "amr_flak_fullGuard",
+                "wpn_melee_chainsword",
+                "wpn_pistol_handCannon"
+            ]
+        }
+    ],
+    "unitsToSpawn": {
+        "arbitesElite": [
+            "arbites01",
+            "arbites02",
+            "arbites03",
+            "arbites04",
+            "arbites05",
+            "arbites06",
+            "arbites07",
+            "arbites08",
+            "arbites09",
+            "arbites10",
+            "arbites11",
+            "arbites12"
+        ]
+    }
+}

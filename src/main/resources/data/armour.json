@@ -8,5 +8,63 @@
             "DAMAGE_REDUCTION_ARM_R": 1,
             "DAMAGE_REDUCTION_TORSO": 1
         }
+    },
+    {
+        "itemRef": "amr_basic_bodyglove",
+        "itemName": "Armoured Bodyglove",
+        "itemType": "ARMOUR",
+        "modifiesAttributes": {
+            "DAMAGE_REDUCTION_ARM_L": 2,
+            "DAMAGE_REDUCTION_ARM_R": 2,
+            "DAMAGE_REDUCTION_TORSO": 2,
+            "DAMAGE_REDUCTION_LEG_L": 2,
+            "DAMAGE_REDUCTION_LEG_R": 2
+        }
+    },
+    {
+        "itemRef": "amr_flak_fullGuard",
+        "itemName": "Imperial Guard Flak Armour",
+        "itemType": "ARMOUR",
+        "modifiesAttributes": {
+            "DAMAGE_REDUCTION_HEAD": 4,
+            "DAMAGE_REDUCTION_ARM_L": 4,
+            "DAMAGE_REDUCTION_ARM_R": 4,
+            "DAMAGE_REDUCTION_TORSO": 4,
+            "DAMAGE_REDUCTION_LEG_L": 4,
+            "DAMAGE_REDUCTION_LEG_R": 4
+        }
+    },
+    {
+        "itemRef": "amr_carapace_helm",
+        "itemName": "Carapace Helm",
+        "itemType": "ARMOUR",
+        "modifiesAttributes": {
+            "DAMAGE_REDUCTION_HEAD": 4
+        }
+    },
+    {
+        "itemRef": "amr_carapace_fullEnforcer",
+        "itemName": "Enforcer Light Carapace",
+        "itemType": "ARMOUR",
+        "modifiesAttributes": {
+            "DAMAGE_REDUCTION_HEAD": 5,
+            "DAMAGE_REDUCTION_ARM_L": 5,
+            "DAMAGE_REDUCTION_ARM_R": 5,
+            "DAMAGE_REDUCTION_TORSO": 5,
+            "DAMAGE_REDUCTION_LEG_L": 5,
+            "DAMAGE_REDUCTION_LEG_R": 5
+        }
+    },
+    {
+        "itemRef": "amr_cybernetic_subskin",
+        "itemName": "Subskin Armour",
+        "itemType": "ARMOUR",
+        "modifiesAttributes": {
+            "DAMAGE_REDUCTION_ARM_L": 2,
+            "DAMAGE_REDUCTION_ARM_R": 2,
+            "DAMAGE_REDUCTION_TORSO": 2,
+            "DAMAGE_REDUCTION_LEG_L": 2,
+            "DAMAGE_REDUCTION_LEG_R": 2
+        }
     }
 ]

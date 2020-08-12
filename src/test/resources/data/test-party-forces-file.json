@@ -1,0 +1,121 @@
+{
+    "units": [
+        {
+            "unitRef": "playerMagnus",
+            "description": "A carousing go-getter of the Adeptus Mechanicus Nettelhorst.",
+            "stats": {
+                "baseStats": {
+                    "MAX_HEALTH": 13,
+                    "WEAPON_SKILL": 30,
+                    "BALLISTIC_SKILL": 33,
+                    "STRENGTH": 33,
+                    "TOUGHNESS": 48,
+                    "AGILITY": 40,
+                    "INTELLIGENCE": 50,
+                    "WILLPOWER": 40,
+                    "FELLOWSHIP": 35
+                },
+                "derivedStats": {
+                    "DODGE": -20,
+                    "PARRY": -20
+                }
+            },
+            "equipmentRefs": [
+                "amr_basic_bodyglove",
+                "wpn_basic_autogun"
+            ]
+        },
+        {
+            "unitRef": "playerSescae",
+            "description": "An oddly bloodthirsty ex-auxiliary of the Legiones Skitarius Nettelhorst.",
+            "stats": {
+                "baseStats": {
+                    "MAX_HEALTH": 12,
+                    "WEAPON_SKILL": 38,
+                    "BALLISTIC_SKILL": 55,
+                    "STRENGTH": 42,
+                    "TOUGHNESS": 41,
+                    "AGILITY": 37,
+                    "INTELLIGENCE": 40,
+                    "WILLPOWER": 43,
+                    "FELLOWSHIP": 31
+                },
+                "derivedStats": {
+                    "DODGE": 0,
+                    "PARRY": 10
+                }
+            },
+            "equipmentRefs": [
+                "amr_cybernetic_subskin",
+                "amr_flak_fullGuard",
+                "wpn_melee_shield",
+                "wpn_pistol_laspistol"
+            ]
+        },
+        {
+            "unitRef": "playerThesse",
+            "description": "A morally confused ex-enforcer of the Adeptus Arbites.",
+            "stats": {
+                "baseStats": {
+                    "MAX_HEALTH": 15,
+                    "WEAPON_SKILL": 38,
+                    "BALLISTIC_SKILL": 46,
+                    "STRENGTH": 38,
+                    "TOUGHNESS": 33,
+                    "AGILITY": 36,
+                    "INTELLIGENCE": 33,
+                    "WILLPOWER": 34,
+                    "FELLOWSHIP": 38
+                },
+                "derivedStats": {
+                    "DODGE": -20,
+                    "PARRY": -20
+                }
+            },
+            "equipmentRefs": [
+                "amr_carapace_fullEnforcer",
+                "wpn_pistol_handCannon"
+            ]
+        },
+        {
+            "unitRef": "playerWolfe",
+            "description": "A surprising light-fingered contraband expert with an interest in redecoration.",
+            "stats": {
+                "baseStats": {
+                    "MAX_HEALTH": 11,
+                    "WEAPON_SKILL": 37,
+                    "BALLISTIC_SKILL": 36,
+                    "STRENGTH": 33,
+                    "TOUGHNESS": 38,
+                    "AGILITY": 49,
+                    "INTELLIGENCE": 44,
+                    "WILLPOWER": 37,
+                    "FELLOWSHIP": 36
+                },
+                "derivedStats": {
+                    "DODGE": 10,
+                    "PARRY": 0
+                }
+            },
+            "equipmentRefs": [
+                "amr_basic_bodyglove",
+                "wpn_pistol_laspistol",
+                "wpn_melee_chainsword"
+            ]
+        }
+    ],
+    "unitsToSpawn": {
+        "playerMagnus": [
+            "Magnus"
+        ],
+        "playerSescae": [
+            "Sescae"
+        ],
+        "playerThesse": [
+            "Thesse"
+        ],
+        "playerWolfe": [
+            "Wolfe"
+        ]
+    }
+}

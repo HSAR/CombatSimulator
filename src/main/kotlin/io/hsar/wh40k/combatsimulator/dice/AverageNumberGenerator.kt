@@ -1,4 +1,4 @@
-package io.hsar.wh40k.combatsimulator.random
+package io.hsar.wh40k.combatsimulator.dice
 
 import com.bernardomg.tabletop.dice.Dice
 import com.bernardomg.tabletop.dice.random.NumberGenerator

@@ -1,5 +1,23 @@
 [
     {
+        "itemRef": "wpn_melee_chainsword",
+        "itemName": "Chainsword",
+        "itemType": "WEAPON",
+        "modifiesAttributes": {
+            "COMMENT": "Should have the TEARING effect but this isn't supported yet",
+            "WEAPON_TYPE": "MeleeAttack",
+            "ACTIONS": [
+                {
+                    "actionType": "StandardMeleeAttack",
+                    "damage": "1d10+2"
+                }
+            ],
+            "EFFECTS": [
+                "BALANCED"
+            ]
+        }
+    },
+    {
         "itemRef": "wpn_melee_staff",
         "itemName": "Staff",
         "itemType": "WEAPON",
@@ -14,6 +32,24 @@
             "EFFECTS": [
                 "BALANCED"
             ]
+        }
+    },
+    {
+        "itemRef": "wpn_melee_shield",
+        "itemName": "Staff",
+        "itemType": "WEAPON",
+        "modifiesAttributes": {
+            "COMMENT": "Should have the DEFENSIVE effect but this isn't supported yet",
+            "WEAPON_TYPE": "MELEE",
+            "ACTIONS": [
+                {
+                    "actionType": "StandardMeleeAttack",
+                    "damage": "1d5"
+                }
+            ],
+            "DAMAGE_REDUCTION_ARM_L": 2,
+            "DAMAGE_REDUCTION_ARM_R": 2,
+            "DAMAGE_REDUCTION_TORSO": 2
         }
     }
 ]

@@ -1,9 +1,10 @@
 package io.hsar.wh40k.combatsimulator.logic.actionoptions
 
+import io.hsar.wh40k.combatsimulator.dice.Result.FAILURE
+import io.hsar.wh40k.combatsimulator.dice.Result.SUCCESS
 import io.hsar.wh40k.combatsimulator.model.UnitInstance
 import io.hsar.wh40k.combatsimulator.model.World
 import io.hsar.wh40k.combatsimulator.model.unit.BaseStat
-import io.hsar.wh40k.combatsimulator.random.Result
 
 class ChargeAttack(override val damage: String) : MeleeAttack() {
     override val actionCost = ActionCost.FULL_ACTION
@@ -22,9 +23,9 @@ class ChargeAttack(override val damage: String) : MeleeAttack() {
         world.moveTowards(user, target, user.getBaseStatBonus(BaseStat.AGILITY) * 3)
         if(world.isInMeleeRange(user, target)) {
             rollToHit(user).let { rollResult ->
-                when(rollResult.result) {
-                    Result.SUCCESS -> applyHits(target, 1)
-                    Result.FAILURE -> return
+                when (rollResult.result) {
+                    SUCCESS -> applyHits(target, 1)
+                    FAILURE -> return
                 }
             }
         }
