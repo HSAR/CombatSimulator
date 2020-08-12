@@ -8,7 +8,7 @@ import io.hsar.wh40k.combatsimulator.model.World
 class StandardMeleeAttack(override val damage: String):  MeleeAttack() {
 
     override val actionCost = ActionCost.HALF_ACTION
-    override val bonusToHit = 10
+    override val hitModifier = 10
 
     override fun isLegal(world: World, user: UnitInstance, target: UnitInstance): Boolean {
         // check target is in melee range of user

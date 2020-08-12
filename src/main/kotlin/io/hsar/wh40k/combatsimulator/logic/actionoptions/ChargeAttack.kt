@@ -9,7 +9,7 @@ import io.hsar.wh40k.combatsimulator.model.unit.BaseStat
 class ChargeAttack(override val damage: String) : MeleeAttack() {
     override val actionCost = ActionCost.FULL_ACTION
     override val targetType = TargetType.ADVERSARY_TARGET
-    override val bonusToHit = 20
+    override val hitModifier = 20
     override fun isLegal(world: World, user: UnitInstance, target: UnitInstance): Boolean {
         return world.distanceApart(user, target) <= user.getBaseStatBonus(BaseStat.AGILITY) * 3
         // TODO implement this more thoroughly

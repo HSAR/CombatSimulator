@@ -41,9 +41,9 @@ internal class RangedAttackTest {
     }
 }
 
-class VanillaRangedAttack: RangedAttack() {
+class VanillaRangedAttack : RangedAttack(30) {
     override val actionCost = ActionCost.FULL_ACTION
-    override val bonusToHit = 15
+    override val hitModifier = 15
     override val damage = "1d10"
     override fun isLegal(world: World, user: UnitInstance, target: UnitInstance): Boolean {
         return true

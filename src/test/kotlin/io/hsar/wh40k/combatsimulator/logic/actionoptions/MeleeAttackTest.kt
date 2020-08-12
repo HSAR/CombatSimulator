@@ -43,7 +43,7 @@ internal class MeleeAttackTest {
 
 class VanillaMeleeAttack: MeleeAttack() {
     override val actionCost = ActionCost.FULL_ACTION
-    override val bonusToHit = 15
+    override val hitModifier = 15
     override val damage = "1d10"
     override fun isLegal(world: World, user: UnitInstance, target: UnitInstance): Boolean {
         return true

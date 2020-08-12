@@ -2,7 +2,10 @@ package io.hsar.wh40k.combatsimulator.model
 
 import TestUtils
 import io.hsar.wh40k.combatsimulator.model.unit.ActionValue
-import io.hsar.wh40k.combatsimulator.model.unit.Attribute
+import io.hsar.wh40k.combatsimulator.model.unit.Attribute.CURRENT_HEALTH
+import io.hsar.wh40k.combatsimulator.model.unit.Attribute.DAMAGE_REDUCTION_HEAD
+import io.hsar.wh40k.combatsimulator.model.unit.Attribute.EFFECTS
+import io.hsar.wh40k.combatsimulator.model.unit.Attribute.WEAPON_TYPE
 import io.hsar.wh40k.combatsimulator.model.unit.BaseStat
 import io.hsar.wh40k.combatsimulator.model.unit.Effect
 import io.hsar.wh40k.combatsimulator.model.unit.EffectValue
@@ -10,6 +13,7 @@ import io.hsar.wh40k.combatsimulator.model.unit.EquipmentItem
 import io.hsar.wh40k.combatsimulator.model.unit.ItemType
 import io.hsar.wh40k.combatsimulator.model.unit.NumericValue
 import io.hsar.wh40k.combatsimulator.model.unit.StringValue
+import io.hsar.wh40k.combatsimulator.model.unit.WeaponType
 import io.hsar.wh40k.combatsimulator.model.unit.WeaponTypeValue
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
@@ -37,11 +41,11 @@ class UnitInstanceTest {
     fun `setEffect adds effect if not present`() {
         val unit = TestUtils.getGenericUnitInstance()
         unit.setEffect(Effect.AIMED_HALF)
-        val isAimed = (unit.currentAttributes.getValue(Attribute.EFFECTS) as EffectValue).value.contains(Effect.AIMED_HALF)
+        val isAimed = (unit.currentAttributes.getValue(EFFECTS) as EffectValue).value.contains(Effect.AIMED_HALF)
         assertThat("HalfAim effect added to unit",
             isAimed, equalTo(true))
         assertThat("No other effects added",
-                (unit.currentAttributes.getValue(Attribute.EFFECTS) as EffectValue).value.size, equalTo(1))
+                (unit.currentAttributes.getValue(EFFECTS) as EffectValue).value.size, equalTo(1))
     }
 
     @Test
@@ -50,7 +54,7 @@ class UnitInstanceTest {
         unit.setEffect(Effect.AIMED_HALF)
         unit.setEffect(Effect.AIMED_HALF)
         assertThat("Effect not added twice",
-                (unit.currentAttributes.getValue(Attribute.EFFECTS) as EffectValue).value.size, equalTo(1))
+                (unit.currentAttributes.getValue(EFFECTS) as EffectValue).value.size, equalTo(1))
     }
 
     @Test
@@ -73,9 +77,9 @@ class UnitInstanceTest {
     @Test
     fun `receiveDamage modifies health correctly`() {
         val unit = TestUtils.getGenericUnitInstance()
-        unit.currentAttributes[Attribute.CURRENT_HEALTH] = NumericValue(10)
+        unit.currentAttributes[CURRENT_HEALTH] = NumericValue(10)
         unit.receiveDamage(6)
-        val health = (unit.currentAttributes[Attribute.CURRENT_HEALTH] as NumericValue).value
+        val health = (unit.currentAttributes[CURRENT_HEALTH] as NumericValue).value
         assertThat(health, equalTo(4))
     }
 
@@ -114,7 +118,10 @@ class UnitInstanceTest {
     @Test
     fun `createInitialAttributeMap creates correct attributes`() {
         val unit = TestUtils.getGenericUnitInstance()
-        val equipmentModifiers = mapOf(Attribute.DAMAGE_REDUCTION_HEAD to NumericValue(1))
+        val equipmentModifiers = mapOf(
+                WEAPON_TYPE to WeaponTypeValue(WeaponType.MELEE),
+                DAMAGE_REDUCTION_HEAD to NumericValue(1)
+        )
         val equipment = EquipmentItem(
                 "ref",
                 "name",
@@ -122,7 +129,7 @@ class UnitInstanceTest {
                 equipmentModifiers
         )
         val attributeMap = UnitInstance.createInitialAttributeMap(unit.unit, listOf(equipment))
-        assertThat((attributeMap[Attribute.CURRENT_HEALTH] as NumericValue).value, equalTo(10))
+        assertThat((attributeMap[CURRENT_HEALTH] as NumericValue).value, equalTo(10))
         //assertThat(UnitInstance.DEFAULT_ATTRIBUTES)
         assertThat(attributeMap.entries.containsAll(UnitInstance.DEFAULT_ATTRIBUTES.entries), equalTo(true))
         assertThat(attributeMap.entries.containsAll(equipmentModifiers.entries), equalTo(true))

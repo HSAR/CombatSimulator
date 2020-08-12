@@ -6,15 +6,16 @@ import io.hsar.wh40k.combatsimulator.dice.RollResult
 import io.hsar.wh40k.combatsimulator.model.UnitInstance
 import io.hsar.wh40k.combatsimulator.model.unit.Attribute
 import io.hsar.wh40k.combatsimulator.model.unit.BodyPart
+import io.hsar.wh40k.combatsimulator.model.unit.Effect
 import io.hsar.wh40k.combatsimulator.model.unit.NumericValue
 
 /*
     Provide some concrete implementations of common damage calculation tasks that can be re-used by child classes
 */
-abstract class AttackActionOption: ActionOption() {
+abstract class AttackActionOption(val appliesEffects: Collection<Effect> = emptyList()) : ActionOption() {
 
     abstract val damage: String
-    abstract val bonusToHit: Int
+    abstract val hitModifier: Int
 
     abstract fun rollToHit(user: UnitInstance): RollResult
     abstract fun getHitChance(user: UnitInstance): Float

@@ -7,6 +7,7 @@ import io.hsar.wh40k.combatsimulator.logic.TacticalActionStrategy
 import io.hsar.wh40k.combatsimulator.logic.actionoptions.ActionOption
 import io.hsar.wh40k.combatsimulator.logic.actionoptions.FullAim
 import io.hsar.wh40k.combatsimulator.logic.actionoptions.HalfAim
+import io.hsar.wh40k.combatsimulator.logic.actionoptions.WeaponReload
 import io.hsar.wh40k.combatsimulator.model.unit.ActionValue
 import io.hsar.wh40k.combatsimulator.model.unit.Attribute
 import io.hsar.wh40k.combatsimulator.model.unit.Attribute.ACTIONS
@@ -18,14 +19,19 @@ import io.hsar.wh40k.combatsimulator.model.unit.Attribute.DAMAGE_REDUCTION_LEG_L
 import io.hsar.wh40k.combatsimulator.model.unit.Attribute.DAMAGE_REDUCTION_LEG_R
 import io.hsar.wh40k.combatsimulator.model.unit.Attribute.DAMAGE_REDUCTION_TORSO
 import io.hsar.wh40k.combatsimulator.model.unit.Attribute.EFFECTS
+import io.hsar.wh40k.combatsimulator.model.unit.Attribute.WEAPON_AMMUNITION
+import io.hsar.wh40k.combatsimulator.model.unit.Attribute.WEAPON_TYPE
 import io.hsar.wh40k.combatsimulator.model.unit.AttributeValue
 import io.hsar.wh40k.combatsimulator.model.unit.BaseStat
 import io.hsar.wh40k.combatsimulator.model.unit.BodyPart
 import io.hsar.wh40k.combatsimulator.model.unit.Effect
 import io.hsar.wh40k.combatsimulator.model.unit.EffectValue
 import io.hsar.wh40k.combatsimulator.model.unit.EquipmentItem
+import io.hsar.wh40k.combatsimulator.model.unit.ItemType.WEAPON
 import io.hsar.wh40k.combatsimulator.model.unit.NumericValue
 import io.hsar.wh40k.combatsimulator.model.unit.Unit
+import io.hsar.wh40k.combatsimulator.model.unit.WeaponType.MELEE
+import io.hsar.wh40k.combatsimulator.model.unit.WeaponTypeValue
 import io.hsar.wh40k.combatsimulator.utils.mergeWithAddition
 import io.hsar.wh40k.combatsimulator.utils.sum
 
@@ -72,7 +78,7 @@ class UnitInstance(
     }
 
     fun getAimBonus(): Int {
-        return when (val effects = currentAttributes[Attribute.EFFECTS] ?: EffectValue(listOf())) {
+        return when (val effects = currentAttributes[EFFECTS] ?: EffectValue(listOf())) {
             is EffectValue -> {
                 when {
                     Effect.AIMED_FULL in effects.value -> 20
@@ -117,25 +123,26 @@ class UnitInstance(
         val DEFAULT_ATTRIBUTES = mapOf(ACTIONS to DEFAULT_ACTIONS, EFFECTS to EffectValue(emptyList()))
 
         fun createInitialAttributeMap(unit: Unit, equipment: List<EquipmentItem>): Map<Attribute, AttributeValue> {
-            val equipmentAttributes = equipment.map { it.modifiesAttributes }.sum()
+            val equipmentAttributes = equipment
+                    .map { equipmentItem -> equipmentItem.modifiesAttributes }
+                    .sum()
 
-//            val ammoMap = equipment
-//                    .firstOrNull { it.itemType == WEAPON } // #TODO: Handle this better than just "the first weapon to hand"
-//                    ?.modifiesAttributes
-//                    ?.let { weaponAttributes ->
-//                        if (weaponAttributes.getValue(WEAPON_TYPE) == WeaponTypeValue(MELEE)) {
-//                            // Melee weapons have no need for ammunition
-//                            null
-//                        } else {
-//                            // Ranged weapons take their clip size from the ammo given from a reload
-//                            mapOf(WEAPON_AMMUNITION to NumericValue((weaponAttributes.getValue(ACTIONS) as ActionValue)
-//                                    .value
-//                                    .filterIsInstance<WeaponReload>()
-//                                    .first().setsAmmunitionTo)
-//                            )
-//                        }
-//                    } ?: emptyMap()
-            val ammoMap = emptyMap<Attribute, NumericValue>() // FIXME
+            val ammoMap = equipment
+                    .firstOrNull { it.itemType == WEAPON } // #TODO: Handle this better than just "the first weapon to hand"
+                    ?.modifiesAttributes
+                    ?.let { weaponAttributes ->
+                        if (weaponAttributes.getValue(WEAPON_TYPE) == WeaponTypeValue(MELEE)) {
+                            // Melee weapons have no need for ammunition
+                            null
+                        } else {
+                            // Ranged weapons take their clip size from the ammo given from a reload
+                            mapOf(WEAPON_AMMUNITION to NumericValue((weaponAttributes.getValue(ACTIONS) as ActionValue)
+                                    .value
+                                    .filterIsInstance<WeaponReload>()
+                                    .first().setsAmmunitionTo)
+                            )
+                        }
+                    } ?: emptyMap()
 
             val toughnessMap = ((unit.stats.baseStats[BaseStat.TOUGHNESS] ?: 0) / 10)
                     .let { toughnessBonus ->

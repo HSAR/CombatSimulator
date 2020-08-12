@@ -14,7 +14,10 @@ import io.hsar.wh40k.combatsimulator.model.World
 @JsonIgnoreProperties(value = ["actionType"])
 @JsonSubTypes( // NB: No elegant way to do this without specifying class names, see https://github.com/FasterXML/jackson-databind/issues/374
         JsonSubTypes.Type(value = StandardMeleeAttack::class, name = "StandardMeleeAttack"),
-        JsonSubTypes.Type(value = SingleRangedAttack::class, name = "SingleRangedAttack")
+        JsonSubTypes.Type(value = SingleRangedAttack::class, name = "SingleRangedAttack"),
+        JsonSubTypes.Type(value = SemiAutoBurstRangedAttack::class, name = "SemiAutoBurstRangedAttack"),
+        JsonSubTypes.Type(value = FullAutoBurstRangedAttack::class, name = "FullAutoBurstRangedAttack"),
+        JsonSubTypes.Type(value = WeaponReload::class, name = "WeaponReload")
 )
 abstract class ActionOption {
     abstract val actionCost: ActionCost
@@ -32,7 +35,7 @@ abstract class ActionOption {
     }
 }
 
-class TargetedAction(val action: ActionOption, val target: UnitInstance){}
+class TargetedAction(val action: ActionOption, val target: UnitInstance)
 
 //TODO maybe nest these enums inside ActionOption to avoid namespace pollution
 enum class ActionCost {
