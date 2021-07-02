@@ -76,10 +76,10 @@ object TacticalActionStrategy : ActionStrategy {
                 }
 
         return (fullActionTargetedActions + allLegalHalfActionCombos)
-                .map { eachLegalActionCombo ->
-                    getExpectedValue(world, thisUnit, eachLegalActionCombo) to eachLegalActionCombo
-                }
-                .maxBy { (expectedValue, _) -> expectedValue }!!
+            .map { eachLegalActionCombo ->
+                getExpectedValue(world, thisUnit, eachLegalActionCombo) to eachLegalActionCombo
+            }
+            .maxByOrNull { (expectedValue, _) -> expectedValue }!!
                 .second
     }
 
