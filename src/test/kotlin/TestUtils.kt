@@ -1,13 +1,25 @@
 
-import com.nhaarman.mockito_kotlin.any
-import io.hsar.wh40k.combatsimulator.logic.actionoptions.*
+import io.hsar.wh40k.combatsimulator.logic.actionoptions.ActionCost
+import io.hsar.wh40k.combatsimulator.logic.actionoptions.ActionOption
+import io.hsar.wh40k.combatsimulator.logic.actionoptions.FullAim
+import io.hsar.wh40k.combatsimulator.logic.actionoptions.FullMove
+import io.hsar.wh40k.combatsimulator.logic.actionoptions.HalfAim
+import io.hsar.wh40k.combatsimulator.logic.actionoptions.HalfMove
+import io.hsar.wh40k.combatsimulator.logic.actionoptions.SingleRangedAttack
+import io.hsar.wh40k.combatsimulator.logic.actionoptions.TargetType
 import io.hsar.wh40k.combatsimulator.model.MapPosition
 import io.hsar.wh40k.combatsimulator.model.UnitInstance
 import io.hsar.wh40k.combatsimulator.model.World
-import io.hsar.wh40k.combatsimulator.model.unit.*
+import io.hsar.wh40k.combatsimulator.model.unit.Attribute
+import io.hsar.wh40k.combatsimulator.model.unit.BaseStat
+import io.hsar.wh40k.combatsimulator.model.unit.DerivedStats
+import io.hsar.wh40k.combatsimulator.model.unit.Effect
+import io.hsar.wh40k.combatsimulator.model.unit.NumericValue
+import io.hsar.wh40k.combatsimulator.model.unit.Stats
 import io.hsar.wh40k.combatsimulator.model.unit.Unit
-import org.mockito.Mockito
-import org.mockito.Mockito.*
+import org.mockito.Mockito.`when`
+import org.mockito.Mockito.mock
+import org.mockito.kotlin.any
 
 object TestUtils {
     fun getGenericUnitInstance(): UnitInstance {
