@@ -12,8 +12,9 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.build.targetJdk>1.8</project.build.targetJdk>
-        <kotlin.compiler.jvmTarget>1.8</kotlin.compiler.jvmTarget>
+        <project.build.targetJdk>11</project.build.targetJdk>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
         <kotlin.version>1.5.20</kotlin.version>
 
         <slf4j.version>1.7.28</slf4j.version>
@@ -133,6 +134,9 @@
                         </goals>
                     </execution>
                 </executions>
+                <configuration>
+                    <jvmTarget>${project.build.targetJdk}</jvmTarget>
+                </configuration>
             </plugin>
         </plugins>
     </build>
